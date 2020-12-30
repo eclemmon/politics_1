@@ -16,4 +16,6 @@ class Chord:
 
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
+    c7 = Chord(Note(60), Note(64), Note(67), Note(70))
     print(c_major)
+    print(c7)
