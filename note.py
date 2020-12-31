@@ -14,6 +14,15 @@ class Note:
         )
         return pretty_midi
 
+    def __eq__(self, other):
+        if not isinstance(other, Note):
+            return NotImplemented
+
+        return self.midi_note_number == other.midi_note_number
+
+    def __hash__(self):
+        return hash(tuple(sorted(self.__dict__.items())))
+
 if __name__ == '__main__':
     c = Note(72)
     db = Note(90)

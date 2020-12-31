@@ -12,6 +12,16 @@ class Chord:
             result += " | " + str(note) + " | "
         return result
 
+    def __eq__(self, other):
+        if not isinstance(other, Chord):
+            return NotImplemented
+
+        return self.notes == other.notes
+
+    def __hash__(self):
+        return hash(tuple(sorted(self.__dict__.items())))
+
+
 
 
 if __name__ == '__main__':

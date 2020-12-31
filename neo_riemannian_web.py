@@ -1,6 +1,7 @@
 from chord import Chord
 from note import Note
 from itertools import permutations
+import pprint
 
 class Neoriemannian_web:
     def __init__(self, starting_chord):
@@ -13,15 +14,12 @@ class Neoriemannian_web:
         if chord == None:
             chord = self.starting_chord
         neighbors = self.get_valid_chords(chord)
-        print(neighbors)
         self.web[chord] = [self.build_chord(neighbor) for neighbor in neighbors]
         for next_chord in self.web[chord]:
-            print(next_chord)
             if next_chord in self.web.keys():
-                break
+                pass
             else:
                 self.build_web(next_chord)
-
 
 
     def build_chord_permutations(self, chord=None):
@@ -45,7 +43,8 @@ class Neoriemannian_web:
         perms = [list(t) for t in perms]
         return perms
 
-    def get_valid_chords2(self, chord=None):
+
+    def get_valid_chords(self, chord=None):
         valid_chords = []
         chords = self.build_chord_permutations(chord)
         for chord in chords:
@@ -75,10 +74,9 @@ if __name__ == '__main__':
     e_minor = Chord(Note(4), Note(7), Note(11))
     web = Neoriemannian_web(c_major)
     web2 = Neoriemannian_web(e_minor)
-    print(web2.get_valid_chords())
-    print(web2.get_valid_chords2())
     # print(web.get_valid_chords())
     # web.build_chord_permutations()
     # print(web.build_chord([4, 7, 11]))
-    # web.build_web()
+    web.build_web()
     # print(web.web.keys())
+    pprint.pprint(web.web)
