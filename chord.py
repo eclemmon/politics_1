@@ -7,9 +7,16 @@ class Chord:
         self.notes = notes
 
     def __repr__(self):
-        result = ''
+        result = '| '
+        for index, note in enumerate(self.notes):
+            if index == len(self.notes)-1:
+                result += str(note).split()[0]
+            else:
+                result += str(note).split()[0] + ", "
+        result += ' | or | '
         for note in self.notes:
-            result += " | " + str(note) + " | "
+            result += str(note.midi_note_number) + ' '
+        result += '|'
         return result
 
     def __eq__(self, other):

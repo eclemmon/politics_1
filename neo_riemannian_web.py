@@ -79,4 +79,5 @@ if __name__ == '__main__':
     # print(web.build_chord([4, 7, 11]))
     web.build_web()
     # print(web.web.keys())
+    # print(web.web)
     pprint.pprint(web.web)
