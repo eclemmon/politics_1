@@ -7,7 +7,10 @@ class Neoriemannian_web:
     def __init__(self, starting_chord):
         midinote_numbers = [note.midi_note_number for note in starting_chord.notes]
         self.starting_chord = Chord(*[Note(note % 12) for note in midinote_numbers])
+        self.current_chord = self.starting_chord
         self.web = {}
+        self.breadth_first_path = {}
+        self.depth_first_path = {}
 
 
     def build_web(self, chord=None):
@@ -21,6 +24,39 @@ class Neoriemannian_web:
             else:
                 self.build_web(next_chord)
 
+    def breadth_first_search(self, destination_chord):
+        visited = []
+        queue = [[self.current_chord]]
+
+        if self.current_chord == destination_chord:
+            return [destination_chord]
+
+        if (self.current_chord, destination_chord) in self.breadth_first_path.keys():
+            substitute_chord = self.current_chord
+            self.current_chord = destination_chord
+            return self.breadth_first_path[(substitute_chord, destination_chord)]
+
+        while queue:
+            path = queue.pop(0)
+            chord = path[-1]
+            if chord not in visited:
+                child_chords = self.web[chord]
+
+                for child_chord in child_chords:
+                    new_path = list(path)
+                    new_path.append(child_chord)
+                    queue.append(new_path)
+                    if child_chord == destination_chord:
+                        self.breadth_first_path[(self.current_chord, destination_chord)] = new_path
+                        self.current_chord = destination_chord
+                        return new_path
+
+                visited.append(chord)
+
+        return []
+
+    def depth_first_search(self, destination_chord):
+        pass
 
     def build_chord_permutations(self, chord=None):
         if chord == None:
@@ -72,6 +108,7 @@ class Neoriemannian_web:
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
     e_minor = Chord(Note(4), Note(7), Note(11))
+    c_sharp_minor = Chord(Note(1), Note(4), Note(8))
     web = Neoriemannian_web(c_major)
     web2 = Neoriemannian_web(e_minor)
     # print(web.get_valid_chords())
@@ -81,3 +118,7 @@ if __name__ == '__main__':
     # print(web.web.keys())
     # print(web.web)
     pprint.pprint(web.web)
+    print("Printing shortest riemannian path between C Major and c#-minor")
+    print(web.breadth_first_search(c_sharp_minor))
+    print("Printing shortest riemannian path between c#-minor and e_minor")
+    print(web.breadth_first_search(e_minor))
