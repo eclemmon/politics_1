@@ -5,7 +5,7 @@ import random
 import pprint
 
 
-class Neoriemannian_web:
+class NeoriemannianWeb:
     def __init__(self, starting_chord=None):
         """
         Initializes the Neoriemannian web
@@ -34,7 +34,7 @@ class Neoriemannian_web:
         :param chord: default builds the web around the starting chord, but any triad that works in a Riemannian
         web can be given over as well.
         """
-        if chord == None:
+        if chord is None:
             chord = self.starting_chord
         neighbors = self.get_valid_chords(chord)
         self.web[chord] = [self.build_chord(neighbor) for neighbor in neighbors]
@@ -165,7 +165,7 @@ class Neoriemannian_web:
         """
         visited = [self.current_chord]
         path = []
-        for time in (range(length)):
+        for _ in (range(length)):
             options = self.web[self.current_chord]
             new_options = []
             for option in options:
@@ -183,7 +183,7 @@ class Neoriemannian_web:
         :return: Returns the path as a list.
         """
         path = []
-        for time in (range(length)):
+        for _ in (range(length)):
             options = self.web[self.current_chord]
             next_chord = random.choice(options)
             path.append(next_chord)
@@ -191,14 +191,12 @@ class Neoriemannian_web:
         return path
 
 
-
-
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
     e_minor = Chord(Note(4), Note(7), Note(11))
     c_sharp_minor = Chord(Note(1), Note(4), Note(8))
-    web = Neoriemannian_web(c_major)
-    web2 = Neoriemannian_web(e_minor)
+    web = NeoriemannianWeb(c_major)
+    web2 = NeoriemannianWeb(e_minor)
     # print(web.get_valid_chords())
     # web.build_chord_permutations()
     # print(web.build_chord([4, 7, 11]))
