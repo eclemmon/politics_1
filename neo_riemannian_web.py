@@ -1,17 +1,22 @@
 from chord import Chord
 from note import Note
 from itertools import permutations
+import random
 import pprint
+
 
 class Neoriemannian_web:
     def __init__(self, starting_chord):
+
         midinote_numbers = [note.midi_note_number for note in starting_chord.notes]
         self.starting_chord = Chord(*[Note(note % 12) for note in midinote_numbers])
         self.current_chord = self.starting_chord
+
         self.web = {}
+        self.build_web()
+
         self.breadth_first_path = {}
         self.depth_first_path = {}
-
 
     def build_web(self, chord=None):
         if chord == None:
@@ -59,7 +64,7 @@ class Neoriemannian_web:
         pass
 
     def build_chord_permutations(self, chord=None):
-        if chord == None:
+        if chord is None:
             chord = self.starting_chord
         perms = []
         midinote_numbers = [note.midi_note_number for note in chord.notes]
@@ -73,12 +78,11 @@ class Neoriemannian_web:
             new_chord3[index] = note+2
             new_chord4[index] = note-2
             chords = [new_chord1, new_chord2, new_chord3, new_chord4]
-            for index, chord in enumerate(chords):
-                chords[index] = [note % 12 for note in chord]
-                perms += permutations(chords[index])
+            for i, chord in enumerate(chords):
+                chords[i] = [note % 12 for note in chord]
+                perms += permutations(chords[i])
         perms = [list(t) for t in perms]
         return perms
-
 
     def get_valid_chords(self, chord=None):
         valid_chords = []
@@ -94,14 +98,40 @@ class Neoriemannian_web:
 
         return valid_chords
 
-    def tonal_invert_chord(self, chord):
+    @staticmethod
+    def tonal_invert_chord(chord):
         chord[-1] -= 12
         element = chord.pop()
         return [element] + chord
 
-    def build_chord(self, array):
+    @staticmethod
+    def build_chord(array):
         notes = [Note(note_number) for note_number in array]
         return Chord(*notes)
+
+    def random_walk_only_new(self, length):
+        visited = [self.current_chord]
+        path = []
+        for time in (range(length)):
+            options = self.web[self.current_chord]
+            new_options = []
+            for option in options:
+                if option not in visited:
+                    new_options.append(option)
+            next_chord = random.choice(new_options)
+            path.append(next_chord)
+            self.current_chord = next_chord
+        return path
+
+    def true_random_walk(self, length):
+        path = []
+        for time in (range(length)):
+            options = self.web[self.current_chord]
+            next_chord = random.choice(options)
+            path.append(next_chord)
+            self.current_chord = next_chord
+        return path
+
 
 
 
@@ -122,3 +152,7 @@ if __name__ == '__main__':
     print(web.breadth_first_search(c_sharp_minor))
     print("Printing shortest riemannian path between c#-minor and e_minor")
     print(web.breadth_first_search(e_minor))
+    print("Printing a random walk of 5 chords through the web with only new chords")
+    print(web.random_walk_only_new(5))
+    print("Printing a truly random walk of 10 chords through the web")
+    print(web.true_random_walk(10))

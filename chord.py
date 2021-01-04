@@ -1,5 +1,6 @@
 from note import Note
 
+
 class Chord:
     def __init__(self, *notes):
         for i in notes:
@@ -27,8 +28,6 @@ class Chord:
 
     def __hash__(self):
         return hash(tuple(sorted(self.__dict__.items())))
-
-
 
 
 if __name__ == '__main__':
