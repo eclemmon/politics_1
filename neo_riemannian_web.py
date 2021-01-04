@@ -6,19 +6,34 @@ import pprint
 
 
 class Neoriemannian_web:
-    def __init__(self, starting_chord):
+    def __init__(self, starting_chord=None):
+        """
+        Initializes the Neoriemannian web
+        :param starting_chord: If starting chord is given, makes a copy of the chord and
+        brings it into a lower octave.
+        """
+        if starting_chord is None:
+            midinote_numbers = [0, 4, 7]
+        else:
+            midinote_numbers = [note.midi_note_number for note in starting_chord.notes]
 
-        midinote_numbers = [note.midi_note_number for note in starting_chord.notes]
         self.starting_chord = Chord(*[Note(note % 12) for note in midinote_numbers])
         self.current_chord = self.starting_chord
 
+        # initializes the riemannian web map and constructs it with the helper function.
         self.web = {}
         self.build_web()
 
+        # Initializes dicts for when search paths are called
         self.breadth_first_path = {}
         self.depth_first_path = {}
 
     def build_web(self, chord=None):
+        """
+        Builds the Riemannian web
+        :param chord: default builds the web around the starting chord, but any triad that works in a Riemannian
+        web can be given over as well.
+        """
         if chord == None:
             chord = self.starting_chord
         neighbors = self.get_valid_chords(chord)
@@ -30,6 +45,13 @@ class Neoriemannian_web:
                 self.build_web(next_chord)
 
     def breadth_first_search(self, destination_chord):
+        """
+        Breadth first search implementation, starting chord is wherever the 'cursor' is pointing via self.current_chord.
+        walks through the web to find the shortest path to the destination chord.
+        :param destination_chord: The chord that user wants to travel to.
+        :return: Returns and empty array if the destination is the current chord. Otherwise memoizes and returns the
+        shortest path between self.current_chord and destination chord.
+        """
         visited = []
         queue = [[self.current_chord]]
 
@@ -64,6 +86,14 @@ class Neoriemannian_web:
         pass
 
     def build_chord_permutations(self, chord=None):
+        """
+        neo-Riemannian chords are typically triads. To figure out the neighbor chords agnostically to the asymmetry
+        between pitch classes and the traidic system, this helper function builds all possible permutations of a chord's
+        altered notes by whole- and half-step.
+        :param chord: A Chord object.
+        :return: returns perms, a list of permutations of all chords possible after altering the initial chord by half-
+        or whole-step.
+        """
         if chord is None:
             chord = self.starting_chord
         perms = []
@@ -85,6 +115,12 @@ class Neoriemannian_web:
         return perms
 
     def get_valid_chords(self, chord=None):
+        """
+        This takes in a chord and returns all valid neighbor chords in a neo-Riemannian web.
+        :param chord: Starting chord. If none, starting chord will be self.starting_chord via the
+        build_chord_permutations call.
+        :return: Returns a list of valid neighbor chords in a neo-Riemannian web.
+        """
         valid_chords = []
         chords = self.build_chord_permutations(chord)
         for chord in chords:
@@ -100,16 +136,33 @@ class Neoriemannian_web:
 
     @staticmethod
     def tonal_invert_chord(chord):
+        """
+        Inverts the elements of a chord tonally.
+        :param chord: a list that reflects the pitch classes of a triad
+        :return: returns a new list, with the last element appended to the front of the list and transposed down
+        and octave.
+        """
         chord[-1] -= 12
         element = chord.pop()
         return [element] + chord
 
     @staticmethod
     def build_chord(array):
+        """
+        Builds a chord out of an array.
+        :param array: an array of pitches
+        :return: returns a Chord object.
+        """
         notes = [Note(note_number) for note_number in array]
         return Chord(*notes)
 
     def random_walk_only_new(self, length):
+        """
+        Randomly walks through the neo-Riemannian web based on closest chords without traversing chords already
+        visited.
+        :param length: The number of steps through the web.
+        :return: Returns the path as a list.
+        """
         visited = [self.current_chord]
         path = []
         for time in (range(length)):
@@ -124,6 +177,11 @@ class Neoriemannian_web:
         return path
 
     def true_random_walk(self, length):
+        """
+        Randomly walks through the neo-Riemannian web based on closest chords. Can visit chords already visited
+        :param length: The number of steps through the web.
+        :return: Returns the path as a list.
+        """
         path = []
         for time in (range(length)):
             options = self.web[self.current_chord]
