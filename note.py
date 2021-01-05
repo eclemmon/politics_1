@@ -23,9 +23,15 @@ class Note:
     def __hash__(self):
         return hash(tuple(sorted(self.__dict__.items())))
 
+    def transpose(self, num):
+        self.midi_note_number = self.midi_note_number + (num * 12)
+
 if __name__ == '__main__':
     c = Note(72)
     db = Note(90)
     print(c)
+    print(db)
+    db.transpose(-2)
+    print(db.midi_note_number)
     print(db)
 

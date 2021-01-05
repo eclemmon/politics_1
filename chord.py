@@ -29,6 +29,9 @@ class Chord:
     def __hash__(self):
         return hash(tuple(sorted(self.__dict__.items())))
 
+    def transpose(self, num):
+        self.notes = [note.transpose(num) for note in self.notes]
+
 
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
