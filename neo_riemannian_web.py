@@ -24,9 +24,8 @@ class NeoriemannianWeb:
         self.web = {}
         self.build_web()
 
-        # Initializes dicts for when search paths are called
+        # Initializes dict for when search paths are called
         self.breadth_first_path = {}
-        self.depth_first_path = {}
 
     def build_web(self, chord=None):
         """
@@ -44,7 +43,7 @@ class NeoriemannianWeb:
             else:
                 self.build_web(next_chord)
 
-    def breadth_first_search(self, destination_chord):
+    def breadth_first_search(self, destination_chord, starting_chord=None):
         """
         Breadth first search implementation, starting chord is wherever the 'cursor' is pointing via self.current_chord.
         walks through the web to find the shortest path to the destination chord.
@@ -52,13 +51,15 @@ class NeoriemannianWeb:
         :return: Returns and empty array if the destination is the current chord. Otherwise memoizes and returns the
         shortest path between self.current_chord and destination chord.
         """
+        if starting_chord is None:
+            starting_chord = self.current_chord
         visited = []
-        queue = [[self.current_chord]]
+        queue = [[starting_chord]]
 
-        if self.current_chord == destination_chord:
+        if starting_chord == destination_chord:
             return [destination_chord]
 
-        if (self.current_chord, destination_chord) in self.breadth_first_path.keys():
+        if (starting_chord, destination_chord) in self.breadth_first_path.keys():
             substitute_chord = self.current_chord
             self.current_chord = destination_chord
             return self.breadth_first_path[(substitute_chord, destination_chord)]
@@ -82,8 +83,6 @@ class NeoriemannianWeb:
 
         return []
 
-    def depth_first_search(self, destination_chord):
-        pass
 
     def build_chord_permutations(self, chord=None):
         """
@@ -203,7 +202,7 @@ if __name__ == '__main__':
     web.build_web()
     # print(web.web.keys())
     # print(web.web)
-    pprint.pprint(web.web)
+    # pprint.pprint(web.web)
     print("Printing shortest riemannian path between C Major and c#-minor")
     print(web.breadth_first_search(c_sharp_minor))
     print("Printing shortest riemannian path between c#-minor and e_minor")

@@ -30,7 +30,7 @@ class Chord:
         return hash(tuple(sorted(self.__dict__.items())))
 
     def transpose(self, num):
-        self.notes = [note.transpose(num) for note in self.notes]
+        self.notes = tuple([note.transpose(num) for note in self.notes])
 
 
 if __name__ == '__main__':
