@@ -172,6 +172,7 @@ class NeoriemannianWeb:
                     new_options.append(option)
             next_chord = random.choice(new_options)
             path.append(next_chord)
+            visited.append(next_chord)
             self.current_chord = next_chord
         return path
 
