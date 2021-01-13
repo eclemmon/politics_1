@@ -1,11 +1,12 @@
 from chord import Chord
 from note import Note
 from itertools import permutations
+from harmonic_web import HarmonicWeb
 import random
 import pprint
 
 
-class NeoriemannianWeb:
+class NeoriemannianWeb(HarmonicWeb):
     def __init__(self, starting_chord=None):
         """
         Initializes the Neoriemannian web
@@ -132,63 +133,6 @@ class NeoriemannianWeb:
                         valid_chords.append(chord)
 
         return valid_chords
-
-    @staticmethod
-    def tonal_invert_chord(chord):
-        """
-        Inverts the elements of a chord tonally.
-        :param chord: a list that reflects the pitch classes of a triad
-        :return: returns a new list, with the last element appended to the front of the list and transposed down
-        and octave.
-        """
-        chord[-1] -= 12
-        element = chord.pop()
-        return [element] + chord
-
-    @staticmethod
-    def build_chord(array):
-        """
-        Builds a chord out of an array.
-        :param array: an array of pitches
-        :return: returns a Chord object.
-        """
-        notes = [Note(note_number) for note_number in array]
-        return Chord(*notes)
-
-    def random_walk_only_new(self, length):
-        """
-        Randomly walks through the neo-Riemannian web based on closest chords without traversing chords already
-        visited.
-        :param length: The number of steps through the web.
-        :return: Returns the path as a list.
-        """
-        visited = [self.current_chord]
-        path = []
-        for _ in (range(length)):
-            options = self.web[self.current_chord]
-            new_options = []
-            for option in options:
-                if option not in visited:
-                    new_options.append(option)
-            next_chord = random.choice(new_options)
-            path.append(next_chord)
-            visited.append(next_chord)
-            self.current_chord = next_chord
-        return path
-
-    def true_random_walk(self, length):
-        """
-        Randomly walks through the neo-Riemannian web based on closest chords. Can visit chords already visited
-        :param length: The number of steps through the web.
-        :return: Returns the path as a list.
-        """
-        path = []
-        for _ in (range(length)):
-            options = self.web[self.current_chord]
-            next_chord = random.choice(options)
-            path.append(next_chord)
-            self.current_chord = next_chord
-        return path
 
 
 if __name__ == '__main__':

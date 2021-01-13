@@ -1,7 +1,7 @@
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 import time
-import neo_riemannian_web
+from harmonic_graph_constructors import neo_riemannian_web
 from chord import Chord
 from note import Note
 
