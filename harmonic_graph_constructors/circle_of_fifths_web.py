@@ -1,9 +1,9 @@
 from chord import Chord
 from note import Note
-from harmonic_web import HarmonicWeb
+from harmonic_graph_constructors import harmonic_web
 import pprint
 
-class CircleOfFifths(HarmonicWeb):
+class CircleOfFifths(harmonic_web.HarmonicWeb):
     def __init__(self, starting_chord=None):
         if starting_chord is None:
             midinote_numbers = [0, 4, 7]

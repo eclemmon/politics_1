@@ -1,12 +1,12 @@
 from chord import Chord
 from note import Note
 from itertools import permutations
-from harmonic_web import HarmonicWeb
+from harmonic_graph_constructors import harmonic_web
 import random
 import pprint
 
 
-class NeoriemannianWeb(HarmonicWeb):
+class NeoriemannianWeb(harmonic_web.HarmonicWeb):
     def __init__(self, starting_chord=None):
         """
         Initializes the Neoriemannian web

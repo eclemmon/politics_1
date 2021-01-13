@@ -2,6 +2,7 @@ from pythonosc import udp_client
 from pythonosc import osc_message_builder
 import time
 from harmonic_graph_constructors import neo_riemannian_web
+from harmonic_graph_constructors import circle_of_fifths_web
 from chord import Chord
 from note import Note
 
@@ -70,8 +71,9 @@ if __name__ == "__main__":
     print("Done")
     time.sleep(1)
     print("Initializing neo-RiemannianWeb from C-Major Chord")
-    starting_chord = Chord(Note(61), Note(64), Note(67))
+    starting_chord = Chord(Note(60), Note(64), Note(67))
     web = neo_riemannian_web.NeoriemannianWeb(starting_chord)
+    # web = circle_of_fifths_web.CircleOfFifths(starting_chord)
     web.build_web()
     time.sleep(2)
     print("Done")
@@ -79,5 +81,5 @@ if __name__ == "__main__":
     # print(generate_pitch_materials(web, 4))
     # send_pitch_materials(generate_pitch_materials(web, 4))
     print("Walking through web and sending to SuperCollider")
-    random_walk_only_new(10, web, time_interval=12)
+    random_walk_only_new(3, web, time_interval=12)
     print("Web traversed, ending process")
