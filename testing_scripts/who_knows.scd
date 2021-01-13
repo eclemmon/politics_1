@@ -107,7 +107,6 @@ SynthDef(\reverb, {
 OSCFunc({ |args|
 	"OSCFUNC received the following values:".postln;
 	args.postln;
-	args[2..4].postln;
 	args[2..4].do {
 		arg item, counter;
 		~q_chord[counter].set(\midi, item);
