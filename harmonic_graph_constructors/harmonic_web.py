@@ -116,10 +116,13 @@ class HarmonicWeb:
     def random_walk_only_new(self, length):
         """
         Randomly walks through the neo-Riemannian web based on closest chords without traversing chords already
-        visited.
+        visited. Returns current chord if length is 0.
         :param length: The number of steps through the web.
         :return: Returns the path as a list.
         """
+        if length == 0:
+            return [self.current_chord]
+
         visited = [self.current_chord]
         path = []
         for _ in (range(length)):
@@ -136,10 +139,14 @@ class HarmonicWeb:
 
     def true_random_walk(self, length):
         """
-        Randomly walks through the neo-Riemannian web based on closest chords. Can visit chords already visited
+        Randomly walks through the neo-Riemannian web based on closest chords. Can visit chords already visited.
+        returns current chord if length is 0.
         :param length: The number of steps through the web.
         :return: Returns the path as a list.
         """
+        if length == 0:
+            return [self.current_chord]
+
         path = []
         for _ in (range(length)):
             options = self.web[self.current_chord]
