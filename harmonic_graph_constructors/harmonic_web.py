@@ -27,7 +27,6 @@ class HarmonicWeb:
 
     def build_web(self, chord=None):
         """
-
         :param chord:
         :return:
         """

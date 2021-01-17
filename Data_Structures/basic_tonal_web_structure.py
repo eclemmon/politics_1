@@ -31,3 +31,6 @@ basic_major_tonal_web = {
     # b/º7
     (11, 2, 5, 6): [(0, 4, 7), (0, 4, 7, 11), (9, 0, 4), (9, 0, 4, 7)]
 }
+
+if __name__ == "__main__":
+    print(basic_major_tonal_web[(11,2,5,6)])
