@@ -1,7 +1,7 @@
-from chord import Chord
-from note import Note
-from harmonic_graph_constructors import harmonic_web
-import pprint
+from Classes.chord import Chord
+from Classes.note import Note
+from Harmonic_Graph_Constructors import harmonic_web
+
 
 class CircleOfFifths(harmonic_web.HarmonicWeb):
     def __init__(self, starting_chord=None):

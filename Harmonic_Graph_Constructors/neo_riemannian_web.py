@@ -1,9 +1,7 @@
-from chord import Chord
-from note import Note
+from Classes.chord import Chord
+from Classes.note import Note
 from itertools import permutations
-from harmonic_graph_constructors import harmonic_web
-import random
-import pprint
+from Harmonic_Graph_Constructors import harmonic_web
 
 
 class NeoriemannianWeb(harmonic_web.HarmonicWeb):

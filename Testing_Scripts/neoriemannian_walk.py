@@ -1,10 +1,9 @@
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 import time
-from harmonic_graph_constructors import neo_riemannian_web
-from harmonic_graph_constructors import circle_of_fifths_web
-from chord import Chord
-from note import Note
+from Harmonic_Graph_Constructors import neo_riemannian_web
+from Classes.chord import Chord
+from Classes.note import Note
 
 
 # noinspection PyShadowingNames

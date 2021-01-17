@@ -1,7 +1,7 @@
 from harmonic_web import HarmonicWeb
-from chord import Chord
-from note import Note
-from Data_Structures import basic_tonal_web_structure
+from Classes.chord import Chord
+from Classes.note import Note
+from Data_Dumps import basic_tonal_web_structure
 
 class BasicTonalWeb(HarmonicWeb):
     def __init__(self, starting_chord=None):
@@ -13,8 +13,9 @@ class BasicTonalWeb(HarmonicWeb):
         self.starting_chord = Chord(*[Note(note % 12) for note in midinote_numbers])
         self.current_chord = self.starting_chord
 
-        # initializes the riemannian web map and constructs it with the helper function.
+        # initializes the basic tonal graph and constructs it with the helper function.
         self.web = {}
+        self.build_web()
 
         # Initializes dict for when search paths are called
         self.breadth_first_path = {}
@@ -32,5 +33,4 @@ class BasicTonalWeb(HarmonicWeb):
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
     basic_af_web = BasicTonalWeb()
-    basic_af_web.build_web()
     print(basic_af_web.random_walk_only_new(5))
