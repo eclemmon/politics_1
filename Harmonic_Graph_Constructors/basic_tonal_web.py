@@ -3,6 +3,7 @@ from Classes.chord import Chord
 from Classes.note import Note
 from Data_Dumps import basic_tonal_web_structure
 
+
 class BasicTonalWeb(HarmonicWeb):
     def __init__(self, starting_chord=None):
         if starting_chord is None:
@@ -20,17 +21,17 @@ class BasicTonalWeb(HarmonicWeb):
         # Initializes dict for when search paths are called
         self.breadth_first_path = {}
 
-    def build_web(self, chord=None):
-        if chord is None:
-            chord = self.starting_chord
+    def build_web(self):
+        diff = self.starting_chord.notes[0].midi_note_number
 
         for key, value in basic_tonal_web_structure.basic_major_tonal_web.items():
-            new_key = self.build_chord(key)
-            new_values = [self.build_chord(next_chord) for next_chord in value]
+            new_key = self.build_chord([(note+diff) % 12 for note in key])
+            new_values = [self.build_chord([(note+diff) % 12 for note in next_chord]) for next_chord in value]
             self.web[new_key] = new_values
 
 
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
-    basic_af_web = BasicTonalWeb()
+    e_major = Chord(Note(4), Note(8), Note(11))
+    basic_af_web = BasicTonalWeb(e_major)
     print(basic_af_web.random_walk_only_new(5))

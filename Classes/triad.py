@@ -1,5 +1,5 @@
-from chord import Chord
-from note import Note
+from Classes.chord import Chord
+from Classes.note import Note
 
 
 class Triad(Chord):
