@@ -1,5 +1,4 @@
 import time
-from utility_tools import clock
 
 
 class Voteprocessor:

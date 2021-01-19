@@ -1,8 +1,8 @@
-import tweepy, json, logging, politics_logger
-from pythonosc import osc_message_builder
+import tweepy, json, logging
+from Utility_Tools import politics_logger
 from pythonosc import udp_client
 
-with open("twitter_credentials.json", "r") as file:
+with open("../twitter_credentials.json", "r") as file:
     credentials = json.load(file)
 
 auth = tweepy.OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])

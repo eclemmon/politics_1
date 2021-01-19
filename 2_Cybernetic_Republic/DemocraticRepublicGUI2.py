@@ -8,13 +8,11 @@ from Python2SC import StreamListener
 import Python2SC
 import tweepy
 import random
-import logging
-import politics_logger
 import json
 from Python2SC import message_handler
 from pythonosc import udp_client
 
-with open("twitter_credentials.json", "r") as file:
+with open("../twitter_credentials.json", "r") as file:
     credentials = json.load(file)
 
 auth = tweepy.OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
