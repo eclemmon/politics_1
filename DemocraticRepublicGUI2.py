@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as tkFont
 import Countdown
-import Vote_Processor
+import vote_processor
 import threading
 import queue
 from Python2SC import StreamListener
@@ -185,7 +185,7 @@ class ThreadedClient:
 
 
 
-class VoteProcessor(Vote_Processor.Voteprocessor):
+class VoteProcessor(vote_processor.Voteprocessor):
     def display_current_results(self):
         totals = self.tally_votes()
         formatted_text = ''
