@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.font as tkFont
-import Countdown
+import countdown
 import vote_processor
 import threading
 import queue
@@ -20,7 +20,7 @@ with open("twitter_credentials.json", "r") as file:
 auth = tweepy.OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
 auth.set_access_token(credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
 
-class CountDownApp(Countdown.Countdown):
+class CountDownApp(countdown.Countdown):
     def __init__(self, voting_period, rest_period, vote_processor, queue):
 
         # initiate vote processor and counter periods
