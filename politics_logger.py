@@ -1,6 +1,6 @@
 import os, datetime, time, logging
 
-FILE_PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project/Log_Files/"
+FILE_PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Log_Files/"
 
 
 def construct_filename(path):

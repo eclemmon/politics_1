@@ -9,7 +9,7 @@ import Python2SC
 import tweepy
 import random
 import logging
-import Politics_Logger
+import politics_logger
 import json
 from Python2SC import message_handler
 from pythonosc import udp_client

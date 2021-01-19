@@ -1,4 +1,4 @@
-import tweepy, json, logging, Politics_Logger
+import tweepy, json, logging, politics_logger
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
 
@@ -17,7 +17,7 @@ def logger_launcher():
     print("Launching Logger")
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
-    filehandler = Politics_Logger.setuplogger(Politics_Logger.FILE_PATH)
+    filehandler = politics_logger.setuplogger(politics_logger.FILE_PATH)
     formatter = logging.Formatter('OUTPUT %(asctime)s: %(message)s')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
