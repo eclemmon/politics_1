@@ -1,23 +1,26 @@
 import sched
 import json
+import time
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
+from NLP_Tools.sentiment_analysis_tools import get_sentiment
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
-import time
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Utility_Tools.logistic_function import linear_to_logistic as l2l
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 class TweetsIncomingSim:
     def __init__(self, full_corpus, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
-                 web=NeoriemannianWeb()):
+                 web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer()):
         # Initialize NLP objects.
         self.time_and_tweets = self.time_and_tweet_gen(full_corpus)
         self.current_partial_corpus = {}
         self.prior_partial_corpus = None
         self.prior_corpus_mean_std = CorpusMeanAndStd(0.0, 0.0)
         self.message_comparison_obj = message_comparison
+        self.sentiment_analyzer = sentiment_analyzer
         # Initialize music generators and timing protocols.
         self.web = web
         self.web.build_web()
@@ -65,7 +68,10 @@ class TweetsIncomingSim:
             self.scheduler.run()
 
     def trigger_sounds(self, data, time_interval):
+        # sentiment = get_sentiment(self.sentiment_analyzer, data)
         self.scheduler.enterabs(time_interval, 1, print, argument=('Triggered:', data))
+        # self.scheduler.enterabs(time_interval, 2, print, argument=('Sentiment:', sentiment))
+
 
     def harmonic_walk_dummy(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
         num_chords_walked = int(l2l(abs(lev_mean), 0, 100, 0, 10, lev_standard_of_deviation))
@@ -110,7 +116,7 @@ def send_chord_materials(notes, client, time_interval):
     :param client: OSC client
     :return:
     """
-    msg = osc_message_builder.OscMessageBuilder(address='/s_new')
+    msg = osc_message_builder.OscMessageBuilder(address='/harmonic_materials')
     chord_names = ['Q', 'L', 'P', 'R']
     for index in range(len(chord_names)):
         msg.add_arg(chord_names[index], arg_type='s')
@@ -121,6 +127,10 @@ def send_chord_materials(notes, client, time_interval):
     msg = msg.build()
     print(msg.params)
     client.send(msg)
+
+def generate_rhythm(data):
+    sentiment = get_sentiment(data)
+    print(sentiment)
 
 
 def random_walk_only_new(num_chords_walked, harmonic_web, client, octave=None, time_interval=None):
@@ -158,5 +168,5 @@ if __name__ == '__main__':
     # web = circle_of_fifths_web.CircleOfFifths(starting_chord)
     # web.build_web()
     # random_walk_only_new(3, web, client, time_interval=1)
-    sim = TweetsIncomingSim(tweets, formal_section_length=30, harmonic_rhythm=30)
+    sim = TweetsIncomingSim(tweets, formal_section_length=10, harmonic_rhythm=10)
     sim.run()
