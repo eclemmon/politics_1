@@ -2,18 +2,11 @@
 Compares messages between one another according to different NLP algorithms.
 Wordnet_Sentence_Similarity uses Wordnet
 """
-import os.path
-import matplotlib.pyplot as plt
 from nltk import word_tokenize, pos_tag, PorterStemmer
-from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import wordnet as wn
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from gensim import corpora
-from gensim.models import LsiModel
-from gensim.models.coherencemodel import CoherenceModel
-
 
 porterstemmer = PorterStemmer()
 stop_words = set(stopwords.words("english"))
@@ -42,27 +35,24 @@ class TF_IDF:
 
     def new_incoming_tweet(self, new_tweet_text):
         """
-        :param vectorizer: TfIdfVectorizer model
-        :param docs_tfidf: tfidf vectors for all docs
         :param new_tweet_text: query doc
         Update the tfidf vectorizor to include all the documents and the new one
         :return: cosine similarity between new_tweet_text and all docs
         """
         if len(self.all_documents) == 0:
             self.all_documents.append(new_tweet_text)
-            self.vectorizer = TfidfVectorizer(preprocessor=preprocess)
+            # self.vectorizer = TfidfVectorizer(preprocessor=preprocess)
             self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
             return 0.0
         else:
             query_tfidf = self.vectorizer.transform([new_tweet_text])
             cosine_simiilarities = cosine_similarity(query_tfidf, self.docs_tfidf).flatten()
             self.all_documents.append(new_tweet_text)
-            self.vectorizer = TfidfVectorizer(preprocessor=preprocess)
+            # self.vectorizer = TfidfVectorizer(preprocessor=preprocess)
             self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
             # print(list(cosine_simiilarities), self.all_documents[:-1])
             result = dict(list(zip(self.all_documents[:-1], list(cosine_simiilarities))))
-            return (new_tweet_text, max(result, key=result.get), max(result.values()))
-
+            return max(result, key=result.get), max(result.values())
 
 
 class WordnetSentenceSimilarity:
@@ -162,13 +152,20 @@ class WordnetSentenceSimilarity:
         return (self.sentence_similarity(self.sentence1, self.sentence2) +
                 self.sentence_similarity(self.sentence2, self.sentence1)) / 2
 
-def word_net_tweet_similarity_score(logged_tweets, new_tweet):
-    tweet_similarity_score_dict = {}
-    for tweet in logged_tweets:
-        fs_to_s = WordnetSentenceSimilarity(new_tweet, tweet)
-        result = fs_to_s.symmetric_sentence_similarity()
-        tweet_similarity_score_dict[tweet] = result
-    return max(tweet_similarity_score_dict, key=tweet_similarity_score_dict.get)
+
+class WordNetTweetSimilarityScore:
+    def __init__(self, logged_tweets):
+        self.all_documents = logged_tweets
+
+    def new_incoming_tweet(self, new_tweet):
+        tweet_similarity_score_dict = {}
+        for tweet in self.all_documents:
+            fs_to_s = WordnetSentenceSimilarity(new_tweet, tweet)
+            result = fs_to_s.symmetric_sentence_similarity()
+            tweet_similarity_score_dict[tweet] = result
+        return max(tweet_similarity_score_dict, key=tweet_similarity_score_dict.get), \
+               max(tweet_similarity_score_dict.values())
+
 
 if __name__ == '__main__':
     print("Testing similarity scores for sentences:")
@@ -183,16 +180,14 @@ if __name__ == '__main__':
         "beep, bep, soowop.",
         "Music is sound in time",
         "Music is sound in ti",
-        "cat, cats and jesus have a spectral music that sounds like jazz boop"
+        "cat, cats and jesus have a spectral music that sounds like jazz boob"
     ]
 
-    focus_sentence = "Music is sound in time."
+    focus_sentence = "Hello every one I love music so much."
 
+    tweets = WordNetTweetSimilarityScore(sentences)
+    print(tweets.new_incoming_tweet(focus_sentence))
+
+    # tf_idf = TF_IDF()
     # for sentence in sentences:
-    #     fs_to_s = WordnetSentenceSimilarity(focus_sentence, sentence)
-    #     result = f"Similarity score for \"{focus_sentence}\", \"{sentence}\": {fs_to_s.symmetric_sentence_similarity()}"
-    #     print(result)
-    tf_idf = TF_IDF()
-    for sentence in sentences:
-        print(tf_idf.new_incoming_tweet(new_tweet_text=sentence))
-
+    #     print(tf_idf.new_incoming_tweet(new_tweet_text=sentence))
