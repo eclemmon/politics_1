@@ -64,14 +64,13 @@ class TweetsIncomingSim:
                         self.harmonic_walk_dummy(3, diff.mean, diff.std, harmonic_graph=self.web)
                         time_passed = 0
                 else:
-                    self.trigger_sounds(self.current_partial_corpus[key], time.time() + float(key))
+                    self.trigger_sounds(self.current_partial_corpus[key], float(key))
             except StopIteration:
                 break
             self.scheduler.run()
 
     def trigger_sounds(self, data, time_interval):
-        # self.scheduler.enterabs(time_interval, 1, print, argument=('Triggered:', data))
-        self.generate_rhythm(data)
+        self.scheduler.enter(time_interval, 1, self.send_rhythm_materials, argument=(data, time_interval))
 
 
     def harmonic_walk_dummy(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
@@ -94,8 +93,20 @@ class TweetsIncomingSim:
         return self.message_comparison_obj.new_incoming_tweet(tweet)
 
     def generate_rhythm(self, data):
-        sentiment = get_sentiment(self.sentiment_analyzer, data)
-        print(sentiment)
+        return er_gen.generate_euclidean(2, 3)
+
+    def send_rhythm_materials(self, data, time_interval):
+        rhythm = self.generate_rhythm(data)
+        print(rhythm)
+        msg = osc_message_builder.OscMessageBuilder(address='/pitch_triggers')
+        for item in rhythm:
+            msg.add_arg(item, arg_type='i')
+        msg.add_arg(time_interval, arg_type='f')
+        msg = msg.build()
+        self.client.send(msg)
+
+
+
 
 
 # noinspection PyShadowingNames
@@ -129,7 +140,7 @@ def send_chord_materials(notes, client, time_interval, harmonic_rhythm):
     for pitch in pitches:
         msg.add_arg(pitch, arg_type='i')
     msg = msg.build()
-    print(msg.params)
+    # print(msg.params)
     client.send(msg)
 
 

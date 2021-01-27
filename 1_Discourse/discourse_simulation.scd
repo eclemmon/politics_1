@@ -180,6 +180,7 @@ SynthDef(\reverb, {
 ~q_chord = Array.new(3);
 ~pitches_queue = List.new();
 ~timings_queue = List.new();
+~triggers_queue = List.new();
 
 ~start.do({
 	arg note, index;
@@ -189,6 +190,7 @@ SynthDef(\reverb, {
 	~r_chord.add(Synth(\R2, [\midi, note, \speed, (index+1)*0.4, \out, 98]););
 });
 
+// OSC FUNCTION FOR HARMONIC TRIGGERS
 OSCFunc({ |args|
 	var harmonic_rhythm, timings_queue, pitches_queue, num_chords, timing, dur;
 	"######################################".postln;
@@ -198,7 +200,7 @@ OSCFunc({ |args|
 	harmonic_rhythm = args.removeAt(0);
 	"Harmonic Rhythm:".postln;
 	harmonic_rhythm.postln;
-	num_chords = (harmonic_rhythm / args[0]).ceil.asInteger;
+	num_chords = (harmonic_rhythm / args[0]).floor.asInteger;
 	"Number of Chords:".postln;
 	num_chords.postln;
 	timings_queue = List.new();
@@ -231,23 +233,27 @@ OSCFunc({ |args|
 
 
 OSCFunc({ |args|
-	var harmonic_rhythm, timings_queue, pitches_queue, num_chords, timing, dur;
+	var harmonic_rhythm, triggers_queue, pitches_queue, num_chords, timing, tiggers;
 	"######################################".postln;
 	"OSCFUNC received the following values:".postln;
-		dur = Pseq(timings_queue).asStream;
+	args.postln;
+	args.removeAt(0);
+	timing = args.pop;
+	"Trigger Queue".postln;
+	~triggers_queue.addAll(args);
+	~triggers_queue.postln;
 
 	~trigger_task = Task({
-		var delta;
+		var delta, trigger_val;
 		while {
-			delta = dur.next;
-			delta.notNil;
+			delta = timing;
+			~triggers_queue.size != 0;
 		} {
 			// args.postln;
-			3.do( {arg i; ~q_chord[i].set(\gate, args.removeAt(0))});
-			3.do( {arg i; ~l_chord[i].set(\gate, args.removeAt(0))});
-			3.do( {arg i; ~p_chord[i].set(\gate, args.removeAt(0))});
-			3.do( {arg i; ~r_chord[i].set(\gate, args.removeAt(0))});
-			delta.wait;
+			trigger_val = ~triggers_queue.removeAt(0);
+			trigger_val.postln;
+			3.do( {arg i; ~q_chord[i].set(\gate, trigger_val)});
+			(timing/5).wait;
 		};
 		delta.yield;
 	};
