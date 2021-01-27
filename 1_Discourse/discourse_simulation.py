@@ -1,11 +1,13 @@
 import sched
 import json
 import time
+import itertools
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
 from NLP_Tools.sentiment_analysis_tools import get_sentiment
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
+from Rhythm_Generators import euclidean_rhythm_generator as er_gen
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Utility_Tools.logistic_function import linear_to_logistic as l2l
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -68,9 +70,8 @@ class TweetsIncomingSim:
             self.scheduler.run()
 
     def trigger_sounds(self, data, time_interval):
-        # sentiment = get_sentiment(self.sentiment_analyzer, data)
-        self.scheduler.enterabs(time_interval, 1, print, argument=('Triggered:', data))
-        # self.scheduler.enterabs(time_interval, 2, print, argument=('Sentiment:', sentiment))
+        # self.scheduler.enterabs(time_interval, 1, print, argument=('Triggered:', data))
+        self.generate_rhythm(data)
 
 
     def harmonic_walk_dummy(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
@@ -81,7 +82,8 @@ class TweetsIncomingSim:
         else:
             interval = self.harmonic_rhythm / num_chords_walked
         print("interval: ", interval)
-        random_walk_only_new(num_chords_walked, harmonic_graph, self.client, time_interval=interval)
+        random_walk_only_new(num_chords_walked, harmonic_graph, self.client, time_interval=interval,
+                             harmonic_rhythm=self.harmonic_rhythm)
 
     def compare_tweets(self, tweet):
         """
@@ -90,6 +92,10 @@ class TweetsIncomingSim:
         :return: Tuple with closest related text and the similarity score.
         """
         return self.message_comparison_obj.new_incoming_tweet(tweet)
+
+    def generate_rhythm(self, data):
+        sentiment = get_sentiment(self.sentiment_analyzer, data)
+        print(sentiment)
 
 
 # noinspection PyShadowingNames
@@ -108,7 +114,7 @@ def generate_pitch_materials(web: NeoriemannianWeb, octave, current_chord):
     return [[note.midi_note_number + 12 * octave for note in chord.notes] for chord in chords]
 
 
-def send_chord_materials(notes, client, time_interval):
+def send_chord_materials(notes, client, time_interval, harmonic_rhythm):
     """
     Builds pitch materials into an OSC message, send to SuperCollider.
     :param time_interval:
@@ -117,23 +123,20 @@ def send_chord_materials(notes, client, time_interval):
     :return:
     """
     msg = osc_message_builder.OscMessageBuilder(address='/harmonic_materials')
-    chord_names = ['Q', 'L', 'P', 'R']
-    for index in range(len(chord_names)):
-        msg.add_arg(chord_names[index], arg_type='s')
-        for note in notes[index]:
-            msg.add_arg(note)
-    msg.add_arg('time_interval', arg_type='s')
+    pitches = list(itertools.chain(*[note for chord in notes for note in chord]))
+    msg.add_arg(harmonic_rhythm, arg_type='f')
     msg.add_arg(time_interval, arg_type='f')
+    for pitch in pitches:
+        msg.add_arg(pitch, arg_type='i')
     msg = msg.build()
     print(msg.params)
     client.send(msg)
 
-def generate_rhythm(data):
-    sentiment = get_sentiment(data)
-    print(sentiment)
 
 
-def random_walk_only_new(num_chords_walked, harmonic_web, client, octave=None, time_interval=None):
+
+def random_walk_only_new(num_chords_walked, harmonic_web, client, octave=None, time_interval=None,
+                         harmonic_rhythm=None):
     """
     Function that walks randomly through a harmonic web object, selects
     Chord objects that have not been visited yet and sends their pitch materials to SC.
@@ -148,14 +151,18 @@ def random_walk_only_new(num_chords_walked, harmonic_web, client, octave=None, t
     if time_interval is None:
         time_interval = 5
 
+    if harmonic_rhythm is None:
+        harmonic_rhythm = 5
+
     chords = harmonic_web.random_walk_only_new(num_chords_walked)
-    schedule_chords(chords, time_interval, harmonic_web, octave, client)
+    schedule_chords(chords, time_interval, harmonic_rhythm, harmonic_web, octave, client)
 
 
-def schedule_chords(chords, time_interval, chord_graph, octave, client):
+def schedule_chords(chords, time_interval, harmonic_rhythm, chord_graph, octave, client):
+    pitch_materials = []
     for chord in chords:
-        pitch_materials = generate_pitch_materials(chord_graph, octave, chord)
-        send_chord_materials(pitch_materials, client, time_interval)
+        pitch_materials.append(generate_pitch_materials(chord_graph, octave, chord))
+    send_chord_materials(pitch_materials, client, time_interval, harmonic_rhythm)
 
 
 if __name__ == '__main__':
