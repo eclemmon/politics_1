@@ -2,7 +2,6 @@ import tweepy
 from Utility_Tools.politics_logger import logger_launcher
 import json
 from pythonosc import udp_client
-from Utility_Tools import politics_logger
 
 
 class DiscourseStreamListener(tweepy.StreamListener):
