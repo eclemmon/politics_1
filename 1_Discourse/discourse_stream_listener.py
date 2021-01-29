@@ -1,11 +1,12 @@
 import tweepy
-from Utility_Tools.politics_logger import logger_launcher
 import json
+from Utility_Tools.politics_logger import logger_launcher
+
 from pythonosc import udp_client
 
 
 class DiscourseStreamListener(tweepy.StreamListener):
-    def __init__(self, client, logger):
+    def __init__(self, client, logger_object):
         self.client = client
         self.keys_to_query = ['created_at', 'text', 'in_reply_to_status_id', 'in_reply_to_status_id_str',
                               'in_reply_to_screen_name', 'geo', 'coordinates',
@@ -15,7 +16,7 @@ class DiscourseStreamListener(tweepy.StreamListener):
         self.user_keys_to_query = ['name', 'screen_name', 'location', 'url', 'description',
                                    'created_at', ]
         self.entities_keys_to_query = ['hashtags', 'urls', 'user_mentions', 'symbols']
-        self.logger_object = logger
+        self.logger_object = logger_object
 
     def on_connect(self):
         """
@@ -83,6 +84,9 @@ class MyStream:
 
     def message_handler(self, message):
         """
+
+        :param message:
+        :return:
         """
         print(message)
         self.logger_object.info(message)
@@ -90,12 +94,16 @@ class MyStream:
     def logging_handler(self, message):
         """
 
-        :param info:
+        :param message:
         :return:
         """
         self.logger_object.info(message)
 
     def run(self):
+        """
+
+        :return:
+        """
         try:
             self.logging_handler('Testing logger...')
             self.logging_handler("Launching Twitter Listener")
@@ -114,7 +122,12 @@ class MyStream:
             self.logger_object.exception("There Was a Problem in the Main Loop\n")
 
     def disconnect(self):
+        """
+        Disconnects
+        :return:
+        """
         self.stream.disconnect()
+        self.stream.on_data("closing")
 
 if __name__ == '__main__':
     PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json"

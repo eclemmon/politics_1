@@ -12,68 +12,35 @@ from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Utility_Tools.logistic_function import linear_to_logistic as l2l
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-
-class TweetsIncomingSim:
-    def __init__(self, full_corpus, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
+class DiscourseMusicGen:
+    def __init__(self, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer()):
         # Initialize NLP objects.
-        self.time_and_tweets = self.time_and_tweet_gen(full_corpus)
         self.current_partial_corpus = {}
         self.prior_partial_corpus = None
         self.prior_corpus_mean_std = CorpusMeanAndStd(0.0, 0.0)
         self.message_comparison_obj = message_comparison
         self.sentiment_analyzer = sentiment_analyzer
+
         # Initialize music generators and timing protocols.
         self.web = web
         self.web.build_web()
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
+
         # Initialize OSC client.
         self.client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
-        # Initialize scheduler
-        self.scheduler = sched.scheduler(time.time, time.sleep)
 
-    @property
-    def next(self):
-        return next(self.time_and_tweets)
+        # Initialize time_passed
+        self.starting_time = time.time()
 
-    @staticmethod
-    def time_and_tweet_gen(corpus):
-        for key in corpus.keys():
-            yield key, corpus[key]
-
-    def run(self):
-        time_passed = 0
-        while True:
-            try:
-                key, value = self.next
-                self.current_partial_corpus[key] = value
-                time_passed += float(key)
-                if time_passed >= self.formal_section_length:
-                    if self.prior_partial_corpus is None:
-                        diff = CorpusMeanAndStd(0.0, 0.0)
-                        self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
-                        self.harmonic_walk_dummy(3, diff.mean, diff.std, harmonic_graph=self.web)
-                        time_passed = 0
-                    else:
-                        current_corpus_mean_std = CorpusMeanAndStd(corpus=self.current_partial_corpus)
-                        diff = self.prior_corpus_mean_std - current_corpus_mean_std
-                        self.prior_partial_corpus = self.current_partial_corpus
-                        self.current_partial_corpus = {}
-                        self.prior_corpus_mean_std = current_corpus_mean_std
-                        self.harmonic_walk_dummy(3, diff.mean, diff.std, harmonic_graph=self.web)
-                        time_passed = 0
-                else:
-                    self.trigger_sounds(self.current_partial_corpus[key], float(key))
-            except StopIteration:
-                break
-            self.scheduler.run()
-
-    def trigger_sounds(self, data, time_interval):
-        self.scheduler.enter(time_interval, 1, self.send_rhythm_materials, argument=(data, time_interval))
+    def trigger_sounds(self, data):
+        current_time = time.time()
+        time_passed = current_time - self.starting_time
+        self.current_partial_corpus[current_time] = data
 
 
-    def harmonic_walk_dummy(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
+    def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
         num_chords_walked = int(l2l(abs(lev_mean), 0, 100, 0, 10, lev_standard_of_deviation))
         print("num_chords_walked: ", num_chords_walked)
         if num_chords_walked == 0:
@@ -92,7 +59,7 @@ class TweetsIncomingSim:
         """
         return self.message_comparison_obj.new_incoming_tweet(tweet)
 
-    def generate_rhythm(self, data):
+    def generate_euclidean_rhythm(self, data):
         return er_gen.generate_euclidean(4, 6)
 
     def send_rhythm_materials(self, data, time_interval):
@@ -106,10 +73,6 @@ class TweetsIncomingSim:
         self.client.send(msg)
 
 
-
-
-
-# noinspection PyShadowingNames
 def generate_pitch_materials(web: NeoriemannianWeb, octave, current_chord):
     """
     This helper functionfunction simply returns an array of midi note numbers according to
@@ -144,8 +107,6 @@ def send_chord_materials(notes, client, time_interval, harmonic_rhythm):
     client.send(msg)
 
 
-
-
 def random_walk_only_new(num_chords_walked, harmonic_web, client, octave=None, time_interval=None,
                          harmonic_rhythm=None):
     """
@@ -174,17 +135,3 @@ def schedule_chords(chords, time_interval, harmonic_rhythm, chord_graph, octave,
     for chord in chords:
         pitch_materials.append(generate_pitch_materials(chord_graph, octave, chord))
     send_chord_materials(pitch_materials, client, time_interval, harmonic_rhythm)
-
-
-if __name__ == '__main__':
-    file_path = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Corpora/TwiConv/time_and_tweets.json"
-
-    with open(file_path, 'r') as file:
-        tweets = json.load(file)
-    # starting_chord = Chord(Note(60), Note(64), Note(67))
-    # web = NeoriemannianWeb(starting_chord)
-    # web = circle_of_fifths_web.CircleOfFifths(starting_chord)
-    # web.build_web()
-    # random_walk_only_new(3, web, client, time_interval=1)
-    sim = TweetsIncomingSim(tweets, formal_section_length=20, harmonic_rhythm=30)
-    sim.run()

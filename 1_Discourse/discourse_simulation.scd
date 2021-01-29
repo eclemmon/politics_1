@@ -1,7 +1,7 @@
 s = Server.default.boot;
 Server.default.options.outDevice_("Multi-Output Device");
 ~netaddress = NetAddr.new("127.0.0.1", 57120)
-{ LPF.ar(Saw.ar(200,0.1), SinOsc.kr(1,0,3600,4000)) }.play;
+
 
 (
 // SYNTH DEFS HERE
@@ -251,9 +251,9 @@ OSCFunc({ |args|
 		} {
 			// args.postln;
 			trigger_val = ~triggers_queue.removeAt(0);
-			trigger_val.postln;
+			// trigger_val.postln;
 			3.do( {arg i; ~q_chord[i].set(\gate, trigger_val)});
-			(timing/5).wait;
+			(timing/10).wait;
 		};
 		delta.yield;
 	};
