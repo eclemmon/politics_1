@@ -81,7 +81,7 @@ def logger_launcher():
     print("Launching Logger")
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
-    filehandler = setuplogger(politics_logger.FILE_PATH)
+    filehandler = setuplogger(FILE_PATH)
     formatter = logging.Formatter('OUTPUT %(asctime)s: %(message)s')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)

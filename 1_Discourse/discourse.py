@@ -2,6 +2,7 @@ import tweepy
 from Utility_Tools.politics_logger import logger_launcher
 import json
 from pythonosc import udp_client
+from Utility_Tools import politics_logger
 
 
 class DiscourseStreamListener(tweepy.StreamListener):
@@ -74,7 +75,8 @@ class DiscourseStreamListener(tweepy.StreamListener):
         except Exception:
             self.logger_object.exception("Something went wrong while trying to collect data!\n")
 
-class MyStream():
+
+class MyStream:
     def __init__(self, auth, logger_object):
         self.auth = auth
         self.logger_object = logger_object
@@ -93,7 +95,6 @@ class MyStream():
         :return:
         """
         self.logger_object.info(message)
-
 
     def run(self):
         try:
@@ -116,4 +117,13 @@ class MyStream():
     def disconnect(self):
         self.stream.disconnect()
 
+if __name__ == '__main__':
+    PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json"
+    with open(PATH, "r") as file:
+        credentials = json.load(file)
 
+    auth = tweepy.OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
+    auth.set_access_token(credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
+
+    logger = logger_launcher()
+    tweet_stream = MyStream(auth, logger)
