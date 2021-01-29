@@ -73,6 +73,19 @@ def setuplogger(path):
 #     #logging.info(" Starting session: %s" % current_time)
 #     logging.info("Logger initialized")
 
+def logger_launcher():
+    """
+    This function launches the logger so any/all data is printed to the log file during the course of a concert.
+    :return: Returns the logger object.
+    """
+    print("Launching Logger")
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    filehandler = setuplogger(politics_logger.FILE_PATH)
+    formatter = logging.Formatter('OUTPUT %(asctime)s: %(message)s')
+    filehandler.setFormatter(formatter)
+    logger.addHandler(filehandler)
+    return logger
 
 if __name__ == '__main__':
     setuplogger(FILE_PATH)

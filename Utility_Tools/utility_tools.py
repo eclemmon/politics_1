@@ -2,7 +2,9 @@
 This function will time a function and print the results
 """
 
-import time, functools
+import time
+import functools
+import logging
 
 def clock(func):
     @functools.wraps(func)
@@ -21,3 +23,4 @@ def clock(func):
         print('[%0.8fs] %s(%s) -> %r' % (elapsed, name, arg_str, result))
         return result
     return clocked
+
