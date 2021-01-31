@@ -252,7 +252,8 @@ OSCFunc({ |args|
 			// args.postln;
 			trigger_val = ~triggers_queue.removeAt(0);
 			// trigger_val.postln;
-			3.do( {arg i; ~q_chord[i].set(\gate, trigger_val)});
+			~q_chord[3.rand].set(\gate, trigger_val);
+/*			3.do( {arg i; ~q_chord[i].set(\gate, trigger_val)});*/
 			(timing/10).wait;
 		};
 		delta.yield;
@@ -262,10 +263,183 @@ OSCFunc({ |args|
 	"######################################".postln;
 }, '/pitch_triggers');
 
-
 )
 
 
+
+(
+// NEW SYNTH DEFS FOR PSEQ
+SynthDef(\Q, {
+	arg midi=48, speed=3, out=0, busout=99, gate=0;
+	var env = Env.perc;
+	var envgen = EnvGen.kr(env, gate, doneAction: Done.freeSelf);
+	var sin = SinOsc.ar((midi%12+60).midicps, 0.5);
+	var sig = sin * envgen;
+	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.5);
+	Out.ar([out, busout], pan);
+}).add;
+
+
+SynthDef(\L, {
+	arg midi=48, speed=0.05, out=0, gate=0;
+	var env = Env.new(
+		levels: [0,1,0],
+		times: [3,4]);
+	var envgen = EnvGen.kr(env, gate);
+	var saw = Saw.ar((midi%12+24).midicps, 1);
+	var sin = SinOsc.ar((midi%12+24).midicps, 1);
+	var sig = sin * saw * envgen;
+	var filter = LPF.ar(sig, XLine.kr(50, 300, 7));
+	var pan = Pan2.ar(filter, pos: SinOsc.kr(0.1), level: 1);
+	Out.ar(out, pan);
+}).add;
+
+SynthDef(\P, {
+	arg midi=48, speed=3, out=0, gate=0;
+	var env = Env.perc(releaseTime: 0.01);
+	var envgen = EnvGen.kr(env, gate);
+	var sin = SinOsc.ar((midi%12+96).midicps, 0.5);
+	var sig = sin * envgen;
+	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.005);
+	Out.ar(out, pan);
+}).add;
+
+SynthDef(\R, {
+	arg midi=48, speed=3, out=0, gate=0;
+	var env = Env.perc(0.2);
+	var envgen = EnvGen.kr(env, gate);
+	var sin = SinOsc.ar((midi%12+72).midicps, 0.5);
+	var sig = sin * envgen;
+	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.1);
+	Out.ar(out, pan);
+}).add;
+
+SynthDef(\R2, {
+	arg midi=48, speed=3, out=0, gate=0;
+	var env = Env.perc(0.2);
+	var envgen = EnvGen.kr(env, gate);
+	var sin = SinOsc.ar((midi%12+72).midicps, 0.5);
+	var noise = WhiteNoise.ar(0.1);
+	var sig = sin * envgen * noise;
+	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.1);
+	Out.ar(out, pan);
+}).add;
+
+SynthDef(\delay1, {
+	arg delaytime=0.6, out=0, in=99;
+	var input = In.ar(in, 2);
+	var effect = DelayN.ar(input, delaytime, delaytime, 0.2);
+	Out.ar(out, effect);
+}).add;
+
+SynthDef(\delay2, {
+	arg delaytime=0.8, out=0, in=99;
+	var input = In.ar(in, 2);
+	var effect = DelayN.ar(input, delaytime, delaytime, 0.05);
+	Out.ar(out, effect);
+}).add;
+
+SynthDef(\reverb, {
+	arg out=0, mix=0.25, room=0.15, damp=0.5, amp=1.0, in=0;
+	var input, signal;
+	input = In.ar(in, 2);
+	signal = FreeVerb2.ar(input[0], input[1], mix, room, damp, amp);
+	Out.ar(out, signal);
+}).add;
+)
+(
+(
+// OSC FUNC WITH Pseq?
+~delay1 = Synth(\delay1, [\in, 99]);
+~delay2 = Synth(\delay2, [\in, 99]);
+~reverb = Synth(\reverb, [\in, 98, \amp, 0.5, \mix, 0.5, \room, 0.7, \damp, 0.9]);
+);
+
+~start = [48,52,55];
+~p_chord = Array.new(3);
+~l_chord = Array.new(3);
+~r_chord = Array.new(3);
+~q_chord = Array.new(3);
+~pitches_queue = List.new();
+~timings_queue = List.new();
+~triggers_queue = List.new();
+
+~start.do({
+	arg note, index;
+	~q_chord.add(Synth(\Q, [\midi, note, \speed, (index+1)*0.3, \out, 98, \outbus, 99]););
+	~l_chord.add(Synth(\L, [\midi, note, \speed, (index+1)*0.1, \out, 98]););
+	~p_chord.add(Synth(\P, [\midi, note, \speed, (index+1)*4, \out, 0]););
+	~r_chord.add(Synth(\R2, [\midi, note, \speed, (index+1)*0.4, \out, 98]););
+});
+
+// OSC FUNCTION FOR HARMONIC TRIGGERS
+OSCFunc({ |args|
+	var harmonic_rhythm, timings_queue, pitches_queue, num_chords, timing, dur;
+	"######################################".postln;
+	"OSCFUNC received the following values:".postln;
+	args.postln;
+	args.removeAt(0);
+	harmonic_rhythm = args.removeAt(0);
+	"Harmonic Rhythm:".postln;
+	harmonic_rhythm.postln;
+	num_chords = (harmonic_rhythm / args[0]).floor.asInteger;
+	"Number of Chords:".postln;
+	num_chords.postln;
+	timings_queue = List.new();
+	timing = args.removeAt(0);
+	num_chords.do( { arg i; timings_queue.add(timing) });
+	"Timings Queue:".postln;
+	timings_queue.postln;
+
+	dur = Pseq(timings_queue).asStream;
+
+	~q_task = Task({
+		var delta;
+		while {
+			delta = dur.next;
+			delta.notNil;
+		} {
+			// args.postln;
+			3.do( {arg i; ~q_chord[i].set(\midi, args.removeAt(0))});
+			3.do( {arg i; ~l_chord[i].set(\midi, args.removeAt(0))});
+			3.do( {arg i; ~p_chord[i].set(\midi, args.removeAt(0))});
+			3.do( {arg i; ~r_chord[i].set(\midi, args.removeAt(0))});
+			delta.wait;
+		};
+		delta.yield;
+	};
+
+).play;
+	"######################################".postln;
+}, '/harmonic_materials');
+
+
+OSCFunc({ |args|
+	var harmonic_rhythm, triggers_queue, pitches_queue, num_chords, timing, triggers, trigger_timing;
+	"######################################".postln;
+	"OSCFUNC received the following values:".postln;
+	args.postln;
+	args.removeAt(0);
+	timing = args.pop;
+	"Trigger Queue".postln;
+	triggers = List.new();
+	triggers.addAll(args);
+	triggers.postln;
+
+	triggers_queue = Pseq(triggers, 1).asStream;
+	trigger_timing = Pseq(List.fill(args.size, { arg i; 1 }), 1).asStream;
+
+	{
+		args.size.do {
+			Synth(\Q, [\gate, triggers_queue.next]);
+			(trigger_timing.next/10).wait;
+		};
+	}.fork;
+
+	"######################################".postln;
+}, '/pitch_triggers');
+
+)
 
 (
 (

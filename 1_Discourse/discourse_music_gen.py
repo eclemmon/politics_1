@@ -1,10 +1,7 @@
-import sched
-import json
 import time
 import itertools
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
-from NLP_Tools.sentiment_analysis_tools import get_sentiment
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 from Rhythm_Generators import euclidean_rhythm_generator as er_gen
@@ -38,6 +35,11 @@ class DiscourseMusicGen:
         current_time = time.time()
         time_passed = current_time - self.starting_time
         self.current_partial_corpus[current_time] = data
+        if time_passed >= self.formal_section_length:
+            self.if_first_chord_walk()
+            self.send_rhythm_materials(data=data)
+        else:
+            self.send_rhythm_materials(data=data)
 
 
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
@@ -62,8 +64,8 @@ class DiscourseMusicGen:
     def generate_euclidean_rhythm(self, data):
         return er_gen.generate_euclidean(4, 6)
 
-    def send_rhythm_materials(self, data, time_interval):
-        rhythm = self.generate_rhythm(data)
+    def send_rhythm_materials(self, data, time_interval=5):
+        rhythm = self.generate_euclidean_rhythm(data)
         print(rhythm)
         msg = osc_message_builder.OscMessageBuilder(address='/pitch_triggers')
         for item in rhythm:
@@ -71,6 +73,28 @@ class DiscourseMusicGen:
         msg.add_arg(time_interval, arg_type='f')
         msg = msg.build()
         self.client.send(msg)
+
+    def send_first_chord_walk(self):
+        diff = CorpusMeanAndStd(0.0, 0.0)
+        self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
+        self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+        self.starting_time = time.time()
+
+    def send_chord_walk(self):
+        current_corpus_mean_std = CorpusMeanAndStd(corpus=self.current_partial_corpus)
+        diff = self.prior_corpus_mean_std - current_corpus_mean_std
+        self.prior_partial_corpus = self.current_partial_corpus
+        self.current_partial_corpus = {}
+        self.prior_corpus_mean_std = current_corpus_mean_std
+        self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+        self.starting_time = time.time()
+
+    def if_first_chord_walk(self):
+        if self.prior_partial_corpus is None:
+            self.send_first_chord_walk()
+        else:
+            self.send_chord_walk()
+
 
 
 def generate_pitch_materials(web: NeoriemannianWeb, octave, current_chord):
