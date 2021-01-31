@@ -67,7 +67,7 @@ if __name__ == '__main__':
     auth = tweepy.OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
     auth.set_access_token(credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
 
-    music_gen = DiscourseMusicGen()
     logger = logger_launcher()
+    music_gen = DiscourseMusicGen(logger_object=logger)
     tweet_stream = MyStream(auth, logger, music_gen)
     tweet_stream.run()

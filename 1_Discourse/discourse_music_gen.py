@@ -10,8 +10,10 @@ from Utility_Tools.logistic_function import linear_to_logistic as l2l
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 class DiscourseMusicGen:
-    def __init__(self, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
+    def __init__(self, logger_object, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer()):
+        self.logger_object = logger_object
+
         # Initialize NLP objects.
         self.current_partial_corpus = {}
         self.prior_partial_corpus = None
@@ -30,6 +32,8 @@ class DiscourseMusicGen:
 
         # Initialize time_passed
         self.starting_time = time.time()
+
+
 
     def trigger_sounds(self, data):
         current_time = time.time()
@@ -86,7 +90,15 @@ class DiscourseMusicGen:
         self.prior_partial_corpus = self.current_partial_corpus
         self.current_partial_corpus = {}
         self.prior_corpus_mean_std = current_corpus_mean_std
-        self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+
+        try:
+            self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+        except ValueError:
+            self.logger_object.info("Seems like you haven't gotten enough tweets in the previous formal section?")
+            diff = CorpusMeanAndStd(0.0, 0.0)
+            self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
+            self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+
         self.starting_time = time.time()
 
     def if_first_chord_walk(self):
