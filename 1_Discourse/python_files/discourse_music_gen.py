@@ -35,6 +35,8 @@ class DiscourseMusicGen:
         self.web.build_web()
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
+        self.osc_func_addresses = ['/pitch_triggers1', '/pitch_triggers2', '/pitch_triggers3', '/pitch_triggers4']
+        self.osc_func_index = 0
 
         # Initialize OSC client.
         self.client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
@@ -77,16 +79,24 @@ class DiscourseMusicGen:
         return self.message_comparison_obj.new_incoming_tweet(tweet)
 
     def generate_euclidean_rhythm(self, data):
-        return er_gen.generate_euclidean(4, 6)
+        data = er_gen.generate_euclidean(4, 6)
+        for index, item in enumerate(data):
+            if item == 0:
+                data[index] = -1.5
+        return data
 
     def send_rhythm_materials(self, data, time_interval=5):
         rhythm = self.generate_euclidean_rhythm(data)
-        msg = osc_message_builder.OscMessageBuilder(address='/pitch_triggers')
+        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_addresses[self.osc_func_index])
         for item in rhythm:
-            msg.add_arg(item, arg_type='i')
+            msg.add_arg(item, arg_type='f')
         msg.add_arg(time_interval, arg_type='f')
         msg = msg.build()
+        self.update_osc_func_index()
         self.client.send(msg)
+
+    def update_osc_func_index(self):
+        self.osc_func_index = (self.osc_func_index + 1) % 4
 
     def send_first_chord_walk(self):
         diff = CorpusMeanAndStd(0.0, 0.0)

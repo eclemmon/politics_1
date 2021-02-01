@@ -272,7 +272,7 @@ OSCFunc({ |args|
 SynthDef(\Q, {
 	arg midi=48, speed=3, out=0, busout=99, gate=0;
 	var env = Env.perc;
-	var envgen = EnvGen.kr(env, gate, doneAction: Done.freeSelf);
+	var envgen = EnvGen.kr(env, gate);
 	var sin = SinOsc.ar((midi%12+60).midicps, 0.5);
 	var sig = sin * envgen;
 	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.5);
@@ -360,9 +360,6 @@ SynthDef(\reverb, {
 ~l_chord = Array.new(3);
 ~r_chord = Array.new(3);
 ~q_chord = Array.new(3);
-~pitches_queue = List.new();
-~timings_queue = List.new();
-~triggers_queue = List.new();
 
 ~start.do({
 	arg note, index;
@@ -431,7 +428,8 @@ OSCFunc({ |args|
 
 	{
 		args.size.do {
-			Synth(\Q, [\gate, triggers_queue.next]);
+			~q_chord[3.rand].set(\gate, triggers_queue.next);
+			// Synth(\Q, [\gate, triggers_queue.next]);
 			(trigger_timing.next/10).wait;
 		};
 	}.fork;

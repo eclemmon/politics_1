@@ -45,7 +45,8 @@ class MyStream:
             self.logging_handler('Trying to listen')
             self.stream_listener = DiscourseStreamListener(client, self.logger_object, self.music_gen)
             self.stream = tweepy.Stream(auth=api.auth, listener=self.stream_listener)
-            self.stream.filter(follow=["1191395193615990785"])
+            # self.stream.filter(follow=["1191395193615990785"])
+            self.stream.filter(track=["Ripple"])
             self.logging_handler('Boot complete\n\n')
         except Exception:
             self.logger_object.exception("There Was a Problem in the Main Loop\n")
@@ -60,7 +61,7 @@ class MyStream:
 
 
 if __name__ == '__main__':
-    PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json"
+    PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
     with open(PATH, "r") as file:
         credentials = json.load(file)
 
