@@ -13,25 +13,24 @@ class MyStream:
 
     def message_handler(self, message):
         """
-
-        :param message:
-        :return:
+        Just a simple message handler that prints message to the post window and logs it
+        in the event log.
+        :param message: Message to be posted and logged.
         """
         print(message)
         self.logger_object.info(message)
 
     def logging_handler(self, message):
         """
-
-        :param message:
+        Simple logger handler for logging info that I don't want posted to the stream.
+        :param message: Message to be logged.
         :return:
         """
         self.logger_object.info(message)
 
     def run(self):
         """
-
-        :return:
+        Initializes the main loop for the whole program.
         """
         try:
             self.logging_handler('Testing logger...')
@@ -45,15 +44,15 @@ class MyStream:
             self.logging_handler('Trying to listen')
             self.stream_listener = DiscourseStreamListener(client, self.logger_object, self.music_gen)
             self.stream = tweepy.Stream(auth=api.auth, listener=self.stream_listener)
-            # self.stream.filter(follow=["1191395193615990785"])
-            self.stream.filter(track=["Ripple"])
+            self.stream.filter(follow=["1191395193615990785"])
+            # self.stream.filter(track=["Swiss"])
             self.logging_handler('Boot complete\n\n')
         except Exception:
             self.logger_object.exception("There Was a Problem in the Main Loop\n")
 
     def disconnect(self):
         """
-        Disconnects
+        Disconnects the stream on call.
         :return:
         """
         self.stream_listener.on_data("closing")

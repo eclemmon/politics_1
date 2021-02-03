@@ -27,6 +27,10 @@ class DiscourseStreamListener(tweepy.StreamListener):
 
     def message_handler(self, message):
         """
+        Message handler logs information coming in from twitter as well as prints it
+        to the post window. It also runs the music_gen's trigger sounds function,
+        which is the meat and potatoes of Politics I.
+        :param message: tweet from tweet stream.
         """
         print(message)
         self.logger_object.info(message)
@@ -34,9 +38,9 @@ class DiscourseStreamListener(tweepy.StreamListener):
 
     def logging_handler(self, message):
         """
-
-        :param info:
-        :return:
+        Logs information that needs to be logged without posting it to window or
+        calling some other function or method.
+        :param message: The message to be logged.
         """
         self.logger_object.info(message)
 

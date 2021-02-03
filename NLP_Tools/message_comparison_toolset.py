@@ -2,11 +2,13 @@
 Compares messages between one another according to different NLP algorithms.
 Wordnet_Sentence_Similarity uses Wordnet
 """
+import numpy as np
 from nltk import word_tokenize, pos_tag, PorterStemmer
 from nltk.corpus import wordnet as wn
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
 
 porterstemmer = PorterStemmer()
 stop_words = set(stopwords.words("english"))
@@ -53,6 +55,19 @@ class TF_IDF:
             # print(list(cosine_simiilarities), self.all_documents[:-1])
             result = dict(list(zip(self.all_documents[:-1], list(cosine_simiilarities))))
             return max(result, key=result.get), max(result.values())
+
+    def most_similar_doc(self, new_tweet_text):
+        self.all_documents.append(new_tweet_text)
+        tfidf = self.vectorizer.fit_transform(self.all_documents)
+        pairwise_similarity = tfidf * tfidf.T
+        arr = pairwise_similarity.toarray()
+        np.fill_diagonal(arr, np.nan)
+        input_idx = self.all_documents.index(new_tweet_text)
+        result_idx = np.nanargmax(arr[input_idx])
+        return self.all_documents[result_idx]
+
+
+
 
 
 class WordnetSentenceSimilarity:
@@ -188,6 +203,6 @@ if __name__ == '__main__':
     tweets = WordNetTweetSimilarityScore(sentences)
     print(tweets.new_incoming_tweet(focus_sentence))
 
-    # tf_idf = TF_IDF()
-    # for sentence in sentences:
-    #     print(tf_idf.new_incoming_tweet(new_tweet_text=sentence))
+    tf_idf = TF_IDF()
+    for sentence in sentences:
+        print(tf_idf.new_incoming_tweet(new_tweet_text=sentence))

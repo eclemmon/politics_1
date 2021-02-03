@@ -1,15 +1,16 @@
 s = Server.default.boot;
-Server.default.options.outDevice_("Multi-Output Device");
+// Server.default.options.outDevice_("Multi-Output Device");
+Server.default.options.outDevice_("multi_output_scarlett");
 ~netaddress = NetAddr.new("127.0.0.1", 57120)
 OSCFunc.trace(false);
 (
 
 SynthDef(\Q, {
-	arg midi=48, speed=3, out=0, busout=99, gate=0;
+	arg midi=48, speed=3, out=0, busout=99, gate=0, amp=0.2;
 	var env = Env.perc;
 	var envgen = EnvGen.kr(env, gate, doneAction: Done.freeSelf);
 	var sin = SinOsc.ar((midi%12+60).midicps, 0.5);
-	var sig = sin * envgen;
+	var sig = sin * envgen * amp;
 	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.5);
 	Out.ar([out, busout], pan);
 }).add;
@@ -40,7 +41,7 @@ SynthDef(\reverb, {
 // OSC FUNC WITH Pseq?
 ~delay1 = Synth(\delay1, [\in, 99]);
 ~delay2 = Synth(\delay2, [\in, 99]);
-~reverb = Synth(\reverb, [\in, 98, \amp, 0.5, \mix, 0.5, \room, 0.7, \damp, 0.9]);
+~reverb = Synth(\reverb, [\in, 98, \amp, 1.0, \mix, 0.5, \room, 0.7, \damp, 0.9]);
 );
 
 ~start = [48,52,55];
@@ -225,10 +226,5 @@ OSCFunc({ |args|
 
 	"######################################".postln;
 }, '/pitch_triggers4');
-
-/*OSCdef.new(\get, {
-	arg msg, time, addr, port;
-	[msg, time, addr, port].postln;
-}, "/pitch_triggers");*/
 
 )

@@ -46,9 +46,8 @@ class DiscourseMusicGen:
 
     def trigger_sounds(self, data):
         """
-        Triggers
-        :param data:
-        :return:
+        Triggers sounds and calls a cascading stack of functions and methods to generate music.
+        :param data: Currently the messsage contents of a tweet.
         """
         current_time = time.time()
         time_passed = current_time - self.starting_time
@@ -60,6 +59,15 @@ class DiscourseMusicGen:
             self.send_rhythm_materials(data=data)
 
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
+        """
+        This will determine the distance that the chord should walk based on the mean and
+        standard of deviation of 3
+        :param multiplier:
+        :param lev_mean:
+        :param lev_standard_of_deviation:
+        :param harmonic_graph:
+        :return:
+        """
         num_chords_walked = int(l2l(abs(lev_mean), 0, 100, 0, 10, lev_standard_of_deviation))
         print("num_chords_walked: ", num_chords_walked)
         if num_chords_walked == 0:
@@ -79,6 +87,12 @@ class DiscourseMusicGen:
         return self.message_comparison_obj.new_incoming_tweet(tweet)
 
     def generate_euclidean_rhythm(self, data):
+        """
+        Generates an array of euclidean rhythms as a list of binary 1's and 0's. 1's represent
+        the onsets of a musical event. The 0's are then replaced with -1.5 for
+        :param data:
+        :return:
+        """
         data = er_gen.generate_euclidean(4, 6)
         for index, item in enumerate(data):
             if item == 0:
