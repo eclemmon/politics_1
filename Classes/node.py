@@ -9,11 +9,11 @@ class Node:
 
     def set_parent(self, node):
         self.parent = node
-        node.set_child(self)
+        node.add_child(self)
 
     def add_child(self, node):
         self.children.append(node)
-        node.set_parent(self)
+        node.parent = self
 
     def remove_child(self, node):
         self.children.remove(node)
