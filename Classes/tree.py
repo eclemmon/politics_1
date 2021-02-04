@@ -35,10 +35,14 @@ class Tree:
         Some functionality to remove a node.
         :param node: Node class.
         """
-        del (self.nodes[node.message])
+        del(self.nodes[node.message])
         for child_node in node.children:
             node.parent.add_child(child_node)
         node.parent.remove_child(node)
+
+    def remove_node_by_message(self, message):
+        node = self.nodes[message]
+        self.remove_node(node)
 
     def find_closest_node(self, node):
         """
@@ -85,4 +89,5 @@ if __name__ == '__main__':
         tf_idf_tree.receive_message(doc)
 
         # wordnet_tree.receive_message(doc)
-    print(tf_idf_tree.nodes["Music is sound in ti"].parent.parent.parent.message)
+    print(tf_idf_tree.nodes["Music is sound in ti"].parent.parent.message)
+    tf_idf_tree.remove_node_by_message("Music is sound in ti")
