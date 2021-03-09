@@ -33,4 +33,4 @@ basic_major_tonal_web = {
 }
 
 if __name__ == "__main__":
-    print(basic_major_tonal_web[(11,2,5,6)])
+    print(basic_major_tonal_web[(11, 2, 5, 6)])
