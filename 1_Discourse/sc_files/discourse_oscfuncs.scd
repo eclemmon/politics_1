@@ -1,6 +1,7 @@
+
 s = Server.default.boot;
-// Server.default.options.outDevice_("Multi-Output Device");
-Server.default.options.outDevice_("multi_output_scarlett");
+Server.default.options.inDevice_("ZoomAudioD");
+Server.default.options.outDevice_("ZoomAudioD");
 ~netaddress = NetAddr.new("127.0.0.1", 57120)
 OSCFunc.trace(false);
 (
