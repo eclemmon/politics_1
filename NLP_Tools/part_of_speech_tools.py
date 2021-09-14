@@ -2,7 +2,7 @@ import json
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
 from nltk import pos_tag
-from Testing_Scripts.simulation_incoming_tweets import TweetsIncomingSim
+from scratch_scripts.simulation_incoming_tweets import TweetsIncomingSim
 
 
 def get_pos_tuples(text):
