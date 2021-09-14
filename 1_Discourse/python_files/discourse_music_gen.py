@@ -39,7 +39,8 @@ class DiscourseMusicGen:
         self.osc_func_index = 0
 
         # Initialize OSC client.
-        self.client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+        self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+        self.gui_client = udp_client.SimpleUDPClient("127.0.0.1", 12000)
 
         # Initialize time_passed
         self.starting_time = time.time()
@@ -57,6 +58,11 @@ class DiscourseMusicGen:
             self.send_rhythm_materials(data=data)
         else:
             self.send_rhythm_materials(data=data)
+        # Send GUI String
+        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_addresses[self.osc_func_index])
+        msg.add_arg(data, arg_type='s')
+        msg = msg.build()
+        self.gui_client.send(msg)
 
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
         """
@@ -75,7 +81,7 @@ class DiscourseMusicGen:
         else:
             interval = self.harmonic_rhythm / num_chords_walked
         print("interval: ", interval)
-        random_walk_only_new(num_chords_walked, harmonic_graph, self.client, time_interval=interval,
+        random_walk_only_new(num_chords_walked, harmonic_graph, self.sc_client, time_interval=interval,
                              harmonic_rhythm=self.harmonic_rhythm)
 
     def compare_tweets(self, tweet):
@@ -107,7 +113,8 @@ class DiscourseMusicGen:
         msg.add_arg(time_interval, arg_type='f')
         msg = msg.build()
         self.update_osc_func_index()
-        self.client.send(msg)
+        self.sc_client.send(msg)
+
 
     def update_osc_func_index(self):
         self.osc_func_index = (self.osc_func_index + 1) % 4
