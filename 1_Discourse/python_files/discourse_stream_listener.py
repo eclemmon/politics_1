@@ -22,7 +22,7 @@ class DiscourseStreamListener(tweepy.StreamListener):
         """
         Posts a message to message handler.
         """
-        msg = "Successfully connected to streaming server."
+        msg = {'text': "Successfully connected to streaming server.", 'screen_name': 'boot_message '}
         self.message_handler(msg)
 
     def message_handler(self, message):
@@ -77,6 +77,7 @@ class DiscourseStreamListener(tweepy.StreamListener):
             message_footer = '\n##### END OF TWEET DATA #####\n'
             full_message = messageheader + message_body + message_footer
             print(full_message)
-            self.message_handler(raw_data_as_dict['text'])
+            message_data = {'text': raw_data_as_dict['text'], 'screen_name': raw_data_as_dict['user']['screen_name']}
+            self.message_handler(message_data)
         except Exception:
             self.logger_object.exception("Something went wrong while trying to collect data!\n")
