@@ -52,15 +52,17 @@ class DiscourseMusicGen:
         """
         current_time = time.time()
         time_passed = current_time - self.starting_time
-        self.current_partial_corpus[current_time] = data
+        self.current_partial_corpus[current_time] = data['text']
         if time_passed >= self.formal_section_length:
             self.if_first_chord_walk()
-            self.send_rhythm_materials(data=data)
+            self.send_rhythm_materials(data=data['text'])
         else:
-            self.send_rhythm_materials(data=data)
+            self.send_rhythm_materials(data=data['text'])
+
         # Send GUI String
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_addresses[self.osc_func_index])
-        msg.add_arg(data, arg_type='s')
+        display = data['screen_name'] + " said: " + data['text']
+        msg.add_arg(display, arg_type='s')
         msg = msg.build()
         self.gui_client.send(msg)
 
