@@ -32,7 +32,7 @@ class DiscourseStreamListener(tweepy.StreamListener):
         which is the meat and potatoes of Politics I.
         :param message: tweet from tweet stream.
         """
-        print(message)
+        # print(message)
         self.logger_object.info(message)
         self.music_gen.trigger_sounds(message)
 
@@ -76,6 +76,7 @@ class DiscourseStreamListener(tweepy.StreamListener):
             message_body = ''.join(message_body_list)
             message_footer = '\n##### END OF TWEET DATA #####\n'
             full_message = messageheader + message_body + message_footer
-            self.message_handler(full_message)
+            print(full_message)
+            self.message_handler(raw_data_as_dict['text'])
         except Exception:
             self.logger_object.exception("Something went wrong while trying to collect data!\n")
