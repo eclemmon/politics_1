@@ -29,6 +29,11 @@ def build_vector_three(n):
     return x, y
 
 def add_vectors(*tuples):
+    """
+    Adds all tuples as vector math. (-1, 0) + (1, 2) = (0, 2)
+    :param tuples: a set of tuples.
+    :return: tuple of all tuples added together
+    """
     result = (0, 0)
     for tup in tuples:
         result += tup
