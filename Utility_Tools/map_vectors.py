@@ -2,17 +2,17 @@ import math
 
 def build_vector_one(n):
     """
-
-    :param n:
-    :return:
+    Takes in a value and maps it to a vector that points directly up the y axis.
+    :param n: Float length of vector along a radius of a circle where vector points up along y axis
+    :return: tuple of vector values
     """
     return (0, n)
 
 def build_vector_two(n):
     """
-
-    :param n:
-    :return:
+    Takes in a value and maps it to a vector that points south east, 30º below the x-axis of a cartesian plane.
+    :param n: Float length of vector along a radius segment.
+    :return: tuple of vector values
     """
     y = n * math.sin(math.radians(30)) * -1
     x = n * math.cos(math.radians(30)) * -1
@@ -20,9 +20,9 @@ def build_vector_two(n):
 
 def build_vector_three(n):
     """
-
-    :param n:
-    :return:
+    Takes in a value and maps it to a vector that points south west, 30º below the x-axis of a cartesian plane.
+    :param n: Float length of vector along a radius segment.
+    :return: tuple of vector values
     """
     y = n * math.sin(math.radians(30)) * -1
     x = n * math.cos(math.radians(30))
