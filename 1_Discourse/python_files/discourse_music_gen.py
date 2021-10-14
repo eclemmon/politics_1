@@ -36,9 +36,10 @@ class DiscourseMusicGen:
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
         self.osc_func_addresses = ['/pitch_triggers1', '/pitch_triggers2', '/pitch_triggers3', '/pitch_triggers4']
+        # TODO: remove osc_func_addresses
         self.osc_func_index = 0
 
-        # Initialize OSC client.
+        # Initialize OSC clients.
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
         self.gui_client = udp_client.SimpleUDPClient("127.0.0.1", 12000)
 
@@ -77,6 +78,7 @@ class DiscourseMusicGen:
         :return:
         """
         num_chords_walked = int(l2l(abs(lev_mean), 0, 100, 0, 10, lev_standard_of_deviation))
+        # TODO: Extract num_chords_walked logic into a function
         print("num_chords_walked: ", num_chords_walked)
         if num_chords_walked == 0:
             interval = self.harmonic_rhythm
@@ -216,3 +218,14 @@ def schedule_chords(chords, time_interval, harmonic_rhythm, chord_graph, octave,
     for chord in chords:
         pitch_materials.append(generate_pitch_materials(chord_graph, octave, chord))
     send_chord_materials(pitch_materials, client, time_interval, harmonic_rhythm)
+
+# TODO: Web sends chord materials over OSC
+# TODO: When message get Sentiment analysis data — neg neu pos {comp: Positive = more centroid chord, Neg = Less}
+# TODO: Data that determines octave — Length on sigmoid curve. Shorter, higher, longer, lower
+# TODO: Data that determines base sound [sin, saw, noise, impulse, square]
+# TODO: Data that determines freq mod [Freq, Amp]
+# TODO: Data that determines Phase Mod [Freq, Amp]
+# TODO: Data that determines spatialization
+# TODO: Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. POS}
+# TODO: data that determines amount of delay (Feedback Delay)
+# TODO: Data that determines reverb
