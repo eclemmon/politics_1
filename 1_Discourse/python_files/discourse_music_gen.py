@@ -221,11 +221,11 @@ def schedule_chords(chords, time_interval, harmonic_rhythm, chord_graph, octave,
 
 # TODO: Web sends chord materials over OSC
 # TODO: When message get Sentiment analysis data — neg neu pos {comp: Positive = more centroid chord, Neg = Less}
-# TODO: Data that determines octave — Length on sigmoid curve. Shorter, higher, longer, lower
+# TODO: Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
 # TODO: Data that determines base sound [sin, saw, noise, impulse, square]
-# TODO: Data that determines freq mod [Freq, Amp]
+# TODO: Data that determines freq mod [Freq, Amp] {Number of emojis = Amp}
 # TODO: Data that determines Phase Mod [Freq, Amp]
 # TODO: Data that determines spatialization
-# TODO: Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. POS}
-# TODO: data that determines amount of delay (Feedback Delay)
-# TODO: Data that determines reverb
+# TODO: Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
+# TODO: data that determines amount of delay (Feedback Delay) {No of unique POS}
+# TODO: Data that determines reverb -
