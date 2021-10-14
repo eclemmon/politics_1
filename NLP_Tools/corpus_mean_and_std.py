@@ -80,3 +80,4 @@ if __name__ == '__main__':
 
     print(CorpusMeanAndStd(2.44, 34.45))
     print(CorpusMeanAndStd(corpus=build_short_corpus(30, tweets)))  # should be 31.903..., 10.281...
+
