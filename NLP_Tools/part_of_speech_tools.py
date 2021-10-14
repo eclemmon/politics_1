@@ -36,14 +36,15 @@ def build_pos_count_dict(text):
 
 
 if __name__ == "__main__":
-    file_path = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Corpora/TwiConv/time_and_tweets.json"
-
-    with open(file_path, 'r') as file:
-        tweets = json.load(file)
-
-    simulation = TweetsIncomingSim(tweets)
-    sentiment_analyzer = SentimentIntensityAnalyzer()
+    # file_path = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Corpora/TwiConv/time_and_tweets.json"
+    #
+    # with open(file_path, 'r') as file:
+    #     tweets = json.load(file)
+    #
+    # simulation = TweetsIncomingSim(tweets)
+    # sentiment_analyzer = SentimentIntensityAnalyzer()
     text = "I love the train! Let me get on it fam! Woohoo!"
+    print(build_pos_count_dict(text))
     print(get_pos_tuples(text))
     print(count_discrete_pos(text))
     print(count_total_pos(text))
