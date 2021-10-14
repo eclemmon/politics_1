@@ -3,7 +3,6 @@ from NLP_Tools.emoji_counter import is_emoji
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.casual import TweetTokenizer
 from NLP_Tools.emoji_counter import count_emojis
-from nose2.tools import params
 
 tweet_tokenizer = TweetTokenizer()
 tokens_one = word_tokenize("Academic freedom guaranteed by tenure is more than a hiring gimmick. Georgia cannot compete for talent or produce innovation if we undermine our public universities. @BORUSG has already abandoned the physical health of our schools. Let’s not destroy intellectual capacity as well.")
