@@ -38,3 +38,16 @@ def add_vectors(*tuples):
 
 def vector_angle_from_pos_x_axis(tuple):
     return math.atan2(tuple[1], tuple[0])
+
+def get_closest_polygon_vertice_from_three_added_vectors(vectors, polygon_size):
+    pass
+
+
+def vertice_angles_by_poly_size(polygon_size):
+    res = []
+    for v in range(polygon_size):
+        if v == 0:
+            res.append(0)
+        else:
+            res.append(2 * math.pi * v / polygon_size)
+    return res
