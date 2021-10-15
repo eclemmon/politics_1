@@ -36,12 +36,19 @@ def add_vectors(*tuples):
     """
     return tuple([sum(x) for x in zip(*tuples)])
 
+def add_three_vectors_for_politics(*values):
+    v1 = build_vector_one(values[0])
+    v2 = build_vector_two(values[1])
+    v3 = build_vector_three(values[2])
+    return add_vectors(v1, v2, v3)
+
 def vector_angle_from_pos_x_axis(tuple):
     return math.atan2(tuple[1], tuple[0])
 
-def get_closest_polygon_vertice_from_three_added_vectors(vectors, polygon_size):
-    pass
-
+def get_closest_polygon_vertice_index_from_three_added_vectors(values, polygon_size):
+    v = add_three_vectors_for_politics(values)
+    angle_in_rads = vector_angle_from_pos_x_axis(v)
+    return find_index_of_closest_vector2vertice_in_new_poly(angle_in_rads, polygon_size)
 
 def vertice_angles_by_poly_size(polygon_size):
     res = []
@@ -49,5 +56,22 @@ def vertice_angles_by_poly_size(polygon_size):
         if v == 0:
             res.append(0)
         else:
-            res.append(2 * math.pi * v / polygon_size)
+            num = 2 * math.pi * v / polygon_size
+            if num > math.pi:
+                res.append(num - (2 * math.pi))
+            else:
+                res.append(num)
     return res
+
+def find_index_of_closest_vector2vertice_in_new_poly(original_vector_angle, polygon_size):
+    """
+    Finds the index of the closest angle to the input vector angle from a set of angles in radians. The set of angles
+    is derived from finding the vertices of an equal sided polygon inscribed in a circle, and taking the angle of
+    these line segments from the positive x-axis.
+    When original vector angle is the bisector of the two line segments it takes the smaller value.
+    :param original_vector_angle:
+    :param polygon_size:
+    :return:
+    """
+    polygon_angles = vertice_angles_by_poly_size(polygon_size)
+    return min(range(len(polygon_angles)), key=lambda i: abs(polygon_angles[i] - original_vector_angle))
