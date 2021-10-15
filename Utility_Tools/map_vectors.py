@@ -1,5 +1,6 @@
 import math
 
+
 def build_vector_one(n):
     """
     Takes in a value and maps it to a vector that points directly up the y axis.
@@ -7,6 +8,7 @@ def build_vector_one(n):
     :return: tuple of vector values
     """
     return 0, n
+
 
 def build_vector_two(n):
     """
@@ -18,6 +20,7 @@ def build_vector_two(n):
     y = n * math.sin(math.radians(30)) * -1
     return x, y
 
+
 def build_vector_three(n):
     """
     Takes in a value and maps it to a vector that points south west, 30º below the x-axis of a cartesian plane.
@@ -28,6 +31,7 @@ def build_vector_three(n):
     y = n * math.sin(math.radians(30)) * -1
     return x, y
 
+
 def add_vectors(*tuples):
     """
     Adds all tuples as vector math. (-1, 0) + (1, 2) = (0, 2)
@@ -36,19 +40,23 @@ def add_vectors(*tuples):
     """
     return tuple([sum(x) for x in zip(*tuples)])
 
+
 def add_three_vectors_for_politics(*values):
     v1 = build_vector_one(values[0])
     v2 = build_vector_two(values[1])
     v3 = build_vector_three(values[2])
     return add_vectors(v1, v2, v3)
 
+
 def vector_angle_from_pos_x_axis(tuple):
     return math.atan2(tuple[1], tuple[0])
 
-def get_closest_polygon_vertex_index_from_three_added_vectors(values, polygon_size):
+
+def get_closest_polygon_vertex_indexes_from_three_added_vectors(values, polygon_size):
     v = add_three_vectors_for_politics(values)
     angle_in_rads = vector_angle_from_pos_x_axis(v)
     return find_indexes_of_closest_vector2vertex_in_new_poly(angle_in_rads, polygon_size)
+
 
 def vertex_angles_by_poly_size(polygon_size):
     res = []
@@ -63,6 +71,7 @@ def vertex_angles_by_poly_size(polygon_size):
                 res.append(num)
     return res
 
+
 def find_indexes_of_closest_vector2vertex_in_new_poly(original_vector_angle, polygon_size):
     """
     Finds the index of the closest two angles to the input vector angle from a set of angles in radians. The set of angles
@@ -71,7 +80,7 @@ def find_indexes_of_closest_vector2vertex_in_new_poly(original_vector_angle, pol
     When original vector angle is the bisector of the two line segments it takes the smaller value.
     :param original_vector_angle:
     :param polygon_size:
-    :return:
+    :return: tuple of two closest vertices in circle
     """
     polygon_angles = vertex_angles_by_poly_size(polygon_size)
     # print("polygon angles: ", polygon_angles)
@@ -80,11 +89,34 @@ def find_indexes_of_closest_vector2vertex_in_new_poly(original_vector_angle, pol
     # print("closest index: ", closest_index)
     if original_vector_angle >= 0:
         if original_vector_angle >= polygon_angles[closest_index]:
-            return (closest_index, (closest_index + 1) % polygon_size) # returns the closest index and the vector greater than it.
+            return (closest_index,
+                    (closest_index + 1) % polygon_size)  # returns the closest index and the vector greater than it.
         else:
-            return (closest_index, (closest_index - 1) % polygon_size) # returns the closest index and the vector smaller than it.
+            return (closest_index,
+                    (closest_index - 1) % polygon_size)  # returns the closest index and the vector smaller than it.
     else:
         if original_vector_angle > polygon_angles[closest_index]:
-            return (closest_index, (closest_index + 1) % polygon_size)
+            return closest_index, (closest_index + 1) % polygon_size
         else:
-            return (closest_index, (closest_index - 1) % polygon_size)
+            return closest_index, (closest_index - 1) % polygon_size
+
+def generate_vertices_points_by_polygon_size(polygon_size):
+    polygon_angles = vertex_angles_by_poly_size(polygon_size)
+    return list(zip([math.cos(a) for a in polygon_angles], [math.sin(a) for a in polygon_angles]))
+
+
+def get_distance_between_points(point1, point2):
+    return math.hypot(point2[0]-point1[0], point2[1]-point1[1])
+
+def get_weights_on_chords_from_vertices(vector_end, vertices):
+    pass
+
+
+def get_closest_tri_vertices_to_vector(values, polygon_size):
+    res = [0, 0]
+    indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(values, polygon_size)
+    vertices = generate_vertices_points_by_polygon_size(polygon_size)
+    return res + [vertices[i] for i in indexes]
+
+
+

@@ -1,5 +1,6 @@
 import unittest
 import math
+import numpy as np
 from Utility_Tools.map_vectors import *
 
 class TestMapVectors(unittest.TestCase):
@@ -46,6 +47,9 @@ class TestMapVectors(unittest.TestCase):
         self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi * 3 / 4, 4), (1, 2))
         self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi * 2 / 3 * -1, 4), (3, 2))
         self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi * 2 / 5 * -1, 4), (3, 0))
+
+    def test_generate_vertices_points_by_polygon_size(self):
+        np.testing.assert_almost_equal(generate_vertices_points_by_polygon_size(4), [(1, 0), (0, 1), (-1, 0), (0, -1)], 7)
 
 
 
