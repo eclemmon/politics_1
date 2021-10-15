@@ -41,9 +41,11 @@ class TestMapVectors(unittest.TestCase):
         pass
 
     def test_find_index_of_closest_vector2vertice_in_new_poly(self):
-        self.assertEquals(find_index_of_closest_vector2vertex_in_new_poly(math.pi / 2, 4), 1)
-        self.assertEquals(find_index_of_closest_vector2vertex_in_new_poly(math.pi / 4, 4), 0)
-        self.assertEquals(find_index_of_closest_vector2vertex_in_new_poly(math.pi * 3 / 4, 4), 1)
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi / 2, 4), (1, 2))
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi / 4, 4), (0, 1))
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi * 3 / 4, 4), (1, 2))
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi * 2 / 3 * -1, 4), (3, 2))
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(math.pi * 2 / 5 * -1, 4), (3, 0))
 
 
 
