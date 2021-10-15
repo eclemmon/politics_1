@@ -45,12 +45,12 @@ def add_three_vectors_for_politics(*values):
 def vector_angle_from_pos_x_axis(tuple):
     return math.atan2(tuple[1], tuple[0])
 
-def get_closest_polygon_vertice_index_from_three_added_vectors(values, polygon_size):
+def get_closest_polygon_vertex_index_from_three_added_vectors(values, polygon_size):
     v = add_three_vectors_for_politics(values)
     angle_in_rads = vector_angle_from_pos_x_axis(v)
-    return find_index_of_closest_vector2vertice_in_new_poly(angle_in_rads, polygon_size)
+    return find_index_of_closest_vector2vertex_in_new_poly(angle_in_rads, polygon_size)
 
-def vertice_angles_by_poly_size(polygon_size):
+def vertex_angles_by_poly_size(polygon_size):
     res = []
     for v in range(polygon_size):
         if v == 0:
@@ -63,7 +63,7 @@ def vertice_angles_by_poly_size(polygon_size):
                 res.append(num)
     return res
 
-def find_index_of_closest_vector2vertice_in_new_poly(original_vector_angle, polygon_size):
+def find_index_of_closest_vector2vertex_in_new_poly(original_vector_angle, polygon_size):
     """
     Finds the index of the closest angle to the input vector angle from a set of angles in radians. The set of angles
     is derived from finding the vertices of an equal sided polygon inscribed in a circle, and taking the angle of
@@ -73,5 +73,5 @@ def find_index_of_closest_vector2vertice_in_new_poly(original_vector_angle, poly
     :param polygon_size:
     :return:
     """
-    polygon_angles = vertice_angles_by_poly_size(polygon_size)
-    return min(range(len(polygon_angles)), key=lambda i: abs(polygon_angles[i] - original_vector_angle))
+    polygon_angles = vertex_angles_by_poly_size(polygon_size)
+    return min(range(len(polygon_angles)), key=lambda i: abs(abs(polygon_angles[i]) - abs(original_vector_angle)))
