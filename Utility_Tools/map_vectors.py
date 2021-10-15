@@ -6,7 +6,7 @@ def build_vector_one(n):
     :param n: Float length of vector along a radius of a circle where vector points up along y axis
     :return: tuple of vector values
     """
-    return (0, n)
+    return 0, n
 
 def build_vector_two(n):
     """
@@ -14,8 +14,8 @@ def build_vector_two(n):
     :param n: Float length of vector along a radius segment.
     :return: tuple of vector values
     """
-    y = n * math.sin(math.radians(30)) * -1
     x = n * math.cos(math.radians(30)) * -1
+    y = n * math.sin(math.radians(30)) * -1
     return x, y
 
 def build_vector_three(n):
@@ -24,8 +24,8 @@ def build_vector_three(n):
     :param n: Float length of vector along a radius segment.
     :return: tuple of vector values
     """
-    y = n * math.sin(math.radians(30)) * -1
     x = n * math.cos(math.radians(30))
+    y = n * math.sin(math.radians(30)) * -1
     return x, y
 
 def add_vectors(*tuples):
@@ -34,7 +34,7 @@ def add_vectors(*tuples):
     :param tuples: a set of tuples.
     :return: tuple of all tuples added together
     """
-    result = (0, 0)
-    for tup in tuples:
-        result += tup
-    return result
+    return tuple([sum(x) for x in zip(*tuples)])
+
+def vector_angle_from_pos_x_axis(tuple):
+    return math.atan2(tuple[1], tuple[0])
