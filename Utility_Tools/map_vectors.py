@@ -104,19 +104,37 @@ def generate_vertices_points_by_polygon_size(polygon_size):
     polygon_angles = vertex_angles_by_poly_size(polygon_size)
     return list(zip([math.cos(a) for a in polygon_angles], [math.sin(a) for a in polygon_angles]))
 
-
 def get_distance_between_points(point1, point2):
     return math.hypot(point2[0]-point1[0], point2[1]-point1[1])
 
-def get_weights_on_chords_from_vertices(vector_end, vertices):
-    pass
+def get_vector_end_vertices_distance(vector_end, vertices):
+    return [get_distance_between_points(vector_end, vertices[i]) for i in vertices]
+
+def get_weights_by_distances(vector_end, vertices):
+    distances = get_vector_end_vertices_distance(vector_end, vertices)
+    return [distance / sum(distances) for distance in distances]
 
 
-def get_closest_tri_vertices_to_vector(values, polygon_size):
-    res = [0, 0]
-    indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(values, polygon_size)
+def get_closest_tri_vertices_to_vector(polygon_size, indexes):
+    res = [(0, 0)]
+    # indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(values, polygon_size)
     vertices = generate_vertices_points_by_polygon_size(polygon_size)
     return res + [vertices[i] for i in indexes]
+
+
+def get_graph_chord_indexes_and_weights(sentiment_values, num_adjacent_chords):
+    sentiment_values = sentiment_values.values()
+    # get vector end based on sentiment values
+    vector_end = add_three_vectors_for_politics(sentiment_values)
+    # get indexes of closest vertexes
+    indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(sentiment_values, num_adjacent_chords)
+    # generate closest vertices
+    vertices = get_closest_tri_vertices_to_vector(num_adjacent_chords, indexes)
+    # get weights based on the distance between vector end and closest vertices
+    weights = get_weights_by_distances(vector_end, vertices)
+    return dict(zip(indexes, weights))
+
+
 
 
 
