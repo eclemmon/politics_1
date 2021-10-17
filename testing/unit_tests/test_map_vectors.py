@@ -57,5 +57,19 @@ class TestMapVectors(unittest.TestCase):
         self.assertEquals(get_closest_polygon_vertex_indexes_from_three_added_vectors(4, 0, 0, 1), (0, 3))
         self.assertEquals(get_closest_polygon_vertex_indexes_from_three_added_vectors(4, 0, 1, 1), (2, 3))
 
+    def test_vertex_angles_by_poly_size(self):
+        np.testing.assert_almost_equal(vertex_angles_by_poly_size(4), [0,
+                                                                       2 * math.pi / 4,
+                                                                       math.pi * 4 / 4,
+                                                                       -math.pi * 2 / 4])
+        angles = []
+        for i in range(6):
+            num = i * math.pi / 3
+            if num > math.pi:
+                angles.append(num - (2 * math.pi))
+            else:
+                angles.append(num)
+        np.testing.assert_almost_equal(vertex_angles_by_poly_size(6), angles)
+
 
 
