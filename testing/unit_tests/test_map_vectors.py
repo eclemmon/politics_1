@@ -71,5 +71,9 @@ class TestMapVectors(unittest.TestCase):
                 angles.append(num)
         np.testing.assert_almost_equal(vertex_angles_by_poly_size(6), angles)
 
+    def test_find_indexes_of_closest_vector2vertex_in_new_poly(self):
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(0.3, 4), (0, 1))
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(1.7, 4), (1, 2))
+        self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(3.15, 6), (3, 4))
 
 
