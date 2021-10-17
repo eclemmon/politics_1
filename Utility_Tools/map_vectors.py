@@ -48,14 +48,16 @@ def add_three_vectors_for_politics(*values):
     return add_vectors(v1, v2, v3)
 
 
-def vector_angle_from_pos_x_axis(tuple):
-    return math.atan2(tuple[1], tuple[0])
+def vector_angle_from_pos_x_axis(tup):
+    return math.atan2(tup[1], tup[0])
 
 
-def get_closest_polygon_vertex_indexes_from_three_added_vectors(values, polygon_size):
-    v = add_three_vectors_for_politics(values)
+def get_closest_polygon_vertex_indexes_from_three_added_vectors(polygon_size, *values):
+    v = add_three_vectors_for_politics(*values)
+    print(v)
     angle_in_rads = vector_angle_from_pos_x_axis(v)
-    return find_indexes_of_closest_vector2vertex_in_new_poly(angle_in_rads, polygon_size)
+    print(angle_in_rads)
+    return tuple(sorted(find_indexes_of_closest_vector2vertex_in_new_poly(angle_in_rads, polygon_size)))
 
 
 def vertex_angles_by_poly_size(polygon_size):
