@@ -76,10 +76,10 @@ def vertex_angles_by_poly_size(polygon_size):
 
 def find_indexes_of_closest_vector2vertex_in_new_poly(original_vector_angle, polygon_size):
     """
-    Finds the index of the closest two angles to the input vector angle from a set of angles in radians. The set of angles
-    is derived from finding the vertices of an equal sided polygon inscribed in a circle, and taking the angle of
-    these line segments from the positive x-axis.
-    When original vector angle is the bisector of the two line segments it takes the smaller value.
+    Finds the index of the closest two angles to the input vector angle from a set of angles in radians. The set of
+    angles is derived from finding the vertices of an equal sided polygon inscribed in a circle, and taking the
+    angle of these line segments from the positive x-axis. When original vector angle is the bisector of the two line
+    segments it takes the smaller value.
     :param original_vector_angle:
     :param polygon_size:
     :return: tuple of two closest vertices in circle
@@ -102,17 +102,22 @@ def find_indexes_of_closest_vector2vertex_in_new_poly(original_vector_angle, pol
         else:
             return closest_index, (closest_index - 1) % polygon_size
 
+
 def generate_vertices_points_by_polygon_size(polygon_size):
     polygon_angles = vertex_angles_by_poly_size(polygon_size)
     return list(zip([math.cos(a) for a in polygon_angles], [math.sin(a) for a in polygon_angles]))
 
+
 def get_distance_between_points(point1, point2):
     return math.hypot(point2[0]-point1[0], point2[1]-point1[1])
+
 
 def get_vector_end_vertices_distance(vector_end, vertices):
     return [get_distance_between_points(vector_end, vertices[i]) for i in vertices]
 
+
 def get_weights_by_distances(vector_end, vertices):
+    # TODO: Logic is incorrect on get weights by distances
     distances = get_vector_end_vertices_distance(vector_end, vertices)
     return [distance / sum(distances) for distance in distances]
 
@@ -135,8 +140,3 @@ def get_graph_chord_indexes_and_weights(sentiment_values, num_adjacent_chords):
     # get weights based on the distance between vector end and closest vertices
     weights = get_weights_by_distances(vector_end, vertices)
     return dict(zip(indexes, weights))
-
-
-
-
-
