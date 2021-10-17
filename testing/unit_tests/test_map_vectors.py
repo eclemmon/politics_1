@@ -51,6 +51,11 @@ class TestMapVectors(unittest.TestCase):
     def test_generate_vertices_points_by_polygon_size(self):
         np.testing.assert_almost_equal(generate_vertices_points_by_polygon_size(4), [(1, 0), (0, 1), (-1, 0), (0, -1)], 7)
 
+    def test_get_closest_polygon_vertex_indexes_from_three_added_vectors(self):
+        self.assertEquals(get_closest_polygon_vertex_indexes_from_three_added_vectors(4, 1, 1, 0), (1, 2))
+        self.assertEquals(get_closest_polygon_vertex_indexes_from_three_added_vectors(4, 1, 0, 1), (0, 1))
+        self.assertEquals(get_closest_polygon_vertex_indexes_from_three_added_vectors(4, 0, 0, 1), (0, 3))
+        self.assertEquals(get_closest_polygon_vertex_indexes_from_three_added_vectors(4, 0, 1, 1), (2, 3))
 
 
 
