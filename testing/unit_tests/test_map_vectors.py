@@ -1,6 +1,8 @@
 import unittest
 import math
 import numpy as np
+import numpy.testing
+
 from Utility_Tools.map_vectors import *
 
 class TestMapVectors(unittest.TestCase):
@@ -85,11 +87,15 @@ class TestMapVectors(unittest.TestCase):
                                 [1, 0, math.sqrt(2)])
 
     def test_get_weights_by_distances(self):
-        pass
+        numpy.testing.assert_almost_equal(get_weights_by_distances((0, 1), [(0, 0), (0, 1), (1, 0)]),
+                                          [0.5857864, 1, 0.4142136])
+
 
     def test_get_closest_tri_vertices_to_vector(self):
-        pass
+        numpy.testing.assert_almost_equal(get_closest_tri_vertices_to_vector(4, 0, 1), [(0, 0), (1, 0), (0, 1)])
+        numpy.testing.assert_almost_equal(get_closest_tri_vertices_to_vector(4, 3, 0), [(0, 0), (0, -1), (1, 0)])
 
     def test_get_graph_chord_indexes_and_weights(self):
-        pass
+        self.assertDictEqual(get_graph_chord_indexes_and_weights({"neg": 1, "neu": 1, "pos": 1}, 4),
+                             {"home": 1.0, 1: 0.5, 2: 0.5})
 

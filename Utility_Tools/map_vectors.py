@@ -54,9 +54,9 @@ def vector_angle_from_pos_x_axis(tup):
 
 def get_closest_polygon_vertex_indexes_from_three_added_vectors(polygon_size, *values):
     v = add_three_vectors_for_politics(*values)
-    print(v)
+    # print(v)
     angle_in_rads = vector_angle_from_pos_x_axis(v)
-    print(angle_in_rads)
+    # print(angle_in_rads)
     return tuple(sorted(find_indexes_of_closest_vector2vertex_in_new_poly(angle_in_rads, polygon_size)))
 
 
@@ -117,25 +117,28 @@ def get_vector_end_vertices_distance(vector_end, vertices):
 
 
 def get_weights_by_distances(vector_end, *vertices):
-    distances = get_vector_end_vertices_distance(vector_end, vertices)
-    return [(1 - distance) / sum(distances) for distance in distances]
+    distances = get_vector_end_vertices_distance(vector_end, *vertices)
+    return [(sum(distances) - distance) / sum(distances) for distance in distances]
 
 
-def get_closest_tri_vertices_to_vector(polygon_size, indexes):
+def get_closest_tri_vertices_to_vector(polygon_size, *indexes):
     res = [(0, 0)]
-    # indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(values, polygon_size)
     vertices = generate_vertices_points_by_polygon_size(polygon_size)
+    print(vertices)
+    print(indexes)
     return res + [vertices[i] for i in indexes]
 
 
 def get_graph_chord_indexes_and_weights(sentiment_values, num_adjacent_chords):
-    sentiment_values = sentiment_values.values()
+    sentiment_values = list(sentiment_values.values())
     # get vector end based on sentiment values
-    vector_end = add_three_vectors_for_politics(sentiment_values)
+    vector_end = add_three_vectors_for_politics(*sentiment_values)
     # get indexes of closest vertexes
-    indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(sentiment_values, num_adjacent_chords)
+    indexes = get_closest_polygon_vertex_indexes_from_three_added_vectors(num_adjacent_chords, *sentiment_values)
     # generate closest vertices
-    vertices = get_closest_tri_vertices_to_vector(num_adjacent_chords, indexes)
+    vertices = get_closest_tri_vertices_to_vector(num_adjacent_chords, *indexes)
     # get weights based on the distance between vector end and closest vertices
     weights = get_weights_by_distances(vector_end, vertices)
+    indexes = ['home'] + list(indexes)
+    print(weights)
     return dict(zip(indexes, weights))
