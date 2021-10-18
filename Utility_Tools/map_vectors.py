@@ -113,10 +113,10 @@ def get_distance_between_points(point1, point2):
 
 
 def get_vector_end_vertices_distance(vector_end, vertices):
-    return [get_distance_between_points(vector_end, vertices[i]) for i in vertices]
+    return [get_distance_between_points(vector_end, i) for i in vertices]
 
 
-def get_weights_by_distances(vector_end, vertices):
+def get_weights_by_distances(vector_end, *vertices):
     # TODO: Logic is incorrect on get weights by distances
     distances = get_vector_end_vertices_distance(vector_end, vertices)
     return [distance / sum(distances) for distance in distances]
