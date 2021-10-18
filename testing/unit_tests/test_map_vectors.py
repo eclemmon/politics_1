@@ -77,11 +77,12 @@ class TestMapVectors(unittest.TestCase):
         self.assertEquals(find_indexes_of_closest_vector2vertex_in_new_poly(3.15, 6), (3, 4))
 
     def test_get_distance_between_points(self):
-        self.assertAlmostEquals(get_distance_between_points((5, 6), (-2, -2)), 5.0)
-        self.assertAlmostEquals(get_distance_between_points((-2, -2.5), (4, 2.5)), 8.48528137423857)
+        self.assertAlmostEquals(get_distance_between_points((1, 2), (-2, -2)), 5.0)
+        self.assertAlmostEquals(get_distance_between_points((-2, -2.5), (4, 2.5)), 7.8102496759067)
 
     def test_get_vector_end_vertices_distance(self):
-        pass
+        self.assertAlmostEquals(get_vector_end_vertices_distance((1, 0), [(0, 0), (1, 0), (0, 1)]),
+                                [1, 0, math.sqrt(2)])
 
     def test_get_weights_by_distances(self):
         pass
