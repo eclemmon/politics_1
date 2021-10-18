@@ -117,9 +117,8 @@ def get_vector_end_vertices_distance(vector_end, vertices):
 
 
 def get_weights_by_distances(vector_end, *vertices):
-    # TODO: Logic is incorrect on get weights by distances
     distances = get_vector_end_vertices_distance(vector_end, vertices)
-    return [distance / sum(distances) for distance in distances]
+    return [(1 - distance) / sum(distances) for distance in distances]
 
 
 def get_closest_tri_vertices_to_vector(polygon_size, indexes):
