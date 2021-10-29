@@ -29,6 +29,7 @@ class MyStream(tweepy.Stream):
     def on_data(self, data):
         json_data = json.loads(data)
         self.stream_sio.emit('handle_message', json_data['text'])
+        # TODO: Send along all necessary information
 
 
 @app.route('/sms', methods=['POST'])
