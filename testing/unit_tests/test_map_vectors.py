@@ -5,6 +5,7 @@ import numpy.testing
 
 from Utility_Tools.map_vectors import *
 
+
 class TestMapVectors(unittest.TestCase):
     def test_build_point_one(self):
         self.assertEqual(build_point_one(0), (0, 0))

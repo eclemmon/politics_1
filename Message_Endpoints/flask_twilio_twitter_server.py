@@ -7,7 +7,7 @@ import tweepy
 import json
 
 
-PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
+PATH = '/twitter_credentials.json'
 with open(PATH, "r") as file:
     credentials = json.load(file)
 
