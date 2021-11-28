@@ -14,5 +14,5 @@ def message(data):
     print(data)
 
 
-client.connect('http://localhost:5000/')
+client.connect('http://127.0.0.1:5000/')
 client.wait()

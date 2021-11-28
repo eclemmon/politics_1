@@ -1,13 +1,13 @@
 import eventlet
 eventlet.monkey_patch()
 from flask import Flask, json, request
-from twilio.twiml.messaging_response import Message, MessagingResponse
+from twilio.twiml.messaging_response import MessagingResponse
 from flask_socketio import SocketIO
 import tweepy
 import json
 
 
-PATH = '/twitter_credentials.json'
+PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
 with open(PATH, "r") as file:
     credentials = json.load(file)
 
