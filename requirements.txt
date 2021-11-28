@@ -12,3 +12,5 @@ emoji~=1.6.1
 twilio~=6.63.2
 Flask~=2.0.1
 eventlet~=0.32.0
+flask-socketio
+python-socketio
