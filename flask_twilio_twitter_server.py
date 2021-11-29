@@ -27,6 +27,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db, directory=MIGRATION_DIR)
 
 from Models.user import User
+from Models.message import Message
 
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 
