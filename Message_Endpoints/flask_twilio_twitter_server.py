@@ -1,3 +1,5 @@
+import os
+
 import eventlet
 eventlet.monkey_patch()
 from flask import Flask, json, request
@@ -7,14 +9,16 @@ import tweepy
 import json
 
 
-PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
-with open(PATH, "r") as file:
+TWITTER_PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
+with open(TWITTER_PATH, "r") as file:
     credentials = json.load(file)
 
+CONFIG_PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/config.json'
+with open(CONFIG_PATH, "r") as file:
+    config = json.load(file)
 
 app = Flask(__name__)
-app.debug = True
-app.config['SECRET_KEY'] = 'abc123'
+app.config.update(config)
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 
 
@@ -42,6 +46,10 @@ def sms():
     handle_message(message_data)
     return str(resp)
 
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return "Server shutting down..."
 
 @sio.on('connect')
 def connect():
@@ -53,13 +61,18 @@ def connect():
     stream.filter(track=[search_term], threaded=True)
     sio.emit('client_connected', "the search term is {}".format(search_term))
 
-
 @sio.on('disconnect')
 def disconnect():
     print('Client Diconnected')
 
 def handle_message(message):
     sio.emit('handle_message', message)
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError("Server is not running with the Werkzeug Server or not running.")
+    func()
 
 if __name__ == '__main__':
     sio.run(app)
