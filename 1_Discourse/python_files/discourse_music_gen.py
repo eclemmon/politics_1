@@ -114,7 +114,6 @@ class DiscourseMusicGen:
             msg.add_arg(item, arg_type='f')
         msg.add_arg(time_interval, arg_type='f')
         msg = msg.build()
-        self.update_osc_func_index()
         self.sc_client.send(msg)
 
     def send_first_chord_walk(self):
