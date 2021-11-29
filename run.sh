@@ -8,11 +8,13 @@ echo "##################"
 echo "Running Politics 1"
 echo "##################"
 
+source "$SCRIPT_DIR/venv/bin/activate"
+
 command() {
-  sleep 5
+  sleep 3
   python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_client.py"
 }
 
-redis-server & python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_server.py" & command
+redis-server & python3.8 "$SCRIPT_DIR/flask_twilio_twitter_server.py" & command
 
-
+trap "{ echo 'SHUTTING DOWN'; redis-cli shutdown; kill $(pgrep -f flask); }" INT

@@ -1,24 +1,33 @@
-import os
-
 import eventlet
 eventlet.monkey_patch()
 from flask import Flask, json, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from twilio.twiml.messaging_response import MessagingResponse
 from flask_socketio import SocketIO
 import tweepy
 import json
+import os
 
 
-TWITTER_PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
+TWITTER_PATH = 'twitter_credentials.json'
 with open(TWITTER_PATH, "r") as file:
     credentials = json.load(file)
 
-CONFIG_PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/config.json'
+CONFIG_PATH = 'config.json'
 with open(CONFIG_PATH, "r") as file:
     config = json.load(file)
 
+MIGRATION_DIR = os.path.join('models', 'migrations')
+
 app = Flask(__name__)
 app.config.update(config)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+migrate = Migrate(app, db, directory=MIGRATION_DIR)
+
+from Models.user import User
+
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 
 
@@ -73,6 +82,7 @@ def shutdown_server():
     if func is None:
         raise RuntimeError("Server is not running with the Werkzeug Server or not running.")
     func()
+
 
 if __name__ == '__main__':
     sio.run(app)
