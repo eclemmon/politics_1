@@ -1,5 +1,5 @@
 import tweepy, json, logging
-from Utility_Tools import politics_logger
+from utility_tools import politics_logger
 from pythonosc import udp_client
 
 with open("../twitter_credentials.json", "r") as file:

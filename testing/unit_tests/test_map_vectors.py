@@ -3,7 +3,7 @@ import math
 import numpy as np
 import numpy.testing
 
-from Utility_Tools.map_vectors import *
+from utility_tools.map_vectors import *
 
 
 class TestMapVectors(unittest.TestCase):
