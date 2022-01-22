@@ -26,8 +26,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, directory=MIGRATION_DIR)
 
-from Models.user import User
-from Models.message import Message
+# from Models.user import User
+# from Models.message import Message
 
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 
@@ -65,7 +65,7 @@ def shutdown():
 def connect():
     print('connected')
     sio.emit('client_connected', "you connected")
-    search_term = "#testingecl"
+    search_term = "@InteractiveMus4"
     stream = MyStream(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
                            credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
     stream.filter(track=[search_term], threaded=True)
