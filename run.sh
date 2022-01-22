@@ -10,15 +10,12 @@ echo "##################"
 
 source "$SCRIPT_DIR/venv/bin/activate"
 
-redis-cli shutdown;
-kill $(pgrep -f flask);
-
 command() {
-  sleep 3
-  python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_client.py"
+  sleep 5
+#  python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_client.py"
 }
 
-redis-server & python3.8 "$SCRIPT_DIR/flask_twilio_twitter_server.py" & command
+redis-server & python3.8 "$SCRIPT_DIR/flask_twilio_twitter_server.py" & command;
 
 trap "{ echo 'SHUTTING DOWN'; redis-cli shutdown; kill $(pgrep -f flask); }" INT
 
