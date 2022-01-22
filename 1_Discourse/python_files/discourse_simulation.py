@@ -9,7 +9,7 @@ from pythonosc import udp_client
 from pythonosc import osc_message_builder
 from Rhythm_Generators import euclidean_rhythm_generator as er_gen
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
-from utility_tools.logistic_function import linear_to_logistic as l2l
+from Utility_Tools.logistic_function import linear_to_logistic as l2l
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 

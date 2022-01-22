@@ -6,7 +6,7 @@ from pythonosc import udp_client
 from pythonosc import osc_message_builder
 from Rhythm_Generators import euclidean_rhythm_generator as er_gen
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
-from utility_tools.logistic_function import linear_to_logistic as l2l
+from Utility_Tools.logistic_function import linear_to_logistic as l2l
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
@@ -14,7 +14,7 @@ class DiscourseMusicGen:
     def __init__(self, logger_object, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer()):
         """
-        :param logger_object: Logger from /utility_tools/politics_logger.py.
+        :param logger_object: Logger from /Utility_Tools/politics_logger.py.
         :param formal_section_length: The length each formal section lasts
         :param harmonic_rhythm: The aggregate timeframe that all chords walk through. So if there are
         :param message_comparison: Defaults to a TF_IDF message comparison object
