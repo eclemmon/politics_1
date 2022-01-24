@@ -1,9 +1,9 @@
-from Data_Dumps import penn_treebank_pos_tags
+from Data_Dumps import pos_tags
 
 
 def delay_time_and_decay(pos_count_dict,
-                         noun_tags=penn_treebank_pos_tags.penn_treebank_pos_nouns,
-                         verb_tags=penn_treebank_pos_tags.penn_treebank_pos_verbs):
+                         noun_tags=pos_tags.penn_treebank_pos_nouns,
+                         verb_tags=pos_tags.penn_treebank_pos_verbs):
     """
     This function counts the number of nouns and verbs in a string and returns them as a tuple.
     :param pos_count_dict: Dictionary that maps pos tag as string to an integer count e.g. {'NN': 4, 'VB': 2}
