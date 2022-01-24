@@ -1,5 +1,7 @@
 import time
 import itertools
+
+import Harmonic_Graph_Constructors.harmonic_web
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
 from pythonosc import udp_client
@@ -47,7 +49,7 @@ class DiscourseMusicGen:
     def trigger_sounds(self, data):
         """
         Triggers sounds and calls a cascading stack of functions and methods to generate music.
-        :param data: Currently the messsage contents of a tweet.
+        :param data: Currently the message contents of a tweet.
         """
         current_time = time.time()
         time_passed = current_time - self.starting_time
@@ -146,9 +148,9 @@ class DiscourseMusicGen:
             self.send_chord_walk()
 
 
-def generate_pitch_materials(web: NeoriemannianWeb, octave, current_chord):
+def generate_pitch_materials(web: Harmonic_Graph_Constructors.harmonic_web.HarmonicWeb, octave, current_chord):
     """
-    This helper functionfunction simply returns an array of midi note numbers according to
+    This helper function simply returns an array of midi note numbers according to
     the input chord.
     :param web: neo-Riemannian web object.
     :param octave: Which octave the desired midi note numbers should be transposed to.
@@ -212,12 +214,14 @@ def schedule_chords(chords, time_interval, harmonic_rhythm, chord_graph, octave,
         pitch_materials.append(generate_pitch_materials(chord_graph, octave, chord))
     send_chord_materials(pitch_materials, client, time_interval, harmonic_rhythm)
 
+
+
 # TODO: Web sends chord materials over OSC
 # TODO: Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
 # TODO: Data that determines base sound [sin, saw, noise, impulse, square]
 # Data that determines freq mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
 # TODO: Data that determines Phase Mod [Freq, Amp]
-# TODO: Data that determines spatialization
-# TODO: Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
-# TODO: data that determines amount of delay (Feedback Delay) {No of unique POS}
+# TODO: Data that determines spatialization <== Motion
+# Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
+# data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
 # TODO: Data that determines reverb -
