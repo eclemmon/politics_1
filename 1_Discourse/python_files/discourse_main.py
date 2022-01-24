@@ -2,7 +2,7 @@ import tweepy
 import json
 from Utility_Tools.politics_logger import logger_launcher
 from pythonosc import udp_client
-from discourse_stream_listener import DiscourseStreamListener
+from scratch_scripts.discourse_stream_listener import DiscourseStreamListener
 from discourse_music_gen import DiscourseMusicGen
 
 class MyStream:
