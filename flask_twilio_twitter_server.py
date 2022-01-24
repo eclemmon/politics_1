@@ -2,7 +2,6 @@ import eventlet
 
 eventlet.monkey_patch()
 from flask import Flask, json, request
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from twilio.twiml.messaging_response import MessagingResponse
 from flask_socketio import SocketIO
@@ -45,7 +44,7 @@ class MyStream(tweepy.Stream):
 
     def on_data(self, data):
         json_data = json.loads(data)
-        message_data = {'username': json_data['user']['screen_name'], 'msg': json_data['text']}
+        message_data = {'username': json_data['user']['screen_name'], 'text': json_data['text']}
         store_message(message_data)
         self.stream_sio.emit('handle_message', message_data)
         # TODO: Send along all necessary information
@@ -55,7 +54,7 @@ class MyStream(tweepy.Stream):
 def sms():
     number = request.form['From']
     message_body = request.form['Body']
-    message_data = {"username": number, "msg": message_body}
+    message_data = {"username": number, "text": message_body}
     resp = MessagingResponse()
     resp.message('Hello {}, you said: {}'.format(number, message_body))
     sio.emit('handle_message', message_data)
@@ -73,6 +72,7 @@ def shutdown():
 def handle_message(message_data):
     store_message(message_data=message_data)
     # sio.emit('handle_message', message)
+
 
 @sio.on('connect')
 def connect():
@@ -113,7 +113,6 @@ def store_message(message_data):
             return res
 
 
-
 def get_or_make_user(message_data):
     with app.app_context():
         if db.session.query(User.id).filter_by(username=message_data['username']).first() is not None:
@@ -129,8 +128,6 @@ def get_or_make_user(message_data):
                 db.session.rollback()
             finally:
                 db.session.close()
-
-
 
 
 if __name__ == '__main__':
