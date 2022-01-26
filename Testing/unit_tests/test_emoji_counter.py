@@ -6,9 +6,11 @@ from NLP_Tools.emoji_counter import count_emojis
 from NLP_Tools.emoji_counter import get_emoji_sentiment
 
 tweet_tokenizer = TweetTokenizer()
-tokens_one = word_tokenize("Academic freedom guaranteed by tenure is more than a hiring gimmick. Georgia cannot compete for talent or produce innovation if we undermine our public universities. @BORUSG has already abandoned the physical health of our schools. Let’s not destroy intellectual capacity as well.")
+tokens_one = word_tokenize(
+    "Academic freedom guaranteed by tenure is more than a hiring gimmick. Georgia cannot compete for talent or produce innovation if we undermine our public universities. @BORUSG has already abandoned the physical health of our schools. Let’s not destroy intellectual capacity as well.")
 tokens_two = word_tokenize("oh my gooOooOdness what a precious little angel!! ❤️ ❤️")
 tokens_three = tweet_tokenizer.tokenize("Super stars 😔 😔🌟 🌟 🌟 😁 🥶")
+
 
 class TestEmojiCounter(unittest.TestCase):
     def test_tokens_three_len_nine(self):
