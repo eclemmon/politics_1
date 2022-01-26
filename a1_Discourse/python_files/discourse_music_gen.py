@@ -51,6 +51,7 @@ class DiscourseMusicGen:
         Triggers sounds and calls a cascading stack of functions and methods to generate music.
         :param data: Currently the message contents of a tweet.
         """
+        # Send Data to SuperCollider
         current_time = time.time()
         time_passed = current_time - self.starting_time
         self.current_partial_corpus[current_time] = data['text']
@@ -60,7 +61,8 @@ class DiscourseMusicGen:
         else:
             self.send_rhythm_materials(data=data['text'])
 
-        # Send GUI String
+        # Send Data to GUI
+        # TODO: Add censor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         display = data['username'] + " said: " + data['text']
         msg.add_arg(display, arg_type='s')
@@ -109,6 +111,7 @@ class DiscourseMusicGen:
         return data
 
     def send_rhythm_materials(self, data, time_interval=5):
+        # TODO: Add harmonic materials refactor name
         rhythm = self.generate_euclidean_rhythm(data)
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         for item in rhythm:
@@ -146,7 +149,6 @@ class DiscourseMusicGen:
         else:
             self.send_chord_walk()
 
-# TODO: Web sends chord materials over OSC
 # TODO: Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
 # TODO: Data that determines base sound [sin, saw, noise, impulse, square]
 # Data that determines freq mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
