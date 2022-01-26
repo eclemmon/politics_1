@@ -3,7 +3,7 @@ import json
 from Utility_Tools.politics_logger import logger_launcher
 from pythonosc import udp_client
 from scratch_scripts.discourse_stream_listener import DiscourseStreamListener
-from discourse_music_gen import DiscourseMusicGen
+from a1_Discourse.python_files.discourse_music_gen import DiscourseMusicGen
 
 class MyStream:
     def __init__(self, auth, logger_object, music_gen):
@@ -60,7 +60,7 @@ class MyStream:
 
 
 if __name__ == '__main__':
-    PATH = '/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/twitter_credentials.json'
+    PATH = '/twitter_credentials.json'
     with open(PATH, "r") as file:
         credentials = json.load(file)
 
