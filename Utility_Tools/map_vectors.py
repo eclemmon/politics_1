@@ -180,7 +180,7 @@ def get_closest_tri_vertices_to_point(no_polygon_sides, *indexes):
 
 def get_graph_chord_indexes_and_weights(sentiment_values, num_adjacent_chords):
     """
-    Gets the respective weights of chords in a graph based on the the input sentiment values. Chords will always include
+    Gets the respective weights of chords in a graph based on the input sentiment values. Chords will always include
     the current node, as well as two of the "next" chords in the graph based on the index that is also calculated.
     :param sentiment_values: Dictionary of three sentiment values from NLTK's VADER {"neg": x, "neu": y, "pos": z}
     :param num_adjacent_chords: Integer
@@ -190,7 +190,7 @@ def get_graph_chord_indexes_and_weights(sentiment_values, num_adjacent_chords):
     # TODO: fix the ordering of the sentiment values
     # get vector end based on sentiment values
     vector_end = add_three_points_for_politics(*sentiment_values)
-    # get indexes of closest vertexes
+    # get indexes of the closest vertexes
     indexes = get_closest_polygon_vertex_indexes_from_three_added_points(num_adjacent_chords, *sentiment_values)
     # generate closest vertices
     vertices = get_closest_tri_vertices_to_point(num_adjacent_chords, *indexes)
