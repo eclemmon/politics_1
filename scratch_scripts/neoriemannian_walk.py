@@ -1,6 +1,8 @@
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 import time
+
+import Harmony_Generators.harmonic_walk_functions
 from Harmonic_Graph_Constructors import neo_riemannian_web
 from Classes.chord import Chord
 from Classes.note import Note
@@ -54,7 +56,7 @@ def random_walk_only_new(num_chords_walked, neo_rweb, client, octave=None, time_
     if time_interval is None:
         time_interval = 5
 
-    chords = [neo_rweb.current_chord] + neo_rweb.random_walk_only_new(num_chords_walked)
+    chords = [neo_rweb.current_chord] + Harmony_Generators.harmonic_walk_functions.random_walk_only_new(num_chords_walked)
     for chord in chords:
         print("The original form of the chord is: ")
         print(chord)

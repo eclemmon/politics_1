@@ -2,6 +2,8 @@ import sched
 import json
 import time
 import itertools
+
+import Harmony_Generators.harmonic_walk_functions
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
 from NLP_Tools.sentiment_analysis_tools import get_sentiment
@@ -165,7 +167,7 @@ def random_walk_only_new(num_chords_walked, harmonic_web, client, octave=None, t
     if harmonic_rhythm is None:
         harmonic_rhythm = 5
 
-    chords = harmonic_web.random_walk_only_new(num_chords_walked)
+    chords = Harmony_Generators.harmonic_walk_functions.random_walk_only_new(num_chords_walked)
     schedule_chords(chords, time_interval, harmonic_rhythm, harmonic_web, octave, client)
 
 
