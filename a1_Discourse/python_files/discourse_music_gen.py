@@ -13,7 +13,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 class DiscourseMusicGen:
     def __init__(self, logger_object, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
-                 web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer()):
+                 web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1):
         """
         :param logger_object: Logger from /Utility_Tools/politics_logger.py.
         :param formal_section_length: The length each formal section lasts
@@ -37,6 +37,7 @@ class DiscourseMusicGen:
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
         self.osc_func_address = '/pitch_triggers'
+        self.num_chords_walked_multiplier = ncw_multiplier
 
         # Initialize OSC clients.
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
@@ -61,7 +62,7 @@ class DiscourseMusicGen:
 
         # Send GUI String
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
-        display = data['screen_name'] + " said: " + data['text']
+        display = data['username'] + " said: " + data['text']
         msg.add_arg(display, arg_type='s')
         msg = msg.build()
         self.gui_client.send(msg)
@@ -69,14 +70,14 @@ class DiscourseMusicGen:
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
         """
         This will determine the distance that the chord should walk based on the mean and
-        standard of deviation of 3
+        standard of deviation
         :param multiplier:
         :param lev_mean:
         :param lev_standard_of_deviation:
         :param harmonic_graph:
         :return:
         """
-        num_walked = num_chords_walked(lev_mean, lev_standard_of_deviation)
+        num_walked = num_chords_walked(lev_mean, lev_standard_of_deviation) * multiplier
         print("num_chords_walked: ", num_walked)
         if num_walked == 0:
             interval = self.harmonic_rhythm
@@ -130,12 +131,12 @@ class DiscourseMusicGen:
         self.prior_corpus_mean_std = current_corpus_mean_std
 
         try:
-            self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+            self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
         except ValueError:
             self.logger_object.info("Seems like you haven't gotten enough tweets in the previous formal section?")
             diff = CorpusMeanAndStd(0.0, 0.0)
             self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
-            self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+            self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
 
         self.starting_time = time.time()
 
