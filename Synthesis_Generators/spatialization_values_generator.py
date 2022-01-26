@@ -1,0 +1,2 @@
+# TODO: Data that determines spatialization <== Motion == starting point -> inverse starting point, time
+# TODO: {time = length of message. 280 max. Starting point = Composite Sentiment, Target = Inverse Sentiment val}
