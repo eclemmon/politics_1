@@ -75,3 +75,9 @@ def schedule_chords(chords, time_interval, harmonic_rhythm, chord_graph, octave,
 
 def num_chords_walked(lev_mean, lev_standard_of_deviation):
     return int(l2l(abs(lev_mean), 0, 100, 0, 10, lev_standard_of_deviation))
+
+
+def get_octave_placement(text):
+    length = len(text)
+    return int(l2l(length, 0, 280, 21, 108, 0.5)) // 12
+
