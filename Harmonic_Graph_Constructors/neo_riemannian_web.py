@@ -82,7 +82,6 @@ class NeoriemannianWeb(harmonic_web.HarmonicWeb):
 
         return []
 
-
     def build_chord_permutations(self, chord=None):
         """
         neo-Riemannian chords are typically triads. To figure out the neighbor chords agnostically to the asymmetry
@@ -101,10 +100,10 @@ class NeoriemannianWeb(harmonic_web.HarmonicWeb):
             new_chord2 = midinote_numbers.copy()
             new_chord3 = midinote_numbers.copy()
             new_chord4 = midinote_numbers.copy()
-            new_chord1[index] = note+1
-            new_chord2[index] = note-1
-            new_chord3[index] = note+2
-            new_chord4[index] = note-2
+            new_chord1[index] = note + 1
+            new_chord2[index] = note - 1
+            new_chord3[index] = note + 2
+            new_chord4[index] = note - 2
             chords = [new_chord1, new_chord2, new_chord3, new_chord4]
             for i, chord in enumerate(chords):
                 chords[i] = [note % 12 for note in chord]
@@ -154,3 +153,7 @@ if __name__ == '__main__':
     print(web.random_walk_only_new(5))
     print("Printing a truly random walk of 10 chords through the web")
     print(web.true_random_walk(10))
+    print("current chord")
+    print(web.current_chord)
+    print("getting neighbor chords")
+    print(web.get_neighbor_chords())

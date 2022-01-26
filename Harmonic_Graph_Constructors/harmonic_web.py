@@ -153,3 +153,6 @@ class HarmonicWeb:
             path.append(next_chord)
             self.current_chord = next_chord
         return path
+
+    def get_neighbor_chords(self):
+        return self.web[self.current_chord]
