@@ -1,16 +1,37 @@
 
-class InstrumentKeyGenerator:
-    def __init__(self, instrument_names, max_no_instruments):
-        self.total_no_instruments = len(instrument_names)
-        self.instrument_dict = generate_instrument_dict(instrument_names)
+class InstrumentKeyAndNameGenerator:
+    def __init__(self, inst_names, max_no_instruments):
+        """
+        Class to help in constructing sound selection to be passed to SuperCollider.
+        :param inst_names: List of instrument names available, e.g. ['sin', 'saw']
+        :param max_no_instruments: Integer of maximum number of instruments allowed, purely a safety value to cap
+        the number of instruments allowed to run. Set at object construction time.
+        """
+        self.total_no_instruments = len(inst_names)
+        self.instrument_dict = generate_instrument_dict(inst_names)
         self.instrument_graph = generate_instrument_graph(self.instrument_dict)
         self.max_instruments = max_no_instruments
-        self.instrument_keys = ['sound{}'.format(count + 1) for count in range(len(instrument_names))]
+        self.instrument_keys = ['sound{}'.format(count + 1) for count in range(len(inst_names))]
 
-    def get_instrument_chain(self, sent_dict, emoji_sent_dict, num_inst_to_run=4):
+    def get_instrument_chain_keys(self, sent_dict, emoji_sent_dict, num_inst_to_run=4):
+        """
+        Gets the keys for instruments to be activated in Super Collider.
+        :param sent_dict: Dict String: Float. e.g. {'pos': 0.736...etc}
+        :param emoji_sent_dict: Dict String: Float. e.g. {'pos': 0.736...etc}
+        :param num_inst_to_run: Integer of number of instruments in final array.
+        :return: List of instrument keys. e.g. ['sound3', 'sound4', 'sound6', 'sound5', 'sound3']
+        """
         return get_instrument_chain(num_inst_to_run-1, self.instrument_graph, sent_dict,
                                     emoji_sent_dict, self.total_no_instruments, self.instrument_keys,
                                     self.max_instruments)
+
+    def get_instrument_chain_names(self, keys: list):
+        """
+        Gets a list of the instrument names to pass to SuperCollider
+        :param keys: keys in the instrument key dict. ['sound1', 'sound2']
+        :return: List of instrument names ['sin', 'saw']
+        """
+        return [self.instrument_dict[key] for key in keys]
 
 
 def generate_instrument_dict(inst_names: list):
@@ -61,6 +82,7 @@ def get_next_instrument(inst_graph: dict, current_instrument: str, value: float,
 def get_first_instrument(value: float, instrument_keys: list, total_no_instruments: int):
     """
     Helper function that gets the first instrument key name. Returns a string of the first instrument key
+    :param instrument_keys: List of instrument keys
     :param value: Float of value to be hashed.
     :param total_no_instruments: Integer of total number of instruments available.
     :return: String of first instrument. e.g. 'sound1'
@@ -73,6 +95,7 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
                          emoji_sentiment: dict, total_no_instruments: int, instrument_keys: list, max_inst_to_run=4):
     """
     Returns an array of instruments that can be passed to SuperCollider for runtime.
+    :param instrument_keys: List of instrument keys.
     :param max_inst_to_run: Integer of maximum instruments to run. Default is 4.
     :param num_inst_to_run: Integer of number of instruments in final array.
     :param inst_graph: Dict of String: List. e.g. {'sound1': ['sound2', 'sound3', 'sound4', 'sound5', 'sound6']}
@@ -94,6 +117,6 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
 if __name__ == "__main__":
     from Data_Dumps.instrument_names import instrument_names
     from NLP_Tools.emoji_counter import get_emoji_sentiment
-    key_gen = InstrumentKeyGenerator(instrument_names, 4)
+    key_gen = InstrumentKeyAndNameGenerator(instrument_names, 4)
     print(key_gen.get_instrument_chain({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
-                               get_emoji_sentiment("❤")))
+                                       get_emoji_sentiment("❤")))
