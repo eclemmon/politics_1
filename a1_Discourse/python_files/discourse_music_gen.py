@@ -9,11 +9,13 @@ from Rhythm_Generators import euclidean_rhythm_generator as er_gen
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Harmony_Generators.harmonic_walk_functions import num_chords_walked
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from better_profanity import profanity
 
 
 class DiscourseMusicGen:
     def __init__(self, logger_object, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
-                 web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1):
+                 web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
+                 profanity_word_list_path=None):
         """
         :param logger_object: Logger from /Utility_Tools/politics_logger.py.
         :param formal_section_length: The length each formal section lasts
@@ -30,6 +32,13 @@ class DiscourseMusicGen:
         self.prior_corpus_mean_std = CorpusMeanAndStd(0.0, 0.0)
         self.message_comparison_obj = message_comparison
         self.sentiment_analyzer = sentiment_analyzer
+        self.profanity = profanity
+
+        # Initialize profanity word list based on object run time.
+        if profanity_word_list_path is None:
+            self.profanity.load_censor_words()
+        else:
+            self.profanity.load_censor_words_from_file(profanity_word_list_path)
 
         # Initialize music generators and timing protocols.
         self.web = web
@@ -62,9 +71,8 @@ class DiscourseMusicGen:
             self.send_rhythm_materials(data=data['text'])
 
         # Send Data to GUI
-        # TODO: Add censor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
-        display = data['username'] + " said: " + data['text']
+        display = data['username'] + " said: " + self.profanity.censor(data['text'])
         msg.add_arg(display, arg_type='s')
         msg = msg.build()
         self.gui_client.send(msg)
