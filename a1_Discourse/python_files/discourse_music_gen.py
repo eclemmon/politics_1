@@ -150,9 +150,8 @@ class DiscourseMusicGen:
             self.send_chord_walk()
 
 # Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
-# TODO: Data that determines base sound [sin, saw, noise, impulse, square]
+# Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
 # Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
-
 # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
 # data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
 # TODO: Data that determines reverb -
