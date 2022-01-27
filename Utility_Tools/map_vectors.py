@@ -103,7 +103,7 @@ def find_indexes_of_closest_point2vertex_in_new_poly(original_origin2point_angle
     segments it takes the smaller value.
     :param original_origin2point_angle:
     :param polygon_size:
-    :return: tuple of two closest two vertice's indexes
+    :return: tuple of closest two vertice's indexes
     """
     polygon_angles = vertex_angles_by_no_poly_sides(polygon_size)
     closest_index = min(range(len(polygon_angles)), key=lambda i: abs(polygon_angles[i] - original_origin2point_angle))
