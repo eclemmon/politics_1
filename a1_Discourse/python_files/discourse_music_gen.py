@@ -10,10 +10,13 @@ from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Harmony_Generators.harmonic_walk_functions import num_chords_walked
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
+from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
+from NLP_Tools.average_sentiment import AverageSentiment
 
 
 class DiscourseMusicGen:
-    def __init__(self, logger_object, formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
+    def __init__(self, logger_object, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
+                 formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
                  profanity_word_list_path=None):
         """
@@ -32,6 +35,7 @@ class DiscourseMusicGen:
         self.prior_corpus_mean_std = CorpusMeanAndStd(0.0, 0.0)
         self.message_comparison_obj = message_comparison
         self.sentiment_analyzer = sentiment_analyzer
+        self.average_sent = AverageSentiment()
         self.profanity = profanity
 
         # Initialize profanity word list based on object run time.
@@ -47,6 +51,7 @@ class DiscourseMusicGen:
         self.harmonic_rhythm = harmonic_rhythm
         self.osc_func_address = '/pitch_triggers'
         self.num_chords_walked_multiplier = ncw_multiplier
+        self.inst_key_name_gen = instrument_key_and_name_gen
 
         # Initialize OSC clients.
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
@@ -60,15 +65,17 @@ class DiscourseMusicGen:
         Triggers sounds and calls a cascading stack of functions and methods to generate music.
         :param data: Currently the message contents of a tweet.
         """
-        # Send Data to SuperCollider
+        # Get current time and time elapsed and add text to current partial corpus.
         current_time = time.time()
         time_passed = current_time - self.starting_time
         self.current_partial_corpus[current_time] = data['text']
+
+        # Send Data to SuperCollider
         if time_passed >= self.formal_section_length:
             self.if_first_chord_walk()
-            self.send_rhythm_materials(data=data['text'])
+            self.send_musical_materials(data=data['text'])
         else:
-            self.send_rhythm_materials(data=data['text'])
+            self.send_musical_materials(data=data['text'])
 
         # Send Data to GUI
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
@@ -105,7 +112,8 @@ class DiscourseMusicGen:
         """
         return self.message_comparison_obj.new_incoming_tweet(tweet)
 
-    def generate_euclidean_rhythm(self, data):
+    @staticmethod
+    def generate_euclidean_rhythm(data):
         """
         Generates an array of euclidean rhythms as a list of binary 1's and 0's. 1's represent
         the onsets of a musical event. The 0's are then replaced with -1.5 for
@@ -118,8 +126,8 @@ class DiscourseMusicGen:
                 data[index] = -1.5
         return data
 
-    def send_rhythm_materials(self, data, time_interval=5):
-        # TODO: Add harmonic materials refactor name
+    def send_musical_materials(self, data, time_interval=5):
+        # TODO: Add ALL materials refactor name
         rhythm = self.generate_euclidean_rhythm(data)
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         for item in rhythm:
@@ -162,4 +170,4 @@ class DiscourseMusicGen:
 # Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
 # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
 # data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
-# TODO: Data that determines reverb -
+# TODO: Data that determines reverb - Distance of text from sentiment value.
