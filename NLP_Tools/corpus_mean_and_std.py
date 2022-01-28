@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz
 
 class CorpusMeanAndStd:
     def __init__(self, mean=None, std=None, corpus=None):
-        if mean == None or std == None:
+        if mean is None or std is None:
             try:
                 mean_and_std = mean_and_std_of_corpus(corpus)
                 self.mean = mean_and_std[0]
@@ -30,10 +30,17 @@ class CorpusMeanAndStd:
     def __repr__(self):
         return "{}, {}".format(self.mean, self.std)
 
+    def average(self, other):
+        new_mean = (self.mean + other.mean) / 2
+        new_std = (self.std + other.std) / 2
+        return CorpusMeanAndStd(new_mean, new_std)
+
+
+
 
 def mean_and_std_of_corpus(corpus):
     """
-    Builds mean and std after determining levenshtein distance between two texts in a corpus.
+    Builds mean and std after determining levenshtein distance between texts in a corpus.
     Better way? Also dumb O(n^2) double nested loop.
     :param corpus:
     :return:
