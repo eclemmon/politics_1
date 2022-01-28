@@ -1,8 +1,5 @@
-import json
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
 from nltk import pos_tag
-from scratch_scripts.simulation_incoming_tweets import TweetsIncomingSim
 
 
 def get_pos_tuples(text):
@@ -14,15 +11,13 @@ def get_pos_tuples(text):
     return res
 
 
-def count_discrete_pos(text):
-    pos_count = build_pos_count_dict(text)
-    return len(pos_count)
+def count_discrete_pos(pos_count_dict):
+    return len(pos_count_dict)
 
 
-def count_total_pos(text):
+def count_total_pos(pos_count_dict):
     res = 0
-    pos_count = build_pos_count_dict(text)
-    for value in pos_count.values():
+    for value in pos_count_dict.values():
         res += value
     return res
 
@@ -44,7 +39,8 @@ if __name__ == "__main__":
     # simulation = TweetsIncomingSim(tweets)
     # sentiment_analyzer = SentimentIntensityAnalyzer()
     text = "I love the train! Let me get on it fam! Woohoo!"
-    print(build_pos_count_dict(text))
+    pos_count_dict = build_pos_count_dict(text)
+    print(pos_count_dict)
     print(get_pos_tuples(text))
-    print(count_discrete_pos(text))
-    print(count_total_pos(text))
+    print(count_discrete_pos(pos_count_dict))
+    print(count_total_pos(pos_count_dict))
