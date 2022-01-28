@@ -14,10 +14,13 @@ def delay_time_and_decay(pos_count_dict,
     nouns = 0
     verbs = 0
     for tag in noun_tags:
-        nouns += pos_count_dict[tag]
+        if pos_count_dict.get(tag) is not None:
+            nouns += pos_count_dict.get(tag)
+        else:
+            pass
     for tag in verb_tags:
-        verbs += pos_count_dict[verb_tags]
+        if pos_count_dict.get(tag) is not None:
+            verbs += pos_count_dict.get(tag)
+        else:
+            pass
     return nouns, verbs
-
-
-
