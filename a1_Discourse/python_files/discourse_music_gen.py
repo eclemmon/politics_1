@@ -92,10 +92,11 @@ class DiscourseMusicGen:
         # TODO: Octave placement Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
         # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
-
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from sentiment value.
         # TODO: Amount of Delay data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
+        # TODO: Spatialization
+        # TODO: Synthesis Instruments Chain
 
         # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(data)
