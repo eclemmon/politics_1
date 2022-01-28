@@ -12,6 +12,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
 from NLP_Tools.average_sentiment import AverageSentiment
+from NLP_Tools import part_of_speech_tools
 
 
 class DiscourseMusicGen:
@@ -68,15 +69,39 @@ class DiscourseMusicGen:
         # Get current time and time elapsed and add text to current partial corpus.
         current_time = time.time()
         time_passed = current_time - self.starting_time
+        # Add text to corpus for this formal section
         self.current_partial_corpus[current_time] = data['text']
 
-        # Send Data to SuperCollider
+        # Send Data
         if time_passed >= self.formal_section_length:
+            # If formal section length elapsed, chord walk
             self.if_first_chord_walk()
-            self.send_musical_materials(data=data['text'])
+            # Send Music Data
+            self.send_music_data(data=data['text'])
+            # Send GUI Data
+            self.send_gui_data(data=data['text'])
         else:
-            self.send_musical_materials(data=data['text'])
+            self.send_music_data(data=data['text'])
+            self.send_gui_data(data=data['text'])
 
+    def send_music_data(self, data, time_interval=5):
+        # TODO: Add ALL materials
+        # TODO: Octave placement Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
+        # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
+        # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
+        # TODO: Rhythmic Materials Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
+        # TODO: Neighbor Chord Borrowing — Vector distance stuff
+        # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from sentiment value.
+        # TODO: Amount of Delay data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
+        rhythm = self.generate_euclidean_rhythm(data)
+        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
+        for item in rhythm:
+            msg.add_arg(item, arg_type='f')
+        msg.add_arg(time_interval, arg_type='f')
+        msg = msg.build()
+        self.sc_client.send(msg)
+
+    def send_gui_data(self, data):
         # Send Data to GUI
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         display = data['username'] + " said: " + self.profanity.censor(data['text'])
@@ -117,24 +142,22 @@ class DiscourseMusicGen:
         """
         Generates an array of euclidean rhythms as a list of binary 1's and 0's. 1's represent
         the onsets of a musical event. The 0's are then replaced with -1.5 for
-        :param data:
-        :return:
+        :param data: Dictionary String: String of tweet or text data
+        :return: List of 1s and -1.5s e.g. [1, -1.5, -1.5, 1, -1.5]. Done this way for the way trigger works in SC.
         """
-        data = er_gen.generate_euclidean(4, 6)
+        # Builds a dictionary of counts of parts of speech
+        pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
+        # Counts the number of discrete POS in the text.
+        discrete_pos = part_of_speech_tools.count_discrete_pos(pos_count_dict)
+        # Total number of POS in the text len(dict)
+        total_pos = part_of_speech_tools.count_total_pos(pos_count_dict)
+        # Generates the Euclidean Rhythms based on the ratio
+        data = er_gen.generate_euclidean(discrete_pos, total_pos)
+        # Preps data for SuperCollider
         for index, item in enumerate(data):
             if item == 0:
                 data[index] = -1.5
         return data
-
-    def send_musical_materials(self, data, time_interval=5):
-        # TODO: Add ALL materials refactor name
-        rhythm = self.generate_euclidean_rhythm(data)
-        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
-        for item in rhythm:
-            msg.add_arg(item, arg_type='f')
-        msg.add_arg(time_interval, arg_type='f')
-        msg = msg.build()
-        self.sc_client.send(msg)
 
     def send_first_chord_walk(self):
         diff = CorpusMeanAndStd(0.0, 0.0)
@@ -165,9 +188,3 @@ class DiscourseMusicGen:
         else:
             self.send_chord_walk()
 
-# Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
-# Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
-# Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
-# Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
-# data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
-# TODO: Data that determines reverb - Distance of text from sentiment value.
