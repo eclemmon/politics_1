@@ -30,10 +30,9 @@ class AverageSentiment:
 
     def add_value_average(self, other):
         res = {}
-        self.x_averaged += 1
         for k in self.avg_sent.keys():
-            res[k] = self.avg_sent[k] + ((other.avg_sent[k] - self.avg_sent[k]) / self.x_averaged)
-        return AverageSentiment(res, self.x_averaged)
+            res[k] = self.avg_sent[k] + ((other.avg_sent[k] - self.avg_sent[k]) / (self.x_averaged + 1))
+        return AverageSentiment(res, self.x_averaged + 1)
 
     def __repr__(self):
         return self
