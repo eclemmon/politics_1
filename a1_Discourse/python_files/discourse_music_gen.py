@@ -11,9 +11,10 @@ from Harmony_Generators.harmonic_walk_functions import num_chords_walked
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
-from NLP_Tools.average_sentiment import AverageSentiment
+from NLP_Tools.sentiment_dictionary import SentimentDict
 from NLP_Tools import part_of_speech_tools
 from Synthesis_Generators.delay_values_generator import delay_time_and_decay
+from NLP_Tools.sentiment_analysis_tools import get_average_sentiment
 
 
 class DiscourseMusicGen:
@@ -37,7 +38,7 @@ class DiscourseMusicGen:
         self.prior_corpus_mean_std = CorpusMeanAndStd(0.0, 0.0)
         self.message_comparison_obj = message_comparison
         self.sentiment_analyzer = sentiment_analyzer
-        self.average_sent = AverageSentiment()
+        self.average_sent = SentimentDict()
         self.profanity = profanity
 
         # Initialize profanity word list based on object run time.
@@ -94,16 +95,21 @@ class DiscourseMusicGen:
         # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
         # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
-        # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from sentiment value.
+        # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from average sentiment value.
         # TODO: Spatialization
         # TODO: Synthesis Instruments Chain
 
         # Builds a dictionary of counts of parts of speech
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
+        # Get sentiment value of text
+        sent = get_average_sentiment(data['text'])
+        # Find difference between SentimentDict.sent_dict and sent
+        reverb_
         # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(pos_count_dict)
         # Data that determines delay time and decay (Feedback Delay Time, Delay Decay) {No of Nouns, No. Verbs}
         delay_t_a_d = delay_time_and_decay(pos_count_dict)
+
         # Add Rhythm Data to osc message
         for item in rhythm:
             msg.add_arg(item, arg_type='f')
@@ -117,6 +123,10 @@ class DiscourseMusicGen:
         msg = msg.build()
         # Send the message to SuperCollider
         self.sc_client.send(msg)
+
+        # CLEAN UP AND UPDATE ANY VALUES
+        # Update average sentiment value
+        self.average_sent.add_value_average(SentimentDict(sent))
 
     def send_gui_data(self, data):
         # Send Data to GUI
