@@ -85,28 +85,40 @@ class DiscourseMusicGen:
             self.send_gui_data(data=data['text'])
 
     def send_music_data(self, data, time_interval=5):
+        # Send Data to Super Collider.
+        # Build OSC Message Object Constructor
+        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         # TODO: Add ALL materials
         # TODO: Octave placement Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
         # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
-        # TODO: Rhythmic Materials Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
+
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from sentiment value.
         # TODO: Amount of Delay data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
+
+        # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(data)
-        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
+        # Add Rhythm Data to osc message
         for item in rhythm:
             msg.add_arg(item, arg_type='f')
-        msg.add_arg(time_interval, arg_type='f')
+        msg.add_arg(time_interval, arg_type='f')  # Depreciate
+        # Build the message
         msg = msg.build()
+        # Send the message to SuperCollider
         self.sc_client.send(msg)
 
     def send_gui_data(self, data):
         # Send Data to GUI
+        # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
+        # Construct text to display and censor any text for profanity.
         display = data['username'] + " said: " + self.profanity.censor(data['text'])
+        # Add data to the message
         msg.add_arg(display, arg_type='s')
+        # Build the message
         msg = msg.build()
+        # Send the message to SuperCollider
         self.gui_client.send(msg)
 
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
@@ -129,10 +141,10 @@ class DiscourseMusicGen:
         random_walk_only_new(num_walked, harmonic_graph, self.sc_client, time_interval=interval,
                              harmonic_rhythm=self.harmonic_rhythm)
 
-    def compare_tweets(self, data):
+    def compare_text(self, data):
         """
 
-        :param tweet:
+        :param data:
         :return: Tuple with closest related text and the similarity score.
         """
         return self.message_comparison_obj.new_incoming_tweet(data['text'])
@@ -162,7 +174,7 @@ class DiscourseMusicGen:
     def send_first_chord_walk(self):
         diff = CorpusMeanAndStd(0.0, 0.0)
         self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
-        self.harmonic_walk(3, diff.mean, diff.std, harmonic_graph=self.web)
+        self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
         self.starting_time = time.time()
 
     def send_chord_walk(self):
@@ -175,7 +187,7 @@ class DiscourseMusicGen:
         try:
             self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
         except ValueError:
-            self.logger_object.info("Seems like you haven't gotten enough tweets in the previous formal section?")
+            self.logger_object.info("Seems like you haven't gotten enough texts in the previous formal section?")
             diff = CorpusMeanAndStd(0.0, 0.0)
             self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
             self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
