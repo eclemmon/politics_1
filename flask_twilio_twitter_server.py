@@ -55,6 +55,8 @@ def sms():
     number = request.form['From']
     message_body = request.form['Body']
     message_data = {"username": number, "text": message_body}
+    # TODO: Remove message response and test
+    # TODO: Emit username as censored phone number
     resp = MessagingResponse()
     resp.message('Hello {}, you said: {}'.format(number, message_body))
     sio.emit('handle_message', message_data)
