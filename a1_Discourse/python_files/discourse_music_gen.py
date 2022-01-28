@@ -129,13 +129,13 @@ class DiscourseMusicGen:
         random_walk_only_new(num_walked, harmonic_graph, self.sc_client, time_interval=interval,
                              harmonic_rhythm=self.harmonic_rhythm)
 
-    def compare_tweets(self, tweet):
+    def compare_tweets(self, data):
         """
 
         :param tweet:
         :return: Tuple with closest related text and the similarity score.
         """
-        return self.message_comparison_obj.new_incoming_tweet(tweet)
+        return self.message_comparison_obj.new_incoming_tweet(data['text'])
 
     @staticmethod
     def generate_euclidean_rhythm(data):
