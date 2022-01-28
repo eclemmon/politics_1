@@ -13,6 +13,7 @@ from better_profanity import profanity
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
 from NLP_Tools.average_sentiment import AverageSentiment
 from NLP_Tools import part_of_speech_tools
+from Synthesis_Generators.delay_values_generator import delay_time_and_decay
 
 
 class DiscourseMusicGen:
@@ -94,15 +95,23 @@ class DiscourseMusicGen:
         # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from sentiment value.
-        # TODO: Amount of Delay data that determines amount of delay [Feedback Delay Time, Delay Decay] {No of Nouns, No. Verbs}
         # TODO: Spatialization
         # TODO: Synthesis Instruments Chain
 
+        # Builds a dictionary of counts of parts of speech
+        pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
-        rhythm = self.generate_euclidean_rhythm(data)
+        rhythm = self.generate_euclidean_rhythm(pos_count_dict)
+        # Data that determines delay time and decay (Feedback Delay Time, Delay Decay) {No of Nouns, No. Verbs}
+        delay_t_a_d = delay_time_and_decay(pos_count_dict)
         # Add Rhythm Data to osc message
         for item in rhythm:
             msg.add_arg(item, arg_type='f')
+        # Add delay data to osc message
+        for item in delay_t_a_d:
+            msg.add_arg(item, arg_type='i')
+
+
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
         # Build the message
         msg = msg.build()
@@ -151,15 +160,13 @@ class DiscourseMusicGen:
         return self.message_comparison_obj.new_incoming_tweet(data['text'])
 
     @staticmethod
-    def generate_euclidean_rhythm(data):
+    def generate_euclidean_rhythm(pos_count_dict):
         """
         Generates an array of euclidean rhythms as a list of binary 1's and 0's. 1's represent
         the onsets of a musical event. The 0's are then replaced with -1.5 for
-        :param data: Dictionary String: String of tweet or text data
+        :param pos_count_dict: Dictionary of parts of speech count
         :return: List of 1s and -1.5s e.g. [1, -1.5, -1.5, 1, -1.5]. Done this way for the way trigger works in SC.
         """
-        # Builds a dictionary of counts of parts of speech
-        pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Counts the number of discrete POS in the text.
         discrete_pos = part_of_speech_tools.count_discrete_pos(pos_count_dict)
         # Total number of POS in the text len(dict)
