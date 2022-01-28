@@ -103,8 +103,10 @@ class DiscourseMusicGen:
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Get sentiment value of text
         sent = get_average_sentiment(data['text'])
+        # Build Sentiment Dictionary
+        sent_dict = SentimentDict(sent)
         # Find difference between SentimentDict.sent_dict and sent
-        reverb_
+        reverb_vals = self.average_sent.abs_difference(sent_dict)
         # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(pos_count_dict)
         # Data that determines delay time and decay (Feedback Delay Time, Delay Decay) {No of Nouns, No. Verbs}
@@ -116,6 +118,9 @@ class DiscourseMusicGen:
         # Add delay data to osc message
         for item in delay_t_a_d:
             msg.add_arg(item, arg_type='i')
+        # Add reverb data to osc message
+        for value in list(reverb_vals.sent_dict.values()):
+            msg.add_arg(item, arg_type='f')
 
 
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
@@ -126,7 +131,7 @@ class DiscourseMusicGen:
 
         # CLEAN UP AND UPDATE ANY VALUES
         # Update average sentiment value
-        self.average_sent.add_value_average(SentimentDict(sent))
+        self.average_sent.add_value_average(sent_dict)
 
     def send_gui_data(self, data):
         # Send Data to GUI
