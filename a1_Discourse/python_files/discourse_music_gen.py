@@ -103,7 +103,6 @@ class DiscourseMusicGen:
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         # TODO: Add ALL materials
-        # TODO: Octave placement Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from average sentiment value.
@@ -126,8 +125,8 @@ class DiscourseMusicGen:
         spat = generate_spatialization_values(time_interval, sent)
         # Data that determines amount of Phase Modulation (Freq, Amp) {Number of emojis, Sentiment of Emojis}
         pmod = phase_mod_values_generator(data['text'])
-        # Data on octave displacement
-
+        # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
+        od = get_octave_placement(data['text'])
 
         # Add Rhythm Data to osc message
         for item in rhythm:
@@ -144,6 +143,8 @@ class DiscourseMusicGen:
         # Add phase mod data to osc message
         for item in pmod:
             msg.add_arg(float(item), arg_type='f')
+        # Add octave displacement to osc message
+        msg.add_arg(od, arg_type='i')
 
 
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
