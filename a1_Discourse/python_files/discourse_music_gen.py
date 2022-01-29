@@ -19,15 +19,13 @@ from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Harmony_Generators.harmonic_walk_functions import num_chords_walked
 from Harmony_Generators.harmonic_walk_functions import random_walk_only_new
 from Harmony_Generators.octave_displacement_generator import get_octave_placement
+from Harmony_Generators.neighbor_chord_generator import generate_neighbor_chord_weights
+from Harmony_Generators.neighbor_chord_generator import build_weight_and_chord_array
 
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
 from Synthesis_Generators.spatialization_values_generator import generate_spatialization_values
 from Synthesis_Generators.delay_values_generator import delay_time_and_decay
 from Synthesis_Generators.phase_mod_values_generator import phase_mod_values_generator
-
-
-
-
 
 
 class DiscourseMusicGen:
@@ -104,10 +102,8 @@ class DiscourseMusicGen:
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         # TODO: Add ALL materials
-        # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
-        # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from average sentiment value.
-        # TODO: Synthesis Instruments Chain
+        # TODO: Time interval
 
         # Builds a dictionary of counts of parts of speech
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
@@ -118,7 +114,7 @@ class DiscourseMusicGen:
         avg_emoji_sent = emoji_counter.get_average_emoji_sent_from_msg(emojis)
         # Build Sentiment Dictionary
         sent_dict = SentimentDict(sent)
-        # Find difference between SentimentDict.sent_dict and sent
+        # Data that determines reverb values (predelay, reverbtime, lpf, mix) {neg, neu, pos, compound}
         reverb_vals = self.average_sent.abs_difference(sent_dict)
         # Data that determines rhythmic materials (impulses, offsets) {No. Tokens, No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(pos_count_dict)
@@ -131,9 +127,16 @@ class DiscourseMusicGen:
         pmod = phase_mod_values_generator(avg_emoji_sent, emojis)
         # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         od = get_octave_placement(data['text'])
-        # Chain of Instruments to synthesize with
+        # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
         inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
         inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
+        # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
+        neighbor_chords = self.web.get_neighbor_chords()
+        current_chord_notes = [note.midi_note_number for note in self.web.current_chord.notes]
+        neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes] for neighbor_chord in neighbor_chords]
+        weights = generate_neighbor_chord_weights(sent, len(neighbor_chords))
+        w_c_array = build_weight_and_chord_array(current_chord_notes, neighbor_notes, weights)
+        print(w_c_array)
 
         # Add Rhythm Data to osc message
         for item in rhythm:
@@ -152,6 +155,13 @@ class DiscourseMusicGen:
             msg.add_arg(float(item), arg_type='f')
         # Add octave displacement to osc message
         msg.add_arg(od, arg_type='i')
+        # Add instrument names to osc message
+        for inst in inst_names:
+            msg.add_arg(inst, arg_type='s')
+        # Add neighbor chords to OSC Message
+        for item in w_c_array:
+            msg.add_arg(item, arg_type='f')
+
 
 
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
