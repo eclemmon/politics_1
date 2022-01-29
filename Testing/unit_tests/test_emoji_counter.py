@@ -29,4 +29,4 @@ class TestEmojiCounter(unittest.TestCase):
         self.assertEqual(get_emoji_sentiment("❤"), {'neg': 355,
                                                     'neu': 1334,
                                                     'pos': 6361,
-                                                    'composite': 0.746})
+                                                    'compound': 0.746})

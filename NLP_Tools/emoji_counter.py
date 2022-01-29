@@ -39,7 +39,7 @@ def get_emojis(text):
 def get_average_emoji_sent_from_msg(emojis):
     sent_dict = SentimentDict()
 
-    if len(emojis <= 0):
+    if len(emojis) <= 0:
         return None
     else:
         for emo in emojis:

@@ -8,6 +8,7 @@ from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
 from NLP_Tools.sentiment_dictionary import SentimentDict
 from NLP_Tools import part_of_speech_tools
 from NLP_Tools.sentiment_analysis_tools import get_average_sentiment
+from NLP_Tools import emoji_counter
 
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
@@ -112,6 +113,9 @@ class DiscourseMusicGen:
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Get sentiment value of text
         sent = get_average_sentiment(self.sentiment_analyzer, data['text'])
+        # Get avg sentiment value of emojis
+        emojis = emoji_counter.get_emojis(data['text'])
+        avg_emoji_sent = emoji_counter.get_average_emoji_sent_from_msg(emojis)
         # Build Sentiment Dictionary
         sent_dict = SentimentDict(sent)
         # Find difference between SentimentDict.sent_dict and sent
@@ -124,9 +128,12 @@ class DiscourseMusicGen:
         # (Time Interval, Start Point, Target) {Msg Len, Compound Sentiment, Inverse Compound Sentiment val}
         spat = generate_spatialization_values(time_interval, sent)
         # Data that determines amount of Phase Modulation (Freq, Amp) {Number of emojis, Sentiment of Emojis}
-        pmod = phase_mod_values_generator(data['text'])
+        pmod = phase_mod_values_generator(avg_emoji_sent, emojis)
         # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         od = get_octave_placement(data['text'])
+        # Chain of Instruments to synthesize with
+        inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
+        inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
 
         # Add Rhythm Data to osc message
         for item in rhythm:

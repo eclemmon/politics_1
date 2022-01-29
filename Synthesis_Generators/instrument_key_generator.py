@@ -92,7 +92,7 @@ def get_first_instrument(value: float, instrument_keys: list, total_no_instrumen
 
 
 def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict: dict,
-                         emoji_sentiment: dict, total_no_instruments: int, instrument_keys: list, max_inst_to_run=4):
+                         emoji_sentiment, total_no_instruments: int, instrument_keys: list, max_inst_to_run=4):
     """
     Returns an array of instruments that can be passed to SuperCollider for runtime.
     :param instrument_keys: List of instrument keys.
@@ -100,7 +100,7 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
     :param num_inst_to_run: Integer of number of instruments in final array.
     :param inst_graph: Dict of String: List. e.g. {'sound1': ['sound2', 'sound3', 'sound4', 'sound5', 'sound6']}
     :param sentiment_dict: Dict String: Float. e.g. {'pos': 0.736...etc}
-    :param emoji_sentiment: Dict String: Float. e.g. {'pos': 0.736...etc}
+    :param emoji_sentiment: Dict String or NoneType: Float. e.g. {'pos': 0.736...etc}, None
     :param total_no_instruments: Integer of total number of instruments
     :return: List of instrument keys. e.g. ['sound3', 'sound4', 'sound6', 'sound5', 'sound3']
     """
@@ -108,7 +108,12 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
         num_inst_to_run = 4
 
     res = [get_first_instrument(sentiment_dict['compound'], instrument_keys, total_no_instruments)]
-    values = list(sentiment_dict.values()) + list(emoji_sentiment.values())
+
+    if emoji_sentiment is not None:
+        values = list(sentiment_dict.values()) + list(emoji_sentiment.values())
+    else:
+        values = list(sentiment_dict.values())
+
     for _ in range(num_inst_to_run):
         res.append(get_next_instrument(inst_graph, res[-1], values[_], total_no_instruments))
     return res
@@ -118,5 +123,5 @@ if __name__ == "__main__":
     from Data_Dumps.instrument_names import instrument_names
     from NLP_Tools.emoji_counter import get_emoji_sentiment
     key_gen = InstrumentKeyAndNameGenerator(instrument_names, 4)
-    print(key_gen.get_instrument_chain({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
+    print(key_gen.get_instrument_chain_keys({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
                                        get_emoji_sentiment("❤")))
