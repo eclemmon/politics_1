@@ -11,11 +11,14 @@ from Harmony_Generators.harmonic_walk_functions import num_chords_walked
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
+from Synthesis_Generators.spatialization_values_generator import generate_spatialization_values
+from Synthesis_Generators.delay_values_generator import delay_time_and_decay
+from Synthesis_Generators.phase_mod_values_generator import phase_mod_values_generator
 from NLP_Tools.sentiment_dictionary import SentimentDict
 from NLP_Tools import part_of_speech_tools
-from Synthesis_Generators.delay_values_generator import delay_time_and_decay
+
 from NLP_Tools.sentiment_analysis_tools import get_average_sentiment
-from Synthesis_Generators.spatialization_values_generator import generate_spatialization_values
+
 
 
 class DiscourseMusicGen:
@@ -94,7 +97,6 @@ class DiscourseMusicGen:
         # TODO: Add ALL materials
         # TODO: Octave placement Data that determines octave — {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         # TODO: Base Sound Data that determines base sound {sound1: sin, sound2: saw, sound3: noise, sound4: impulse, sound5: square, etc}
-        # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from average sentiment value.
         # TODO: Synthesis Instruments Chain
@@ -107,12 +109,15 @@ class DiscourseMusicGen:
         sent_dict = SentimentDict(sent)
         # Find difference between SentimentDict.sent_dict and sent
         reverb_vals = self.average_sent.abs_difference(sent_dict)
-        # Data that determines rhythmic materials (impulses and offsets) {No. Tokens : No. discrete POS}
+        # Data that determines rhythmic materials (impulses, offsets) {No. Tokens, No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(pos_count_dict)
         # Data that determines delay time and decay (Feedback Delay Time, Delay Decay) {No of Nouns, No. Verbs}
         delay_t_a_d = delay_time_and_decay(pos_count_dict)
         # Data that determines spatialization
+        # (Time Interval, Start Point, Target) {Msg Len, Compound Sentiment, Inverse Compound Sentiment val}
         spat = generate_spatialization_values(time_interval, sent)
+        # Data that determines amount of Phase Modulation (Freq, Amp) {Number of emojis, Sentiment of Emojis}
+        pmod = phase_mod_values_generator(data['text'])
 
         # Add Rhythm Data to osc message
         for item in rhythm:
@@ -121,11 +126,14 @@ class DiscourseMusicGen:
         for item in delay_t_a_d:
             msg.add_arg(item, arg_type='i')
         # Add reverb data to osc message
-        for value in list(reverb_vals.sent_dict.values()):
+        for item in list(reverb_vals.sent_dict.values()):
             msg.add_arg(item, arg_type='f')
         # Add spatialization data to osc message
-        for value in spat:
-            msg.add_arg(float(item), arg_type='i')
+        for item in spat:
+            msg.add_arg(float(item), arg_type='f')
+        # Add phase mod data to osc message
+        for item in pmod:
+            msg.add_arg(float(item), arg_type='f')
 
 
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
