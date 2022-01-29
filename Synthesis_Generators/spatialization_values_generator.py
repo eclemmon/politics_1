@@ -1,7 +1,7 @@
-# Data that determines spatialization <== Motion == starting point -> inverse starting point, time
-# {time = length of message. 280 max. Starting point = Composite Sentiment, Target = Inverse Sentiment val}
+# Data that determines spatialization <== Motion == starting point -> inverse starting point, time_interval
+# {time_interval = length of message. 280 max. Starting point = Composite Sentiment, Target = Inverse Sentiment val}
 
-def generate_spatialization_values(time, sentiment_dict):
+def generate_spatialization_values(time_interval, sentiment_dict):
     start_point = sentiment_dict['compound']
     if start_point > 0:
         target_sent = 'neg'
@@ -10,6 +10,6 @@ def generate_spatialization_values(time, sentiment_dict):
     else:
         target_sent = 'pos'
     target = sentiment_dict[target_sent]
-    return [time, start_point, target]
+    return [time_interval, start_point, target]
 
 

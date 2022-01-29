@@ -15,6 +15,7 @@ from NLP_Tools.sentiment_dictionary import SentimentDict
 from NLP_Tools import part_of_speech_tools
 from Synthesis_Generators.delay_values_generator import delay_time_and_decay
 from NLP_Tools.sentiment_analysis_tools import get_average_sentiment
+from Synthesis_Generators.spatialization_values_generator import generate_spatialization_values
 
 
 class DiscourseMusicGen:
@@ -96,13 +97,12 @@ class DiscourseMusicGen:
         # TODO: Phase Modulation Data that determines Phase Mod [Freq, Amp] {Number of emojis = Freq} {Sentiment of Emojis = Amp}
         # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Sentiment Value Reverb Data that determines reverb - Distance of text from average sentiment value.
-        # TODO: Spatialization
         # TODO: Synthesis Instruments Chain
 
         # Builds a dictionary of counts of parts of speech
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Get sentiment value of text
-        sent = get_average_sentiment(data['text'])
+        sent = get_average_sentiment(self.sentiment_analyzer, data['text'])
         # Build Sentiment Dictionary
         sent_dict = SentimentDict(sent)
         # Find difference between SentimentDict.sent_dict and sent
@@ -111,6 +111,8 @@ class DiscourseMusicGen:
         rhythm = self.generate_euclidean_rhythm(pos_count_dict)
         # Data that determines delay time and decay (Feedback Delay Time, Delay Decay) {No of Nouns, No. Verbs}
         delay_t_a_d = delay_time_and_decay(pos_count_dict)
+        # Data that determines spatialization
+        spat = generate_spatialization_values(time_interval, sent)
 
         # Add Rhythm Data to osc message
         for item in rhythm:
@@ -121,6 +123,9 @@ class DiscourseMusicGen:
         # Add reverb data to osc message
         for value in list(reverb_vals.sent_dict.values()):
             msg.add_arg(item, arg_type='f')
+        # Add spatialization data to osc message
+        for value in spat:
+            msg.add_arg(float(item), arg_type='i')
 
 
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
@@ -132,6 +137,8 @@ class DiscourseMusicGen:
         # CLEAN UP AND UPDATE ANY VALUES
         # Update average sentiment value
         self.average_sent.add_value_average(sent_dict)
+
+        return True
 
     def send_gui_data(self, data):
         # Send Data to GUI
