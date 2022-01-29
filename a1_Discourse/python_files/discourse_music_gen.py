@@ -1,23 +1,31 @@
 import time
 
-from Harmony_Generators.harmonic_walk_functions import random_walk_only_new
-from NLP_Tools.message_comparison_toolset import TF_IDF
-from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
-from pythonosc import udp_client
-from pythonosc import osc_message_builder
-from Rhythm_Generators import euclidean_rhythm_generator as er_gen
-from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
-from Harmony_Generators.harmonic_walk_functions import num_chords_walked
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
+
+from NLP_Tools.message_comparison_toolset import TF_IDF
+from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
+from NLP_Tools.sentiment_dictionary import SentimentDict
+from NLP_Tools import part_of_speech_tools
+from NLP_Tools.sentiment_analysis_tools import get_average_sentiment
+
+from pythonosc import udp_client
+from pythonosc import osc_message_builder
+
+from Rhythm_Generators import euclidean_rhythm_generator as er_gen
+
+from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
+from Harmony_Generators.harmonic_walk_functions import num_chords_walked
+from Harmony_Generators.harmonic_walk_functions import random_walk_only_new
+from Harmony_Generators.octave_displacement_generator import get_octave_placement
+
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
 from Synthesis_Generators.spatialization_values_generator import generate_spatialization_values
 from Synthesis_Generators.delay_values_generator import delay_time_and_decay
 from Synthesis_Generators.phase_mod_values_generator import phase_mod_values_generator
-from NLP_Tools.sentiment_dictionary import SentimentDict
-from NLP_Tools import part_of_speech_tools
 
-from NLP_Tools.sentiment_analysis_tools import get_average_sentiment
+
+
 
 
 
@@ -118,6 +126,8 @@ class DiscourseMusicGen:
         spat = generate_spatialization_values(time_interval, sent)
         # Data that determines amount of Phase Modulation (Freq, Amp) {Number of emojis, Sentiment of Emojis}
         pmod = phase_mod_values_generator(data['text'])
+        # Data on octave displacement
+
 
         # Add Rhythm Data to osc message
         for item in rhythm:
