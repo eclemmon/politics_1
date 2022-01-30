@@ -1,11 +1,9 @@
 import logging
 import time
-import multiprocessing
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Classes.worker_thread import WorkerThread
-from Classes.chord import Chord
 
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
@@ -21,7 +19,6 @@ from Rhythm_Generators import euclidean_rhythm_generator as er_gen
 
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Harmony_Generators.harmonic_walk_functions import num_chords_walked
-from Harmony_Generators.harmonic_walk_functions import random_walk_only_new
 from Harmony_Generators.octave_displacement_generator import get_octave_placement
 from Harmony_Generators.neighbor_chord_generator import generate_neighbor_chord_weights
 from Harmony_Generators.neighbor_chord_generator import build_weight_and_chord_array
@@ -75,7 +72,7 @@ class DiscourseMusicGen:
         # Initialize music generators and timing protocols.
         self.web = web
         self.web.build_web()
-        self.t = None
+        self.worker_thread = None
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
         self.osc_func_address = '/sound_triggers'
@@ -147,7 +144,8 @@ class DiscourseMusicGen:
         # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
         neighbor_chords = self.web.get_neighbor_chords()
         current_chord_notes = [note.midi_note_number for note in self.web.output_chord.notes]
-        neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes] for neighbor_chord in neighbor_chords]
+        neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes]
+                          for neighbor_chord in neighbor_chords]
         weights = generate_neighbor_chord_weights(sent, len(neighbor_chords))
         w_c_array = build_weight_and_chord_array(current_chord_notes, neighbor_notes, weights)
         print(w_c_array)
@@ -201,6 +199,8 @@ class DiscourseMusicGen:
         # Send the message to SuperCollider
         self.gui_client.send(msg)
 
+        return True
+
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
         """
         This will determine the distance that the chord should walk based on the mean and
@@ -218,8 +218,6 @@ class DiscourseMusicGen:
         else:
             interval = self.harmonic_rhythm / num_walked
         print("interval: ", interval)
-        # random_walk_only_new(num_walked, harmonic_graph, self.sc_client, time_interval=interval,
-        #                      harmonic_rhythm=self.harmonic_rhythm)
         self.schedule_random_walk_only_new(num_walked, harmonic_graph, interval,
                                            self.harmonic_rhythm)
 
@@ -267,7 +265,8 @@ class DiscourseMusicGen:
         try:
             self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
         except ValueError:
-            self.logger_object.info("Seems like you haven't gotten enough texts in the previous formal section?")
+            self.logger_object.info("Seems like you haven'worker_thread gotten enough texts in the previous formal "
+                                    "section?")
             diff = CorpusMeanAndStd(0.0, 0.0)
             self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
             self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
@@ -285,31 +284,21 @@ class DiscourseMusicGen:
         if time_interval is None:
             time_interval = 5
 
-        if harmonic_rhythm is None:
-            harmonic_rhythm = 5
-
         chords = harmonic_web.random_walk_only_new(num_chords_walked)
         print(chords)
-        if self.t is None:
-            self.t = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
-            self.t.start()
+        if self.worker_thread is None:
+            self.worker_thread = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
+            self.worker_thread.start()
         else:
-            print('current chord outside of thread: ', self.web.output_chord)
-            print('stopping worker thread')
-            self.t.stop()
-            print('joining worker thread')
-            self.t.join()
-            print('starting new harmonic walk')
-            self.t = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
-            self.t.start()
+            self.worker_thread.stop()
+            self.worker_thread.join()
+            self.worker_thread = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
+            self.worker_thread.start()
 
     def set_output_chord(self, time_interval, chords):
         for chord in chords:
-            if self.t.stopped():
-                print('#' * 20)
+            if self.worker_thread.stopped():
                 break
+
             self.web.output_chord = chord
-            print('current chord in thread: ', self.web.output_chord)
             time.sleep(time_interval)
-
-
