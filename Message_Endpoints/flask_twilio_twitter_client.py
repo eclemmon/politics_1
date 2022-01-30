@@ -5,7 +5,7 @@ from Utility_Tools.politics_logger import logger_launcher
 # Initialize client, logger and music generator
 client = socketio.Client()
 logger = logger_launcher()
-music_gen = DiscourseMusicGen(logger)
+music_gen = DiscourseMusicGen(logger, )
 
 
 @client.on('client_connected')

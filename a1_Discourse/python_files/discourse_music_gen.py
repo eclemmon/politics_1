@@ -1,7 +1,11 @@
+import logging
 import time
+import multiprocessing
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
+from Classes.worker_thread import WorkerThread
+from Classes.chord import Chord
 
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
@@ -29,17 +33,27 @@ from Synthesis_Generators.phase_mod_values_generator import phase_mod_values_gen
 
 
 class DiscourseMusicGen:
-    def __init__(self, logger_object, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
-                 formal_section_length=30, harmonic_rhythm=20, message_comparison=TF_IDF(),
+    def __init__(self, logger_object: logging.Logger, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
+                 formal_section_length=30, harmonic_rhythm=30, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
                  profanity_word_list_path=None):
         """
-        :param logger_object: Logger from /Utility_Tools/politics_logger.py.
-        :param formal_section_length: The length each formal section lasts
-        :param harmonic_rhythm: The aggregate timeframe that all chords walk through. So if there are
-        :param message_comparison: Defaults to a TF_IDF message comparison object
-        :param web: Defaults to a NeoriemannianWeb
-        :param sentiment_analyzer: Defaults to NLTK's VADER Sentiment Analyzer
+        Initializes DiscourseMusicGen
+        :param logger_object: Logger, built from Utility_Tools.politics_logger.py
+        :param instrument_key_and_name_gen: InstrumentKeyAndNameGenerator object that uses stored memory values
+        to generate instrument keys and names agnostically.
+        :param formal_section_length: Integer in seconds
+        :param harmonic_rhythm: Integer in seconds
+        :param message_comparison: Message comparison object. Defaults to term-frequency inverse-document-frequency,
+        but will accept any model to compare two texts.
+        :param web: HarmonicWeb object. Defaults to Neo-riemannian web. A graph of chords that represent motion
+        between vertical pitch structures.
+        :param sentiment_analyzer: SentimentIntensityAnalyzer object. Defaults to my own SentimentIntensityAnalyzer
+        but can be any sentiment intensity model that returns {'neg': val, 'neu': val, 'pos': val, 'compound': val}
+        :param ncw_multiplier: Integer or float. Multiplier of the number of chords walked to accelerate or decelerate
+        the harmonic rhythm.
+        :param profanity_word_list_path: String. Path to a profanity word list to alter the list of censored words
+        output to the GUI.
         """
         self.logger_object = logger_object
 
@@ -61,9 +75,10 @@ class DiscourseMusicGen:
         # Initialize music generators and timing protocols.
         self.web = web
         self.web.build_web()
+        self.t = None
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
-        self.osc_func_address = '/pitch_triggers'
+        self.osc_func_address = '/sound_triggers'
         self.num_chords_walked_multiplier = ncw_multiplier
         self.inst_key_name_gen = instrument_key_and_name_gen
 
@@ -102,7 +117,6 @@ class DiscourseMusicGen:
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         # TODO: Add ALL materials
-        # TODO: Neighbor Chord Borrowing — Vector distance stuff
         # TODO: Time interval
 
         # Builds a dictionary of counts of parts of speech
@@ -132,7 +146,7 @@ class DiscourseMusicGen:
         inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
         # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
         neighbor_chords = self.web.get_neighbor_chords()
-        current_chord_notes = [note.midi_note_number for note in self.web.current_chord.notes]
+        current_chord_notes = [note.midi_note_number for note in self.web.output_chord.notes]
         neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes] for neighbor_chord in neighbor_chords]
         weights = generate_neighbor_chord_weights(sent, len(neighbor_chords))
         w_c_array = build_weight_and_chord_array(current_chord_notes, neighbor_notes, weights)
@@ -161,8 +175,6 @@ class DiscourseMusicGen:
         # Add neighbor chords to OSC Message
         for item in w_c_array:
             msg.add_arg(item, arg_type='f')
-
-
 
         msg.add_arg(time_interval, arg_type='f')  # Depreciate
         # Build the message
@@ -206,8 +218,10 @@ class DiscourseMusicGen:
         else:
             interval = self.harmonic_rhythm / num_walked
         print("interval: ", interval)
-        random_walk_only_new(num_walked, harmonic_graph, self.sc_client, time_interval=interval,
-                             harmonic_rhythm=self.harmonic_rhythm)
+        # random_walk_only_new(num_walked, harmonic_graph, self.sc_client, time_interval=interval,
+        #                      harmonic_rhythm=self.harmonic_rhythm)
+        self.schedule_random_walk_only_new(num_walked, harmonic_graph, interval,
+                                           self.harmonic_rhythm)
 
     def compare_text(self, data):
         """
@@ -265,4 +279,37 @@ class DiscourseMusicGen:
             self.send_first_chord_walk()
         else:
             self.send_chord_walk()
+
+    def schedule_random_walk_only_new(self, num_chords_walked, harmonic_web, time_interval=None,
+                                      harmonic_rhythm=None):
+        if time_interval is None:
+            time_interval = 5
+
+        if harmonic_rhythm is None:
+            harmonic_rhythm = 5
+
+        chords = harmonic_web.random_walk_only_new(num_chords_walked)
+        print(chords)
+        if self.t is None:
+            self.t = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
+            self.t.start()
+        else:
+            print('current chord outside of thread: ', self.web.output_chord)
+            print('stopping worker thread')
+            self.t.stop()
+            print('joining worker thread')
+            self.t.join()
+            print('starting new harmonic walk')
+            self.t = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
+            self.t.start()
+
+    def set_output_chord(self, time_interval, chords):
+        for chord in chords:
+            if self.t.stopped():
+                print('#' * 20)
+                break
+            self.web.output_chord = chord
+            print('current chord in thread: ', self.web.output_chord)
+            time.sleep(time_interval)
+
 

@@ -17,6 +17,7 @@ class HarmonicWeb:
 
         self.starting_chord = Chord(*[Note(note % 12) for note in midinote_numbers])
         self.current_chord = self.starting_chord
+        self.output_chord = self.current_chord
 
         # initializes the web map and constructs it with the helper function.
         self.web = {}
