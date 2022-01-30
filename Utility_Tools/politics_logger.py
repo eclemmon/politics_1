@@ -4,6 +4,7 @@ import os
 import time
 
 FILE_PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Log_Files/"
+# TODO: Automatically construct FILE_PATH via relative path
 
 
 def construct_filename(path):
