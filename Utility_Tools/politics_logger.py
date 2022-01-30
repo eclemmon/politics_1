@@ -1,4 +1,7 @@
-import os, datetime, time, logging
+import datetime
+import logging
+import os
+import time
 
 FILE_PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Log_Files/"
 
@@ -56,23 +59,6 @@ def setuplogger(path):
     return file_handler
 
 
-# def mainlogger(path):
-#     """
-#     This function acts as the mainloop for the logger from the logger module.
-#     The goal is for it
-#     :param path: The target file path to create logged files.
-#     """
-#     filename = construct_filename(path)
-#     current_time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-#     loggerfile = open(filename, 'w')
-#     logger_header = '#'*10 + ' STARTING NEW SESSION: ' + current_time + ' ' + '#'*10 + '\n\n'
-#     loggerfile.write(logger_header)
-#     loggerfile.close()
-#     FORMAT = 'OUTPUT %(asctime)s: %(message)s'
-#     logging.basicConfig(filename=filename, format=FORMAT, filemode='a', level=logging.DEBUG)
-#     #logging.info(" Starting session: %s" % current_time)
-#     logging.info("Logger initialized")
-
 def logger_launcher():
     """
     This function launches the logger so any/all data is printed to the log file during the course of a concert.
@@ -86,6 +72,7 @@ def logger_launcher():
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
     return logger
+
 
 if __name__ == '__main__':
     setuplogger(FILE_PATH)
