@@ -33,7 +33,7 @@ class DiscourseMusicGen:
     def __init__(self, logger_object: logging.Logger, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
                  formal_section_length=30, harmonic_rhythm=30, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
-                 profanity_word_list_path=None):
+                 profanity_word_list_path=None, max_time_interval=5):
         """
         Initializes DiscourseMusicGen
         :param logger_object: Logger, built from Utility_Tools.politics_logger.py
@@ -78,6 +78,7 @@ class DiscourseMusicGen:
         self.osc_func_address = '/sound_triggers'
         self.num_chords_walked_multiplier = ncw_multiplier
         self.inst_key_name_gen = instrument_key_and_name_gen
+        self.max_time_interval = max_time_interval
 
         # Initialize OSC clients.
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
@@ -109,13 +110,12 @@ class DiscourseMusicGen:
             self.send_music_data(data=data['text'])
             self.send_gui_data(data=data['text'])
 
-    def send_music_data(self, data, time_interval=5):
+    def send_music_data(self, data):
         # Send Data to Super Collider.
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
-        # TODO: Add ALL materials
-        # TODO: Time interval
-
+        # Builds the time interval data
+        time_interval = self.get_time_interval_data(data)
         # Builds a dictionary of counts of parts of speech
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Get sentiment value of text
@@ -142,14 +142,11 @@ class DiscourseMusicGen:
         inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
         inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
         # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
-        neighbor_chords = self.web.get_neighbor_chords()
-        current_chord_notes = [note.midi_note_number for note in self.web.output_chord.notes]
-        neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes]
-                          for neighbor_chord in neighbor_chords]
-        weights = generate_neighbor_chord_weights(sent, len(neighbor_chords))
-        w_c_array = build_weight_and_chord_array(current_chord_notes, neighbor_notes, weights)
+        w_c_array = self.get_chord_and_weights(sent)
         print(w_c_array)
 
+        # Add time interval data to osc message
+        msg.add_arg(time_interval, arg_type='f')
         # Add Rhythm Data to osc message
         for item in rhythm:
             msg.add_arg(item, arg_type='f')
@@ -174,7 +171,6 @@ class DiscourseMusicGen:
         for item in w_c_array:
             msg.add_arg(item, arg_type='f')
 
-        msg.add_arg(time_interval, arg_type='f')  # Depreciate
         # Build the message
         msg = msg.build()
         # Send the message to SuperCollider
@@ -302,3 +298,18 @@ class DiscourseMusicGen:
 
             self.web.output_chord = chord
             time.sleep(time_interval)
+
+    def get_time_interval_data(self, data):
+        text_length = len(data['text'])
+        if text_length > 280:
+            return self.max_time_interval
+        else:
+            return len(data['text']) / 280 * self.max_time_interval
+
+    def get_chord_and_weights(self, sent):
+        neighbor_chords = self.web.get_neighbor_chords()
+        current_chord_notes = [note.midi_note_number for note in self.web.output_chord.notes]
+        neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes]
+                          for neighbor_chord in neighbor_chords]
+        weights = generate_neighbor_chord_weights(sent, len(neighbor_chords))
+        return build_weight_and_chord_array(current_chord_notes, neighbor_notes, weights)

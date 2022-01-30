@@ -16,7 +16,5 @@ class TestDiscourseMusicGen(unittest.TestCase):
 
     def test_schedule_current_chord(self):
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
-        time.sleep(5)
         music_gen.send_music_data({'username': "gumbo", 'text': "I went to the circus today"})
-        music_gen.harmonic_walk(1, 100, 20, music_gen.web)
         print(music_gen.web.output_chord)

@@ -1,5 +1,6 @@
 import numpy
 
+
 def linear_to_logistic(lin_input, lin_min, lin_max, logistic_min=-1, logistic_max=1, k=1):
     """
     This function will transform a y input within a chosen linear functions y-min and -max into the the output
