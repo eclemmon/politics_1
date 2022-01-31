@@ -33,7 +33,7 @@ class DiscourseMusicGen:
     def __init__(self, logger_object: logging.Logger, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
                  formal_section_length=30, harmonic_rhythm=30, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
-                 profanity_word_list_path=None, max_time_interval=5):
+                 profanity_word_list_path=None, max_time_interval=10):
         """
         Initializes DiscourseMusicGen
         :param logger_object: Logger, built from Utility_Tools.politics_logger.py
@@ -145,30 +145,31 @@ class DiscourseMusicGen:
         w_c_array = self.get_chord_and_weights(sent)
         print(w_c_array)
 
-        # Add time interval data to osc message
-        msg.add_arg(time_interval, arg_type='f')
-        # Add Rhythm Data to osc message
-        for item in rhythm:
-            msg.add_arg(item, arg_type='f')
-        # Add delay data to osc message
+        # Add delay data to osc message: 2 vals
         for item in delay_t_a_d:
             msg.add_arg(item, arg_type='i')
-        # Add reverb data to osc message
+        # Add reverb data to osc message: 4 vals
         for item in list(reverb_vals.sent_dict.values()):
             msg.add_arg(item, arg_type='f')
-        # Add spatialization data to osc message
+        # Add spatialization data to osc message: 3 vals
         for item in spat:
             msg.add_arg(float(item), arg_type='f')
-        # Add phase mod data to osc message
+        # Add phase mod data to osc message: 2 vals
         for item in pmod:
             msg.add_arg(float(item), arg_type='f')
-        # Add octave displacement to osc message
+        # Add octave displacement to osc message: 1 val
         msg.add_arg(od, arg_type='i')
-        # Add instrument names to osc message
+        # Add instrument names to osc message: var num of vals
         for inst in inst_names:
             msg.add_arg(inst, arg_type='s')
-        # Add neighbor chords to OSC Message
+        # Add neighbor chords to OSC Message: 3 sets of var vals
         for item in w_c_array:
+            msg.add_arg(item, arg_type='f')
+        # Add time interval data to osc message
+        msg.add_arg(time_interval, arg_type='f')
+        # Add Rhythm Data to osc message: var num of vals
+        msg.add_arg(len(rhythm), arg_type='i')
+        for item in rhythm:
             msg.add_arg(item, arg_type='f')
 
         # Build the message
@@ -304,7 +305,7 @@ class DiscourseMusicGen:
         if text_length > 280:
             return self.max_time_interval
         else:
-            return len(data['text']) / 280 * self.max_time_interval
+            return text_length / 280 * self.max_time_interval
 
     def get_chord_and_weights(self, sent):
         neighbor_chords = self.web.get_neighbor_chords()

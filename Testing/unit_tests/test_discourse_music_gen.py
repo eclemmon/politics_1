@@ -16,5 +16,9 @@ class TestDiscourseMusicGen(unittest.TestCase):
 
     def test_schedule_current_chord(self):
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
-        music_gen.send_music_data({'username': "gumbo", 'text': "I went to the circus today"})
+        text = """
+        My name is eric lemmon and I am ready to rock and roll. But I am also putting out some tweets, you know???????
+        BUT IF I MAKE A LONG TWEET< WHAT HAPPENS THEN?
+        """
+        music_gen.send_music_data({'username': "gumbo", 'text': text})
         print(music_gen.web.output_chord)
