@@ -125,48 +125,55 @@ class DiscourseMusicGen:
         avg_emoji_sent = emoji_counter.get_average_emoji_sent_from_msg(emojis)
         # Build Sentiment Dictionary
         sent_dict = SentimentDict(sent)
-        # Data that determines reverb values (predelay, reverbtime, lpf, mix) {neg, neu, pos, compound}
-        reverb_vals = self.average_sent.abs_difference(sent_dict)
-        # Data that determines rhythmic materials (impulses, offsets) {No. Tokens, No. discrete POS}
-        rhythm = self.generate_euclidean_rhythm(pos_count_dict)
+
         # Data that determines delay time and decay (Feedback Delay Time, Delay Decay) {No of Nouns, No. Verbs}
         delay_t_a_d = delay_time_and_decay(pos_count_dict)
-        # Data that determines spatialization
-        # (Time Interval, Start Point, Target) {Msg Len, Compound Sentiment, Inverse Compound Sentiment val}
-        spat = generate_spatialization_values(time_interval, sent)
-        # Data that determines amount of Phase Modulation (Freq, Amp) {Number of emojis, Sentiment of Emojis}
-        pmod = phase_mod_values_generator(avg_emoji_sent, emojis)
-        # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
-        od = get_octave_placement(data['text'])
-        # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
-        inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
-        inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
-        # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
-        w_c_array = self.get_chord_and_weights(sent)
-        print(w_c_array)
-
         # Add delay data to osc message: 2 vals
         for item in delay_t_a_d:
             msg.add_arg(item, arg_type='i')
+
+        # Data that determines reverb values (predelay, reverbtime, lpf, mix) {neg, neu, pos, compound}
+        reverb_vals = self.average_sent.abs_difference(sent_dict)
         # Add reverb data to osc message: 4 vals
         for item in list(reverb_vals.sent_dict.values()):
             msg.add_arg(item, arg_type='f')
+
+        # Data that determines spatialization
+        # (Time Interval, Start Point, Target) {Msg Len, Compound Sentiment, Inverse Compound Sentiment val}
+        spat = generate_spatialization_values(time_interval, sent)
         # Add spatialization data to osc message: 3 vals
         for item in spat:
             msg.add_arg(float(item), arg_type='f')
+
+        # Data that determines amount of Phase Modulation (Freq, Amp) {Number of emojis, Sentiment of Emojis}
+        pmod = phase_mod_values_generator(avg_emoji_sent, emojis)
         # Add phase mod data to osc message: 2 vals
         for item in pmod:
             msg.add_arg(float(item), arg_type='f')
+
+        # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
+        od = get_octave_placement(data['text'])
         # Add octave displacement to osc message: 1 val
         msg.add_arg(od, arg_type='i')
+
+        # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
+        inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
+        inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
         # Add instrument names to osc message: var num of vals
         for inst in inst_names:
             msg.add_arg(inst, arg_type='s')
+
+        # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
+        w_c_array = self.get_chord_and_weights(sent)
         # Add neighbor chords to OSC Message: 3 sets of var vals
         for item in w_c_array:
             msg.add_arg(item, arg_type='f')
+
         # Add time interval data to osc message
         msg.add_arg(time_interval, arg_type='f')
+
+        # Data that determines rhythmic materials (impulses, offsets) {No. Tokens, No. discrete POS}
+        rhythm = self.generate_euclidean_rhythm(pos_count_dict)
         # Add Rhythm Data to osc message: var num of vals
         msg.add_arg(len(rhythm), arg_type='i')
         for item in rhythm:
