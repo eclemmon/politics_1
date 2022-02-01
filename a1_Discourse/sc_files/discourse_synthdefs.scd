@@ -1,82 +1,157 @@
-
-
 (
-// NEW SYNTH DEFS FOR PSEQ
-SynthDef(\Q, {
-	arg midi=48, speed=3, out=0, busout=99, gate=0;
-	var env = Env.perc;
-	var envgen = EnvGen.kr(env, gate);
-	var sin = SinOsc.ar((midi%12+60).midicps, 0.5);
-	var sig = sin * envgen;
-	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.5);
-	Out.ar([out, busout], pan);
-}).add;
-
-
-SynthDef(\L, {
-	arg midi=48, speed=0.05, out=0, gate=0;
-	var env = Env.new(
-		levels: [0,1,0],
-		times: [3,4]);
-	var envgen = EnvGen.kr(env, gate);
-	var saw = Saw.ar((midi%12+24).midicps, 1);
-	var sin = SinOsc.ar((midi%12+24).midicps, 1);
-	var sig = sin * saw * envgen;
-	var filter = LPF.ar(sig, XLine.kr(50, 300, 7));
-	var pan = Pan2.ar(filter, pos: SinOsc.kr(0.1), level: 1);
-	Out.ar(out, pan);
-}).add;
-
-SynthDef(\P, {
-	arg midi=48, speed=3, out=0, gate=0;
-	var env = Env.perc(releaseTime: 0.01);
-	var envgen = EnvGen.kr(env, gate);
-	var sin = SinOsc.ar((midi%12+96).midicps, 0.5);
-	var sig = sin * envgen;
-	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.005);
-	Out.ar(out, pan);
-}).add;
-
-SynthDef(\R, {
-	arg midi=48, speed=3, out=0, gate=0;
-	var env = Env.perc(0.2);
-	var envgen = EnvGen.kr(env, gate);
-	var sin = SinOsc.ar((midi%12+72).midicps, 0.5);
-	var sig = sin * envgen;
-	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.1);
-	Out.ar(out, pan);
-}).add;
-
-SynthDef(\R2, {
-	arg midi=48, speed=3, out=0, gate=0;
-	var env = Env.perc(0.2);
-	var envgen = EnvGen.kr(env, gate);
-	var sin = SinOsc.ar((midi%12+72).midicps, 0.5);
-	var noise = WhiteNoise.ar(0.1);
-	var sig = sin * envgen * noise;
-	var pan = Pan2.ar(sig, pos: SinOsc.kr(2), level: 0.1);
-	Out.ar(out, pan);
-}).add;
-
-SynthDef(\delay1, {
-	arg delaytime=0.6, out=0, in=99;
-	var input = In.ar(in, 2);
-	var effect = DelayN.ar(input, delaytime, delaytime, 0.2);
-	Out.ar(out, effect);
-}).add;
-
-SynthDef(\delay2, {
-	arg delaytime=0.8, out=0, in=99;
-	var input = In.ar(in, 2);
-	var effect = DelayN.ar(input, delaytime, delaytime, 0.05);
-	Out.ar(out, effect);
-}).add;
-
+// H/t Eli Fieldsteel
 SynthDef(\reverb, {
-	arg out=0, mix=0.25, room=0.15, damp=0.5, amp=1.0, in=0;
-	var input, signal;
+	arg in, predelay=1, revtime=10, lpf=4500, mix=0.5, amp=1, out=0;
+	var dry, wet, temp, sig;
+	dry = In.ar(in, 2);
+	temp = In.ar(in, 2);
+	wet = 0;
+	temp = DelayN.ar(temp, 0.2, predelay);
+	16.do({
+		temp = AllpassN.ar(temp, 0.05, {Rand(0.001, 0.05)}!2, revtime);
+		temp = LPF.ar(temp, lpf);
+		wet = wet + temp;
+	});
+	sig = XFade2.ar(dry, wet, mix * 2 - 1, amp);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\linear_spat_motion, {
+	arg in, time_interval, start_point, target, amp=1, out=0;
+	var input, lin_motion, sig;
 	input = In.ar(in, 2);
-	signal = FreeVerb2.ar(input[0], input[1], mix, room, damp, amp);
-	Out.ar(out, signal);
+	lin_motion = Pan2.ar(input, Line.kr(start_point, target, time_interval));
+	sig = lin_motion * amp;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\delay, {
+	arg in, out=0, time_interval=0.2, delaytime=0.2, decaytime=1.0, amp=1;
+	var input, delay, sig;
+	input = In.ar(in, 2);
+	delay = CombN.ar(input, time_interval, delaytime, decaytime);
+	sig = delay * amp;
+	Out.ar(out, sig.dup);
+}).add;
+
+SynthDef(\sin, {
+	// octave is set before hand
+	arg freq=440, out=0, mFreq, mAmp, dur, gate=0, amp=1;
+	var env, sig;
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	sig = SinOsc.ar(freq, SinOsc.kr(mFreq, mul: mAmp)) * amp * env;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\saw, {
+	arg freq=440, out=0, mFreq, mAmp, dur, gate=0, amp=1;
+	var env, sig, mod;
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	mod = LFTri.kr(1).range(0, 1);
+	sig = VarSaw.ar(LFPulse.kr(mFreq, 0, 0.2, freq, mAmp * 2), 0, mod) * env;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\noise, {
+	arg freq=440, out=0, gate, amp=1, dur, mFreq, mAmp;
+	var env, sig;
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	sig = Dust2.ar(freq * LFNoise1.kr(mFreq, mAmp), LFNoise1.kr(mFreq)) * env;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\impulse, {
+	arg freq=440, out=0, mFreq, mAmp, dur, gate=0, amp=1;
+	var env, sig;
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	sig = Impulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\square, {
+	arg freq=440, out=0, mFreq, mAmp, dur, gate=0, amp=1;
+	var env, sig;
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	sig = Pulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
+	Out.ar(out, sig);
+}).add;
+
+Synth(\square, [\freq, 36.midicps, \mFreq, 0.2, \mAmp, 0.9, \dur, 5, \gate, 1]);
+
+SynthDef(\wavetable, {
+	arg out=0, buf=0, numBufs=2, freq=300, amp=1, gate=0, dur=1;
+	var sig, bufpos, detuneSig, panning, leakDC, env;
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	detuneSig = LFNoise1.kr(0.2!8).bipolar(0.2).midiratio;
+	bufpos = buf + LFNoise1.kr(0.5).range(0, numBufs-1);
+	sig = VOsc.ar(bufpos.poll, freq * detuneSig);
+	panning = Splay.ar(sig);
+	leakDC = LeakDC.ar(panning) * amp * env;
+	Out.ar(out, leakDC);
+}).add;
+
+~bufs = ~makeWtBuffers.value()
+Synth(\wavetable, [\freq, 50.midicps, \buf, ~bufs[0].bufnum, \numbufs, ~bufs.size, \gate, 1, \dur, 9]);
+
+SynthDef.new(\pointer, {
+	// A pointer, written to a bus that 'trails' the realtime "head" of an audio bus.
+	arg out=0, buf=0;
+	var sig;
+	sig = Phasor.ar(0, BufRateScale.kr(buf), 0, BufFrames.kr(buf));
+	Out.ar(out, sig);
+}).add;
+
+SynthDef.new(\recordBuffer, {
+	// Records a signal into a buffer from the pointer's position.
+	arg ptrIn=0, recIn=0, buf=0;
+	var ptr, sig;
+	ptr = In.ar(ptrIn, 1);
+	sig = In.ar(recIn, 1);
+	BufWr.ar(sig, buf, ptr);
+}).add;
+
+SynthDef.new(\splitter, {
+	// A helper audio bus splitter to send one audio inout to two audio buses out.
+	arg in=10, out1=89, out2=99;
+	var input;
+	input = In.ar(in, 2);
+	Out.ar([out1, out2], input);
+}).add;
+
+SynthDef.new(\granulator, {
+	// Granulator.
+	arg amp=0.5, out=0, buf=0, attack=1, release=1, gate=1, sync=1, density=40, baseDur=0.05, durRand=1, rate=1, rateRand=1, pan=0, panRand=0, grainEnv=(-1), ptrBus=0, ptrSampleDelay=20000, ptrRandSamples=5000, minPtrDelay=1000;
+	var sig, env, densCtrl, durCtrl, rateCtrl, panCtrl, ptr, ptrRand, totalDelay, maxGrainDur, grain;
+
+	env = EnvGen.kr(Env.asr(attack, 1, release), gate, doneAction:2);
+	densCtrl = Select.ar(sync, [Dust.ar(density), Impulse.ar(density)]);
+	durCtrl = baseDur * LFNoise1.ar(100).exprange(1/durRand, durRand);
+	rateCtrl = rate * LFNoise1.ar(100).exprange(1/rateRand, rateRand);
+	panCtrl = pan + LFNoise1.kr(100).bipolar(panRand);
+
+	ptrRand = LFNoise1.ar(100).bipolar(ptrRandSamples);
+	totalDelay = max(ptrSampleDelay - ptrRand, minPtrDelay);
+
+	ptr = In.ar(ptrBus, 1);
+	ptr = ptr - totalDelay;
+	ptr = ptr / BufFrames.kr(buf);
+
+	maxGrainDur = (totalDelay / rateCtrl) /SampleRate.ir;
+	durCtrl = min(durCtrl, maxGrainDur);
+
+	grain = GrainBuf.ar(
+		2,
+		densCtrl,
+		durCtrl,
+		buf,
+		rateCtrl,
+		ptr,
+		2,
+		panCtrl,
+		grainEnv
+	);
+
+	sig = grain * env * amp;
+	Out.ar(out, sig);
 }).add;
 )
