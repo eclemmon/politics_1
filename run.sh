@@ -11,8 +11,10 @@ echo "##################"
 source "$SCRIPT_DIR/venv/bin/activate"
 
 command() {
-  sleep 5
-#  python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_client.py"
+  # sleep 10s
+  # source "$SCRIPT_DIR/venv/bin/activate"
+  # python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_client.py"
+  echo 'why?'
 }
 
 redis-server & python3.8 "$SCRIPT_DIR/flask_twilio_twitter_server.py" & command;
