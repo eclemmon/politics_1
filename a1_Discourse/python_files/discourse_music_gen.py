@@ -216,12 +216,12 @@ class DiscourseMusicGen:
         :return:
         """
         num_walked = num_chords_walked(lev_mean, lev_standard_of_deviation) * multiplier
-        print("num_chords_walked: ", num_walked)
+        # print("num_chords_walked: ", num_walked)
         if num_walked == 0:
             interval = self.harmonic_rhythm
         else:
             interval = self.harmonic_rhythm / num_walked
-        print("interval: ", interval)
+        # print("interval: ", interval)
         self.schedule_random_walk_only_new(num_walked, harmonic_graph, interval,
                                            self.harmonic_rhythm)
 
@@ -289,7 +289,7 @@ class DiscourseMusicGen:
             time_interval = 5
 
         chords = harmonic_web.random_walk_only_new(num_chords_walked)
-        print(chords)
+        # print(chords)
         if self.worker_thread is None:
             self.worker_thread = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
             self.worker_thread.start()
