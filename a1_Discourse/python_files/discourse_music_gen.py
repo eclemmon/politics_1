@@ -156,10 +156,14 @@ class DiscourseMusicGen:
         # Add octave displacement to osc message: 1 val
         msg.add_arg(od, arg_type='i')
 
+        # Add time interval data to osc message
+        msg.add_arg(time_interval, arg_type='f')
+
         # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
         inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
         inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
         # Add instrument names to osc message: var num of vals
+        msg.add_arg(len(inst_names), arg_type='i')
         for inst in inst_names:
             msg.add_arg(inst, arg_type='s')
 
@@ -169,13 +173,9 @@ class DiscourseMusicGen:
         for item in w_c_array:
             msg.add_arg(item, arg_type='f')
 
-        # Add time interval data to osc message
-        msg.add_arg(time_interval, arg_type='f')
-
         # Data that determines rhythmic materials (impulses, offsets) {No. Tokens, No. discrete POS}
         rhythm = self.generate_euclidean_rhythm(pos_count_dict)
         # Add Rhythm Data to osc message: var num of vals
-        msg.add_arg(len(rhythm), arg_type='i')
         for item in rhythm:
             msg.add_arg(item, arg_type='f')
 
