@@ -22,6 +22,7 @@
 	memory.put('sin', ~build_sin_pattern);
 	memory.put('impulse', ~build_impulse_pattern);
 	memory.put('saw', ~build_saw_pattern);
+	memory.put('noise', ~build_noise_pattern);
 	memory.put('wavetable1', ~makeWtBuffers.value());
 	memory.put('wavetable2', ~makeWtBuffers.value());
 	memory.put('wavetable3', ~makeWtBuffers.value());

@@ -2,7 +2,7 @@
 // H/t Eli Fieldsteel
 SynthDef(\reverb, {
 	arg in, predelay=1, revtime=10, lpf=4500, mix=0.5, amp=1, out=0, dur=1, gate=1, doneAction=2, time_interval=4, start_point=(-1), target=1;
-	var dry, wet, temp, sig, env, pan;
+	var dry, wet, temp, sig, env, pan, leakDC;
 	dry = In.ar(in, 2);
 	temp = In.ar(in, 2);
 	wet = 0;
@@ -14,7 +14,7 @@ SynthDef(\reverb, {
 	});
 	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur+1, 0.1], curve: (-2)), gate, doneAction: doneAction);
 	sig = XFade2.ar(dry, wet, mix * 2 - 1, amp) * env;
-	pan = Pan2.ar(sig[0], Line.kr(start_point, target, time_interval));
+	pan = Pan2.ar(sig.dup, Line.kr(start_point, target, time_interval));
 	Out.ar(out, pan);
 }).add;
 
@@ -40,41 +40,40 @@ SynthDef(\delay, {
 }).add;
 
 SynthDef(\sin, {
-	// octave is set before hand
-	arg freq=440, out=0, mFreq, mAmp, dur, gate=1, amp=1;
+	arg freq=440, out=0, mFreq, mAmp, dur, gate=1, amp=0.5;
 	var env, sig, detuneSig;
-	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
+	env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = SinOsc.ar(freq, SinOsc.kr(mFreq, mul: mAmp)) * amp * env;
 	Out.ar(out, sig);
 }).add;
 
 SynthDef(\saw, {
-	arg freq=440, out=0, mFreq, mAmp, dur=1, gate=1, amp=1;
+	arg freq=440, out=0, mFreq, mAmp, dur=1, gate=1, amp=0.5;
 	var env, sig, mod, detuneSig;
-	env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
+	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	mod = LFTri.kr(LFNoise1.kr(2)).range(0, 1);
-	sig = VarSaw.ar(LFPulse.kr(mFreq, 0, 0.2, freq, mAmp * 2), 0, mod) * env * amp;
+	sig = VarSaw.ar(LFSaw.kr(mFreq, 0, 0.2, freq, mAmp * 2), 0, mod) * env * amp;
 	Out.ar(out, sig);
 }).add;
 
 SynthDef(\noise, {
-	arg freq=440, out=0, gate=1, amp=1, dur=1, mFreq, mAmp;
+	arg freq=440, out=0, gate=1, amp=0.5, dur=1, mFreq, mAmp;
 	var env, sig;
-	env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
+	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	sig = Dust2.ar(freq * LFNoise1.kr(mFreq, mAmp), LFNoise1.kr(mFreq)) * env;
 	Out.ar(out, sig);
 }).add;
 
 SynthDef(\impulse, {
-	arg freq=440, out=0, gate=1, amp=1, dur=1, mFreq, mAmp;
+	arg freq=440, out=0, gate=1, amp=0.5, dur=1, mFreq, mAmp;
 	var env, sig;
-	env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
+	env = EnvGen.kr(Env([0, 1, 0.4, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = Impulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
 	Out.ar(out, sig);
 }).add;
 
 SynthDef(\square, {
-	arg freq=440, out=0, mFreq, mAmp, dur=1, gate=1, amp=1;
+	arg freq=440, out=0, mFreq, mAmp, dur=1, gate=1, amp=0.5;
 	var env, sig;
 		env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = Pulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
