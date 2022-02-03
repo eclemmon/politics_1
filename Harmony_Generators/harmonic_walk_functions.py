@@ -1,7 +1,7 @@
 import itertools
 
 from pythonosc import osc_message_builder
-from Utility_Tools.logistic_function import linear_to_logistic as l2l
+from Utility_Tools.mapping_functions import linear_to_logistic as l2l
 
 import Harmonic_Graph_Constructors.harmonic_web
 

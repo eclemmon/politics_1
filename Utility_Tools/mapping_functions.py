@@ -22,3 +22,7 @@ def linear_to_logistic(lin_input, lin_min, lin_max, logistic_min=-1, logistic_ma
     midpoint = (logistic_max+logistic_min) / 2
     result = (logistic_max-logistic_min) / (1 + numpy.exp(-k * (x - midpoint))) + logistic_min
     return result
+
+
+def linear_to_linear(x, r1min, r1max, r2min, r2max):
+    return (((x - r1min) * (r2max - r2min)) / (r1max - r1min)) + r2min
