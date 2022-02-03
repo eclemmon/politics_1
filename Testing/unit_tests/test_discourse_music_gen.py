@@ -21,4 +21,4 @@ class TestDiscourseMusicGen(unittest.TestCase):
         BUT IF I MAKE A LONG TWEET< WHAT HAPPENS THEN?
         """
         music_gen.send_music_data({'username': "gumbo", 'text': text})
-        print(music_gen.web.output_chord)
+        # print(music_gen.web.output_chord)
