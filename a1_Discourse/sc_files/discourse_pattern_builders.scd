@@ -127,15 +127,14 @@
 };
 
 ~build_wavetable_pattern = {
-	arg array, group, outbus;
-	var pattern, modvals, octave, total_dur, chords_data, rhythm_data, bufs;
+	arg array, group, outbus, bufs;
+	var pattern, modvals, octave, total_dur, chords_data, rhythm_data;
 	// Get input data
 	modvals = ~get_mod_values.value(array);
 	octave = ~get_octave_value.value(array);
 	total_dur = ~get_total_dur_value.value(array);
 	chords_data = ~get_chords_data.value(array);
 	rhythm_data = ~get_rhythm_data.value(array);
-	bufs = ~makeWtBuffers.value();
 
 	pattern = Pbind(
 		\instrument, \wavetable,
@@ -151,7 +150,7 @@
 		\numBufs, bufs.size,
 		\buf, bufs[0].bufnum
 	);
-	[pattern, bufs];
+	pattern;
 };
 
 )

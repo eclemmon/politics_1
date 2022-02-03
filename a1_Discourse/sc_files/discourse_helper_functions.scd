@@ -45,16 +45,10 @@
 	buffer;
 };
 
-~buildSignalPath.value([ 'sound_triggers', 15, 8, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 0.1203999966383, 0.0, 0.0, 0.0, 4, 10, 4, 'square', 'sin', 'impulse', 'sin', 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5 ]);
-
-~gm = Dictionary.new();
-~gm.put('square', ~build_square_pattern);
-~gm.put('sin', ~build_sin_pattern);
-~gm.put('impulse', ~build_impulse_pattern);
 
 ~buildSignalPath = {
 	arg vals;
-	var reverb, spat, delay, synths, group, rbus, dbus, pattern, events, total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments;
+	var reverb, spat, delay, synths, group, pattern, total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, splitter, sbus, rbus, dbus;
 	total_dur = ~get_total_dur_value.value(vals);
 	dvals = ~get_delay_values.value(vals);
 	rvals = ~get_reverb_values.value(vals);
@@ -76,32 +70,58 @@
 	start_point = spatvals[1];
 	target = spatvals[2];
 
+	~print_vals.value([total_dur, dvals, rvals, spatvals, instruments, time_interval, total_dur]).postln;
+
 	// Automatically allocate buses
+
 	rbus = Bus.audio(s, numChannels: 2);
 	dbus = Bus.audio(s, numChannels: 2);
+	sbus = Bus.audio(s, numChannels: 2);
 
 	// Synths
 	group = Group.new;
-	reverb = Synth(\reverb, [\in, rbus, \predelay, predelay, \revtime, reverbtime, \lpf, lpf, \mix, mix, \amp, 1, \out, 0, \dur, total_dur+reverbtime, \gate, 1, \time_interval, time_interval, \start_point, start_point, \target, target, \doneAction, 14], group);
 
-	delay = Synth(\delay, [\in, dbus, \out, rbus, \time_interval, 0.2, \delaytime, dt, \decaytime, dd, \amp, 1, \dur, 10, \gate, 1], group);
-	instruments.do({
+	reverb = Synth(\reverb, [\in, rbus, \predelay, predelay, \revtime, reverbtime, \lpf, lpf, \mix, mix, \amp, 0.9, \out, 0, \dur, total_dur+reverbtime, \gate, 1, \time_interval, time_interval, \start_point, start_point, \target, target, \doneAction, 14], group);
+
+	delay = Synth(\delay,
+		[
+			\in, dbus,
+			\out, rbus,
+			\time_interval, total_dur,
+			\delaytime, dt,
+			\decaytime, dd,
+			\amp, 1,
+			\dur, total_dur,
+			\gate, 1
+	], group);
+
+	splitter = Synth(\splitter, [\in, sbus, \out1, dbus, \out2, rbus, \dur, total_dur, \gate, 1], group);
+
+	patterns = instruments.collect({
 		arg item, i;
-		var p;
-		if(item == 'wavetable', {
-			p = ~build_wavetable_pattern.value(vals, group, dbus);
-			~build_wave_table_fork.value(total_dur, reverbtime, p);
+		var p, bufs;
+		if(item.asString.contains("wavetable"), {
+			item.postln;
+			bufs = ~gm.at(item).value(item);
+			p = ~build_wavetable_pattern.value(vals, group, sbus, bufs);
+			// ~build_inst_fork.value(p);
 		}, {
-			p = ~gm.at(item).value(vals, group, dbus);
-			~build_inst_fork.value(p);
+			p = ~gm.at(item).value(vals, group, sbus);
+			// ~build_inst_fork.value(p);
 		});
-
-		// Free buses after a time.
 	});
+
+	// Parallel play patterns
+	Ppar(patterns).play;
+
+	// Free buses after a time.
 	{
+		// [rbus.index, dbus.index, sbus.index].postln;
 		(reverbtime+total_dur+0.1).wait;
 		rbus.free;
 		dbus.free;
+		sbus.free;
+		// [rbus.index, dbus.index, sbus.index].postln;
 	}.fork;
 };
 
@@ -193,23 +213,21 @@
 	);
 };
 
-~build_wave_table_fork = {
-	arg dbus, rbus, total_dur, reverbtime, wavetable_buf_pattern;
-	{
-		(reverbtime+total_dur+0.1).wait;
-		// free wave table buffers
-		wavetable_buf_pattern[1].free;
-	}.fork;
-
-	// play wave table patterns
-	wavetable_buf_pattern[0].play;
+~print_vals = {
+	arg vals;
+	var string;
+	string = "
+#################################
+Total Duration: %
+Delay Values: %
+Reverb Values: %
+Spatialization Values: %
+Instruments: %
+Time Interval of Events: %
+Duration: %
+#################################
+".format(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+	string;
 };
-
-~build_inst_fork = {
-	arg inst_pattern;
-	inst_pattern.play;
-};
-
-
 
 )
