@@ -35,9 +35,9 @@
 	// Synths
 	group = Group.new;
 
-	reverb = Synth(\reverb, [\in, rbus, \predelay, predelay, \revtime, reverbtime, \lpf, lpf, \mix, mix, \amp, 0.1, \out, 0, \dur, total_dur+reverbtime-5, \gate, 1, \time_interval, time_interval, \start_point, start_point, \target, target, \doneAction, 14], group);
+	// reverb = Synth(\reverb, [\in, rbus, \predelay, predelay, \revtime, reverbtime, \lpf, lpf, \mix, mix, \amp, 0.1, \out, 0, \dur, total_dur+reverbtime-5, \gate, 1, \time_interval, time_interval, \start_point, start_point, \target, target, \doneAction, 14], group);
 
-	delay = Synth(\delay,
+/*	delay = Synth(\delay,
 		[
 			\in, dbus,
 			\out, rbus,
@@ -47,9 +47,9 @@
 			\amp, 0.1,
 			\dur, total_dur,
 			\gate, 1
-	], group);
+	], group);*/
 
-	splitter = Synth(\splitter, [\in, sbus, \out1, dbus, \out2, rbus, \dur, total_dur, \gate, 1], group);
+	splitter = Synth(\splitter, [\in, sbus, \out1, 0, \out2, 0, \dur, total_dur, \gate, 1], group);
 
 	patterns = instruments.collect({
 		arg item, i;

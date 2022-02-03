@@ -13,7 +13,7 @@
 
 	pattern = Pbind(
 		\instrument, \saw,
-		\sustain, Pseq(sus_vals, 1), //(total_dur / array.size),
+		\sustain, Pseq(sus_vals, 1),
 		\dur, ~build_dur_Pseq.value(rhythm_data, total_dur),
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),

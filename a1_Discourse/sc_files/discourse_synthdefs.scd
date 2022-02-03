@@ -7,7 +7,7 @@ SynthDef(\reverb, {
 	temp = In.ar(in, 2);
 	wet = 0;
 	temp = DelayN.ar(temp, revtime, predelay);
-	16.do({
+	4.do({
 		temp = AllpassN.ar(temp, 0.05, {Rand(0.001, 0.05)}!2, revtime);
 		temp = LPF.ar(temp, lpf);
 		wet = wet + temp;
@@ -33,7 +33,7 @@ SynthDef(\delay, {
 	var input, delay, sig, env, leakDC;
 	input = In.ar(in, 2);
 	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
-	delay = CombL.ar(input, max_delay, delaytime, decaytime);
+	delay = CombN.ar(input, max_delay, delaytime, decaytime);
 	sig = delay * amp * env;
 	leakDC = LeakDC.ar(sig);
 	Out.ar(out, leakDC.dup);
