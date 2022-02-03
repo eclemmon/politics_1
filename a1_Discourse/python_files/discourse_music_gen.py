@@ -103,19 +103,19 @@ class DiscourseMusicGen:
             # If formal section length elapsed, chord walk
             self.if_first_chord_walk()
             # Send Music Data
-            self.send_music_data(data=data['text'])
+            self.send_music_data(data=data)
             # Send GUI Data
-            self.send_gui_data(data=data['text'])
+            self.send_gui_data(data=data)
         else:
-            self.send_music_data(data=data['text'])
-            self.send_gui_data(data=data['text'])
+            self.send_music_data(data=data)
+            self.send_gui_data(data=data)
 
     def send_music_data(self, data):
         # Send Data to Super Collider.
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
         # Builds the time interval data
-        time_interval = self.get_time_interval_data(data)
+        time_interval = self.get_time_interval_data(data['text'])
         # Builds a dictionary of counts of parts of speech
         pos_count_dict = part_of_speech_tools.build_pos_count_dict(data['text'])
         # Get sentiment value of text
@@ -308,7 +308,7 @@ class DiscourseMusicGen:
             time.sleep(time_interval)
 
     def get_time_interval_data(self, data):
-        text_length = len(data['text'])
+        text_length = len(data)
         if text_length > 280:
             return self.max_time_interval
         else:
