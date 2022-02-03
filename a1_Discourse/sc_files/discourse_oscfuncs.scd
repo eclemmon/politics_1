@@ -3,7 +3,7 @@ OSCFunc({ |args|
 	"######################################".postln;
 	"OSCFUNC received the following values:".postln;
 	args.postcs;
-	~buildSignalPath.value(args);
+	~buildSignalPath.value(args, ~gm);
 	"######################################".postln;
 }, '/sound_triggers');
 )

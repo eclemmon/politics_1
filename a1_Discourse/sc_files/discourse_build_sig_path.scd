@@ -1,6 +1,6 @@
 (
 ~buildSignalPath = {
-	arg vals;
+	arg vals, memory;
 	var reverb, spat, delay, synths, group, pattern, total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, splitter, sbus, rbus, dbus, octave;
 	total_dur = ~get_total_dur_value.value(vals);
 	dvals = ~get_delay_values.value(vals);
@@ -28,28 +28,13 @@
 
 	// Automatically allocate buses
 
-	rbus = Bus.audio(s, numChannels: 2);
-	dbus = Bus.audio(s, numChannels: 2);
+	rbus = memory.at('rbus');
+	dbus = memory.at('dbus');
 	sbus = Bus.audio(s, numChannels: 2);
 
 	// Synths
 	group = Group.new;
-
-	// reverb = Synth(\reverb, [\in, rbus, \predelay, predelay, \revtime, reverbtime, \lpf, lpf, \mix, mix, \amp, 0.1, \out, 0, \dur, total_dur+reverbtime-5, \gate, 1, \time_interval, time_interval, \start_point, start_point, \target, target, \doneAction, 14], group);
-
-/*	delay = Synth(\delay,
-		[
-			\in, dbus,
-			\out, rbus,
-			\max_delay, total_dur,
-			\delaytime, dt,
-			\decaytime, dd,
-			\amp, 0.1,
-			\dur, total_dur,
-			\gate, 1
-	], group);*/
-
-	splitter = Synth(\splitter, [\in, sbus, \out1, 0, \out2, 0, \dur, total_dur, \gate, 1], group);
+	splitter = Synth(\splitter, [\in, sbus, \out1, rbus, \out2, dbus, \dur, total_dur, \gate, 1], group);
 
 	patterns = instruments.collect({
 		arg item, i;
@@ -68,12 +53,9 @@
 
 	// Free buses after a time.
 	{
-		// [rbus.index, dbus.index, sbus.index].postln;
-		(reverbtime+total_dur+0.1).wait;
-		rbus.free;
-		dbus.free;
+		(total_dur+0.1).wait;
 		sbus.free;
-		// [rbus.index, dbus.index, sbus.index].postln;
+		group.free;
 	}.fork;
 };
 )

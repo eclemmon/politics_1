@@ -1,13 +1,13 @@
 (
 // H/t Eli Fieldsteel
-SynthDef(\reverb, {
+SynthDef(\reverb_with_dur, {
 	arg in, predelay=1, revtime=10, lpf=4500, mix=0.5, amp=1, out=0, dur=1, gate=1, doneAction=2, time_interval=4, start_point=(-1), target=1;
 	var dry, wet, temp, sig, env, pan, leakDC;
 	dry = In.ar(in, 2);
 	temp = In.ar(in, 2);
 	wet = 0;
 	temp = DelayN.ar(temp, revtime, predelay);
-	4.do({
+	16.do({
 		temp = AllpassN.ar(temp, 0.05, {Rand(0.001, 0.05)}!2, revtime);
 		temp = LPF.ar(temp, lpf);
 		wet = wet + temp;
@@ -16,6 +16,22 @@ SynthDef(\reverb, {
 	sig = XFade2.ar(dry, wet, mix * 2 - 1, amp) * env;
 	pan = Pan2.ar(sig.dup, Line.kr(start_point, target, time_interval));
 	Out.ar(out, pan);
+}).add;
+
+SynthDef(\reverb, {
+	arg in, predelay=1, revtime=10, lpf=4500, mix=0.5, amp=1, out=0;
+	var dry, wet, temp, sig, pan, leakDC;
+	dry = In.ar(in, 2);
+	temp = In.ar(in, 2);
+	wet = 0;
+	temp = DelayN.ar(temp, revtime, predelay);
+	16.do({
+		temp = AllpassN.ar(temp, 0.05, {Rand(0.001, 0.05)}!2, revtime);
+		temp = LPF.ar(temp, lpf);
+		wet = wet + temp;
+	});
+	sig = XFade2.ar(dry, wet, mix * 2 - 1, amp);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef(\linear_spat_motion, {
@@ -28,13 +44,23 @@ SynthDef(\linear_spat_motion, {
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\delay, {
+SynthDef(\delay_with_dur, {
 	arg in, out=0, max_delay=0.2, delaytime=0.2, decaytime=1.0, amp=1, dur, gate=1;
 	var input, delay, sig, env, leakDC;
 	input = In.ar(in, 2);
 	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
 	delay = CombN.ar(input, max_delay, delaytime, decaytime);
 	sig = delay * amp * env;
+	leakDC = LeakDC.ar(sig);
+	Out.ar(out, leakDC.dup);
+}).add;
+
+SynthDef(\delay, {
+	arg in, out=0, max_delay=0.2, delaytime=0.2, decaytime=1.0, amp=1;
+	var input, delay, sig, env, leakDC;
+	input = In.ar(in, 2);
+	delay = CombN.ar(input, max_delay, delaytime, decaytime);
+	sig = delay * amp;
 	leakDC = LeakDC.ar(sig);
 	Out.ar(out, leakDC.dup);
 }).add;
@@ -89,6 +115,27 @@ SynthDef(\wavetable, {
 	panning = Splay.ar(sig);
 	leakDC = LeakDC.ar(panning) * amp * env;
 	Out.ar(out, leakDC);
+}).add;
+
+SynthDef(\peep,{
+	// a sine tone peep.
+	arg freq=100, amp=0.5, out=0, gate=1, mFreq, mAmp;
+	var snd, pMod, sig, env;
+	pMod = LFTri.kr(LFNoise1.kr(mFreq, 20), mul: mAmp);
+	env = EnvGen.ar(Env.perc(0.001,0.25), gate: gate, doneAction:2);
+	sig = SinOsc.ar(freq, pMod) * env * amp;
+	Out.ar(out, sig ! 2);
+}).add;
+
+SynthDef.new(\subtract, {
+	// A synth that generates windy-sounding pitches via subtractive synthesis
+	arg out=0, amp=1, freq=440, dur=0.4, rq=0.001, gate=1, mFreq, mAmp;
+	var noise, filter, env, rqMod;
+	rqMod = LFCub.kr(LFNoise1.kr(mFreq, 1), mul: mAmp.linlin(0, 30, 0.001, 0.01), add: 0.007);
+	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
+	noise = ClipNoise.ar(1);
+	filter = RLPF.ar(noise, freq, rq: rqMod, mul: 0.2/rqMod.sqrt) * env * amp;
+	Out.ar(out, filter);
 }).add;
 
 SynthDef.new(\soundInRouter, {
