@@ -19,7 +19,7 @@ from Rhythm_Generators import euclidean_rhythm_generator as er_gen
 
 from Harmonic_Graph_Constructors.neo_riemannian_web import NeoriemannianWeb
 from Harmony_Generators.harmonic_walk_functions import num_chords_walked
-from Harmony_Generators.octave_displacement_generator import get_octave_placement
+from Harmony_Generators.octave_displacement_generator import get_octave_placement_sigmoid
 from Harmony_Generators.neighbor_chord_generator import generate_neighbor_chord_weights
 from Harmony_Generators.neighbor_chord_generator import build_weight_and_chord_array
 
@@ -152,7 +152,7 @@ class DiscourseMusicGen:
             msg.add_arg(float(item), arg_type='f')
 
         # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
-        od = get_octave_placement(data['text'])
+        od = get_octave_placement_sigmoid(data['text'])
         # Add octave displacement to osc message: 1 val
         msg.add_arg(od, arg_type='i')
 
