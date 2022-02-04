@@ -9,5 +9,5 @@ medium_chars = '*' * 140
 class TestOctaveDisplacementGenerator(unittest.TestCase):
     def test_get_octave_placement(self):
         self.assertEqual(get_octave_placement_sigmoid(max_chars), 2)
-        self.assertEqual(get_octave_placement_sigmoid(min_chars), 10)
-        self.assertEqual(get_octave_placement_sigmoid(medium_chars), 6)
+        self.assertEqual(get_octave_placement_sigmoid(min_chars), 7)
+        self.assertEqual(get_octave_placement_sigmoid(medium_chars), 5)

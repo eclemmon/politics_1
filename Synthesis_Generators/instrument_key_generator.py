@@ -75,7 +75,7 @@ def get_next_instrument(inst_graph: dict, current_instrument: str, value: float,
     :param total_no_instruments: Integer of number of instruments.
     :return: String of next instrument key name. e.g. 'sound2'
     """
-    index = hash(value) % total_no_instruments
+    index = int(hash(value) % total_no_instruments - 1)
     return inst_graph[current_instrument][index]
 
 
