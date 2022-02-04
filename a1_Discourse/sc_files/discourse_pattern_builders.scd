@@ -199,7 +199,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave,
-		\amp, Pgauss(0.3, 0.1, inf),
+		\amp, Pgauss(0.01, 0.01, inf),
 		\mAmp, modvals[0].linlin(0, 30, 1, 30),
 		\mFreq, modvals[1].linlin(0, 30, 1, 30),
 		\group, group

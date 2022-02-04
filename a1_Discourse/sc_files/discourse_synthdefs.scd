@@ -70,7 +70,7 @@ SynthDef(\sin, {
 	var env, sig, detuneSig;
 	env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = SinOsc.ar(freq, SinOsc.kr(mFreq, mul: mAmp)) * amp * env;
-	Out.ar(out, sig);
+	Out.ar(out, sig.dup);
 }).add;
 
 SynthDef(\saw, {
@@ -79,7 +79,7 @@ SynthDef(\saw, {
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	mod = LFTri.kr(LFNoise1.kr(2)).range(0, 1);
 	sig = VarSaw.ar(LFSaw.kr(mFreq, 0, 0.2, freq, mAmp * 2), 0, mod) * env * amp;
-	Out.ar(out, sig);
+	Out.ar(out, sig.dup);
 }).add;
 
 SynthDef(\noise, {
@@ -87,7 +87,7 @@ SynthDef(\noise, {
 	var env, sig;
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	sig = Dust2.ar(freq * LFNoise1.kr(mFreq, mAmp), LFNoise1.kr(mFreq)) * env;
-	Out.ar(out, sig);
+	Out.ar(out, sig.dup);
 }).add;
 
 SynthDef(\impulse, {
@@ -95,7 +95,7 @@ SynthDef(\impulse, {
 	var env, sig;
 	env = EnvGen.kr(Env([0, 1, 0.4, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = Impulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
-	Out.ar(out, sig);
+	Out.ar(out, sig.dup);
 }).add;
 
 SynthDef(\square, {
@@ -103,7 +103,7 @@ SynthDef(\square, {
 	var env, sig;
 		env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = Pulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
-	Out.ar(out, sig);
+	Out.ar(out, sig.dup);
 }).add;
 
 SynthDef(\wavetable, {
@@ -135,7 +135,7 @@ SynthDef.new(\subtract, {
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	noise = ClipNoise.ar(1);
 	filter = RLPF.ar(noise, freq, rq: rqMod, mul: 0.2/rqMod.sqrt) * env * amp;
-	Out.ar(out, filter);
+	Out.ar(out, filter.dup);
 }).add;
 
 SynthDef.new(\soundInRouter, {

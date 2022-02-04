@@ -55,7 +55,7 @@
 	{
 		(total_dur+0.1).wait;
 		sbus.free;
-		group.free;
+		// group.free;
 	}.fork;
 };
 )
