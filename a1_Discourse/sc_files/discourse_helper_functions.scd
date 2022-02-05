@@ -158,8 +158,10 @@ Instruments: %
 Time Interval of Events: %
 Duration: %
 Octave: %
+Rhythm: %
+Sustain Values: %
 #########################################
-".format(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7]);
+".format(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9]);
 	string;
 };
 

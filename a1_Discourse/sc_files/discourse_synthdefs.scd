@@ -136,7 +136,7 @@ SynthDef(\peep,{
 	arg freq=100, amp=0.5, out=0, gate=1, mFreq, mAmp, dur=0.25;
 	var snd, pMod, sig, env;
 	pMod = LFTri.kr(LFNoise1.kr(mFreq, 20), mul: mAmp);
-	env = EnvGen.ar(Env.perc(0.001, dur), gate: gate, doneAction: 2);
+	env = EnvGen.kr(Env([0, 1, 0], [0.001, dur], curve: [0, -12], releaseNode: 1), gate, doneAction: 2);
 	sig = SinOsc.ar(freq, pMod) * env * amp;
 	Out.ar(out, sig);
 }).add;
