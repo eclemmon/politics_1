@@ -59,8 +59,54 @@ class TestDiscourseMusicGen(unittest.TestCase):
             "I HATE YOU SO MUCH !!!!!!!!!!!! BECAUSE YOUR HURT ME!!!!!!",
             "I ruined my sweater today :( it has bleach on it",
         ]
+        texts_short = [
+            "Corn!",
+            "Corn!",
+            "Corn!",
+            "Corn!",
+            "Corn!",
+            "Corn!",
+            "ANGRY!!!",
+            "ANGRY!!!",
+            "ANGRY!!!",
+            "ANGRY!!!",
+            "ANGRY!!!",
+            "ANGRY!!!",
+            "ANGRY!!!",
+            "HAPPY!!!!",
+            "HAPPY!!!!",
+            "HAPPY!!!!",
+            "HAPPY!!!!",
+            "HAPPY!!!!",
+        ]
+        texts_long = [
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+            "The neighbors in 1225, whom we have only known a few short weeks, are willing to help us—selflessly—with "
+            "the cat!",
+        ]
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
-        for text in texts:
+        for text in texts_long:
             music_gen.send_music_data({'username': "gumbo", 'text': text})
-            time.sleep(random.random() * 4)
+            time.sleep(random.random())
 
