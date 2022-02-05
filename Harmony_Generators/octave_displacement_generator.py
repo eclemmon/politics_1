@@ -9,4 +9,10 @@ def get_octave_placement_sigmoid(text):
 
 def get_octave_placement_linear(text):
     length = len(text)
+    if length > 144:
+        length = 144
+    elif length < 0:
+        length = 0
+    else:
+        length = length
     return int(lin2lin(length, 0, 144, 96, 24)) // 12
