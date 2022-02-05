@@ -1,7 +1,7 @@
 (
 ~buildSignalPath = {
 	arg vals, memory;
-	var reverb, spat, delay, synths, group, pattern, total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, splitter, sbus, rbus, dbus, octave;
+	var reverb, spat, delay, synths, group, pattern, total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, splitter, sbus, rbus, dbus, fbus, spatbus, octave, filter;
 	total_dur = ~get_total_dur_value.value(vals);
 	dvals = ~get_delay_values.value(vals);
 	rvals = ~get_reverb_values.value(vals);
@@ -30,21 +30,28 @@
 
 	rbus = memory.at('rbus');
 	dbus = memory.at('dbus');
+	fbus = Bus.audio(s, numChannels: 1);
+	spatbus = Bus.audio(s, numChannels: 1);
 	sbus = Bus.audio(s, numChannels: 2);
 
 	// Synths
-	group = Group.new;
-	splitter = Synth(\splitter, [\in, sbus, \out1, rbus, \out2, dbus, \dur, total_dur, \gate, 1], group);
+	group = memory.at('synthgroup');
+	splitter = Synth(\splitter, [\in, sbus, \out1, rbus, \out2, dbus, \dur, total_dur, \gate, 1], memory.at(\splittergroup));
+	spat = Synth(\linear_spat_motion, [\in, spatbus, \out, sbus, \time_interval, time_interval, \start_point, start_point, \target, target, \dur, total_dur, \gate, 1], memory.at(\spatgroup));
+	filter = Synth(\notch_filters, [\in, fbus, \out, spatbus, \dur, total_dur, \amp, 1, \rq, 0.4], memory.at(\spatgroup));
 
 	patterns = instruments.collect({
 		arg item, i;
 		var p, bufs;
 		if(item.asString.contains("wavetable"), {
-			item.postln;
 			bufs = ~gm.at(item).value(item);
-			p = ~build_wavetable_pattern.value(vals, group, sbus, bufs);
+			p = ~build_wavetable_pattern.value(vals, group, fbus, bufs);
 		}, {
-			p = ~gm.at(item).value(vals, group, sbus);
+			if(item.asString.contains("grain"), {
+				p = ~build_grain_pattern.value(vals, group, fbus, memory);
+			}, {
+				p = ~gm.at(item).value(vals, group, fbus);
+			});
 		});
 	});
 
@@ -55,6 +62,9 @@
 	{
 		(total_dur+0.1).wait;
 		sbus.free;
+		spatbus.free;
+		splitter.free;
+		spat.free;
 		// group.free;
 	}.fork;
 };

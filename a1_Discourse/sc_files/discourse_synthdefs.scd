@@ -28,6 +28,7 @@ SynthDef(\reverb, {
 	16.do({
 		temp = AllpassN.ar(temp, 0.05, {Rand(0.001, 0.05)}!2, revtime);
 		temp = LPF.ar(temp, lpf);
+		temp = HPF.ar(temp, 20);
 		wet = wet + temp;
 	});
 	sig = XFade2.ar(dry, wet, mix * 2 - 1, amp);
@@ -37,10 +38,23 @@ SynthDef(\reverb, {
 SynthDef(\linear_spat_motion, {
 	arg in, time_interval=1, start_point, target, amp=1, out=0, dur=1, gate=0;
 	var input, lin_motion, sig, env;
-	input = In.ar(in, 2);
+	input = In.ar(in, 1);
 	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
 	lin_motion = Pan2.ar(input, Line.kr(start_point, target, time_interval));
 	sig = lin_motion * amp * env;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\notch_filters, {
+	arg in, out=0, dur, minFreq=13000, maxFreq=22000, gate=1, amp=1, rq=1;
+	var input, sig, env, randwalk;
+	input = In.ar(in, 1);
+	5.do({
+		randwalk = LFNoise1.kr(0.1, mul: 3000);
+		input = BRF.ar(input, rrand(minFreq, maxFreq) + randwalk, rq);
+	});
+	env = EnvGen.kr(Env([0,1,1,0], [0.05, dur, 0.1], curve: (-2)), gate, doneAction: 2);
+	sig = input * env * amp;
 	Out.ar(out, sig);
 }).add;
 
@@ -70,7 +84,7 @@ SynthDef(\sin, {
 	var env, sig, detuneSig;
 	env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = SinOsc.ar(freq, SinOsc.kr(mFreq, mul: mAmp)) * amp * env;
-	Out.ar(out, sig.dup);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef(\saw, {
@@ -79,7 +93,7 @@ SynthDef(\saw, {
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	mod = LFTri.kr(LFNoise1.kr(2)).range(0, 1);
 	sig = VarSaw.ar(LFSaw.kr(mFreq, 0, 0.2, freq, mAmp * 2), 0, mod) * env * amp;
-	Out.ar(out, sig.dup);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef(\noise, {
@@ -87,7 +101,7 @@ SynthDef(\noise, {
 	var env, sig;
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	sig = Dust2.ar(freq * LFNoise1.kr(mFreq, mAmp), LFNoise1.kr(mFreq)) * env;
-	Out.ar(out, sig.dup);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef(\impulse, {
@@ -95,7 +109,7 @@ SynthDef(\impulse, {
 	var env, sig;
 	env = EnvGen.kr(Env([0, 1, 0.4, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = Impulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
-	Out.ar(out, sig.dup);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef(\square, {
@@ -103,7 +117,7 @@ SynthDef(\square, {
 	var env, sig;
 		env = EnvGen.kr(Env([0, 1, 0.1, 0], [0.01, dur, 0.1], curve: [-2, -2, 'lin'], releaseNode: 1), gate, doneAction: 2);
 	sig = Pulse.ar(freq, LFNoise1.kr(mFreq, mul: mAmp)) * amp * env;
-	Out.ar(out, sig.dup);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef(\wavetable, {
@@ -119,12 +133,12 @@ SynthDef(\wavetable, {
 
 SynthDef(\peep,{
 	// a sine tone peep.
-	arg freq=100, amp=0.5, out=0, gate=1, mFreq, mAmp;
+	arg freq=100, amp=0.5, out=0, gate=1, mFreq, mAmp, dur=0.25;
 	var snd, pMod, sig, env;
 	pMod = LFTri.kr(LFNoise1.kr(mFreq, 20), mul: mAmp);
-	env = EnvGen.ar(Env.perc(0.001,0.25), gate: gate, doneAction:2);
+	env = EnvGen.ar(Env.perc(0.001, dur), gate: gate, doneAction: 2);
 	sig = SinOsc.ar(freq, pMod) * env * amp;
-	Out.ar(out, sig ! 2);
+	Out.ar(out, sig);
 }).add;
 
 SynthDef.new(\subtract, {
@@ -135,7 +149,7 @@ SynthDef.new(\subtract, {
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.2), gate, doneAction: 2);
 	noise = ClipNoise.ar(1);
 	filter = RLPF.ar(noise, freq, rq: rqMod, mul: 0.2/rqMod.sqrt) * env * amp;
-	Out.ar(out, filter.dup);
+	Out.ar(out, filter);
 }).add;
 
 SynthDef.new(\soundInRouter, {
@@ -174,10 +188,10 @@ SynthDef.new(\splitter, {
 
 SynthDef.new(\granulator, {
 	// Granulator.
-	arg amp=1, out=0, buf=0, attack=1, sustain=1, release=1, gate=1, sync=0, density=40, baseDur=0.05, durRand=1, rate=1, rateRand=1, pan=0, panRand=1, grainEnv=(-1), ptrBus=0, ptrSampleDelay=20000, ptrRandSamples=5000, minPtrDelay=1000;
+	arg amp=1, out=0, buf=0, attack=0.01, dur, release=0.01, gate=1, sync=0, density=40, baseDur=0.05, durRand=1, rate=1, rateRand=1, pan=0, panRand=1, grainEnv=(-1), ptrBus=0, ptrSampleDelay=20000, ptrRandSamples=5000, minPtrDelay=1000;
 	var sig, env, densCtrl, durCtrl, rateCtrl, panCtrl, ptr, ptrRand, totalDelay, maxGrainDur, grain;
 
-	env = EnvGen.kr(Env.asr(attack, sustain, release), gate, doneAction:2);
+	env = EnvGen.kr(Env.asr(attack, dur, release), gate, doneAction:2);
 	densCtrl = Select.ar(sync, [Dust.ar(density), Impulse.ar(density)]);
 	durCtrl = baseDur * LFNoise1.ar(100).exprange(1/durRand, durRand);
 	rateCtrl = rate * LFNoise1.ar(100).exprange(1/rateRand, rateRand);

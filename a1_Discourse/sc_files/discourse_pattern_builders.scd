@@ -18,7 +18,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave + 1,
-		\amp, Pgauss(0.3, 0.1, inf),
+		\amp, Pgauss(0.7, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 5, 10),
 		\mFreq, modvals[1].linlin(0, 30, 5, 10),
 		\group, group
@@ -44,7 +44,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave + 1,
-		\amp, Pgauss(0.1, 0.1, inf),
+		\amp, Pgauss(0.9, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 2, 40),
 		\mFreq, modvals[1].linlin(0, 30, 2, 40),
 		\group, group
@@ -68,7 +68,7 @@
 		\sustain, Pseq(sus_vals, 1), //(total_dur / array.size),
 		\dur, ~build_dur_Pseq.value(rhythm_data, total_dur),
 		\out, outbus.index,
-		\amp, Pgauss(0.1, 0.1, inf),
+		\amp, Pgauss(8, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 20, 40),
 		\mFreq, modvals[1].linlin(0, 30, 20, 40),
 		\group, group
@@ -95,7 +95,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave + 1,
-		\amp, Pgauss(0.3, 0.1, inf),
+		\amp, Pgauss(5, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 2, 40),
 		\mFreq, modvals[1].linlin(0, 30, 2, 40),
 		\group, group
@@ -121,7 +121,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave + 1,
-		\amp, Pgauss(0.3, 0.1, inf),
+		\amp, Pgauss(0.7, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 2, 40),
 		\mFreq, modvals[1].linlin(0, 30, 2, 40),
 		\group, group
@@ -147,7 +147,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave,
-		\amp, Pgauss(0.3, 0.1, inf),
+		\amp, Pgauss(0.7, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 2, 40),
 		\mFreq, modvals[1].linlin(0, 30, 2, 40),
 		\group, group,
@@ -166,14 +166,16 @@
 	total_dur = ~get_total_dur_value.value(array);
 	chords_data = ~get_chords_data.value(array);
 	rhythm_data = ~get_rhythm_data.value(array);
+	sus_vals = ~build_sus_data.value(rhythm_data, total_dur);
 
 	pattern = Pbind(
 		\instrument, \peep,
+		\sustain, Pseq(sus_vals, 1), //(total_dur / array.size),
 		\dur, ~build_dur_Pseq.value(rhythm_data, total_dur),
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave + 1,
-		\amp, Pgauss(0.3, 0.1, inf),
+		\amp, Pgauss(0.7, 0.1, inf),
 		\mAmp, modvals[0].linlin(0, 30, 0, 10),
 		\mFreq, modvals[1].linlin(0, 30, 0, 10),
 		\group, group
@@ -199,7 +201,7 @@
 		\out, outbus.index,
 		\note, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave,
-		\amp, Pgauss(0.01, 0.01, inf),
+		\amp, Pgauss(0.5, 0.01, inf),
 		\mAmp, modvals[0].linlin(0, 30, 1, 30),
 		\mFreq, modvals[1].linlin(0, 30, 1, 30),
 		\group, group
@@ -207,4 +209,31 @@
 	pattern;
 };
 
+~build_grain_pattern = {
+	arg array, group, outbus, memory;
+	var pattern, modvals, octave, total_dur, chords_data, rhythm_data, sus_vals, buffer;
+	// Get input data
+	modvals = ~get_mod_values.value(array);
+	octave = ~get_octave_value.value(array);
+	total_dur = ~get_total_dur_value.value(array);
+	chords_data = ~get_chords_data.value(array);
+	rhythm_data = ~get_rhythm_data.value(array);
+	sus_vals = ~build_sus_data.value(rhythm_data, total_dur);
+	buffer = memory.at(\granBuffer);
+
+	pattern = Pbind(
+		\instrument, \granulator,
+		\dur, ~build_dur_Pseq.value(rhythm_data, total_dur),
+		\out, 0,
+		\buf, buffer.bufnum,
+		\amp, Pgauss(1, 0.01, inf),
+		\rateRand, modvals[0].linlin(0, 30, 0.1, 1),
+		\ptrRandSamples, modvals[1].linlin(0, 30, 1000, 10000),
+		\group, group,
+		\ptrBus, memory.at(\ptrBus);
+	);
+	pattern;
+};
 )
+
+/*	arg amp=1, out=0, buf=0, attack=1, sustain=1, release=1, gate=1, sync=0, density=40, baseDur=0.05, durRand=1, rate=1, rateRand=1, pan=0, panRand=1, grainEnv=(-1), ptrBus=0, ptrSampleDelay=20000, ptrRandSamples=5000, minPtrDelay=1000;*/
