@@ -1,3 +1,5 @@
+import random
+
 
 class InstrumentKeyAndNameGenerator:
     def __init__(self, inst_names, max_no_instruments):
@@ -21,7 +23,7 @@ class InstrumentKeyAndNameGenerator:
         :param num_inst_to_run: Integer of number of instruments in final array.
         :return: List of instrument keys. e.g. ['sound3', 'sound4', 'sound6', 'sound5', 'sound3']
         """
-        return get_instrument_chain(num_inst_to_run-1, self.instrument_graph, sent_dict,
+        return get_instrument_chain(num_inst_to_run - 1, self.instrument_graph, sent_dict,
                                     emoji_sent_dict, self.total_no_instruments, self.instrument_keys,
                                     self.max_instruments)
 
@@ -32,6 +34,16 @@ class InstrumentKeyAndNameGenerator:
         :return: List of instrument names ['sin', 'saw']
         """
         return [self.instrument_dict[key] for key in keys]
+
+    def get_n_instrument_chain_names(self, keys: list, num_insts: int):
+        """
+        Gets a list of n instrument names to pass to SuperCollider
+        :param keys: List of keys in the instrument key dict. ['sound1', 'sound2']
+        :param num_insts: Integer of number of instruments desired.
+        :return: List of instrument names ['sin', 'saw']
+        """
+        instruments = self.get_instrument_chain_names(keys)
+        return instruments[:num_insts]
 
 
 def generate_instrument_dict(inst_names: list):
@@ -59,7 +71,7 @@ def generate_instrument_graph(instrument_dict: dict):
     graph = {}
     for count, key in enumerate(keys):
         if keys[count] == key:
-            graph[key] = keys[:count] + keys[count+1:]
+            graph[key] = keys[:count] + keys[count + 1:]
     return graph
 
 
@@ -122,6 +134,7 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
 if __name__ == "__main__":
     from Data_Dumps.instrument_names import instrument_names
     from NLP_Tools.emoji_counter import get_emoji_sentiment
+
     key_gen = InstrumentKeyAndNameGenerator(instrument_names, 4)
     print(key_gen.get_instrument_chain_keys({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
-                                       get_emoji_sentiment("❤")))
+                                            get_emoji_sentiment("❤")))

@@ -1,9 +1,11 @@
 import logging
 import time
+import random
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Classes.worker_thread import WorkerThread
+from Utility_Tools.mapping_functions import linear_to_linear
 
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
@@ -33,7 +35,7 @@ class DiscourseMusicGen:
     def __init__(self, logger_object: logging.Logger, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
                  formal_section_length=30, harmonic_rhythm=30, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
-                 profanity_word_list_path=None, max_time_interval=10):
+                 profanity_word_list_path=None, max_time_interval=20):
         """
         Initializes DiscourseMusicGen
         :param logger_object: Logger, built from Utility_Tools.politics_logger.py
@@ -161,8 +163,10 @@ class DiscourseMusicGen:
         msg.add_arg(time_interval, arg_type='f')
 
         # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
+        # Lower octaves == less instruments
+        num_insts = int(linear_to_linear(od, 2, 8, 1, self.inst_key_name_gen.max_instruments + 1))
         inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
-        inst_names = self.inst_key_name_gen.get_instrument_chain_names(inst_keys)
+        inst_names = self.inst_key_name_gen.get_n_instrument_chain_names(inst_keys, num_insts)
         # Add instrument names to osc message: var num of vals
         msg.add_arg(len(inst_names), arg_type='i')
         for inst in inst_names:
@@ -308,6 +312,7 @@ class DiscourseMusicGen:
             self.web.output_chord = chord
             time.sleep(time_interval)
 
+    # TODO: Make this a sliding scale
     def get_time_interval_data(self, data):
         text_length = len(data)
         if text_length > 280:
