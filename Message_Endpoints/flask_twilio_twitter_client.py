@@ -18,7 +18,6 @@ def on_connect(message):
 
 @client.on('handle_message')
 def message(data):
-    print("got data")
     print(data)
     music_gen.trigger_sounds(data)
 
