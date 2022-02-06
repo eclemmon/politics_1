@@ -33,6 +33,9 @@ from Models.message import Message
 
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 
+global search_term
+search_term = '@InteractiveMus4'
+
 
 class MyStream(tweepy.Stream):
     def __init__(self, consumer_key, consumer_secret, access_token, access_secret):
@@ -44,7 +47,8 @@ class MyStream(tweepy.Stream):
 
     def on_data(self, data):
         json_data = json.loads(data)
-        message_data = {'username': json_data['user']['screen_name'], 'text': json_data['text']}
+        message_data = {'username': json_data['user']['screen_name'],
+                        'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip()}
         store_message(message_data)
         self.stream_sio.emit('handle_message', message_data)
         # TODO: Send along all necessary information
@@ -80,7 +84,6 @@ def handle_message(message_data):
 def connect():
     print('connected')
     sio.emit('client_connected', "you connected")
-    search_term = "@InteractiveMus4"
     stream = MyStream(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
                       credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
     stream.filter(track=[search_term], threaded=True)
