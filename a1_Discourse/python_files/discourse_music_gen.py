@@ -186,6 +186,9 @@ class DiscourseMusicGen:
 
         # Build the message
         msg = msg.build()
+        # Log the message
+        self.logger_object.info(data)
+        self.logger_object.info(msg.params)
         # Send the message to SuperCollider
         self.sc_client.send(msg)
 
@@ -198,9 +201,11 @@ class DiscourseMusicGen:
     def send_gui_data(self, data):
         # Send Data to GUI
         # Build OSC Message Object Constructor
-        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
+        msg = osc_message_builder.OscMessageBuilder(address="\hallo")
         # Construct text to display and censor any text for profanity.
         display = data['username'] + " said: " + self.profanity.censor(data['text'])
+        print(display)
+        print(data)
         # Add data to the message
         msg.add_arg(display, arg_type='s')
         # Build the message
