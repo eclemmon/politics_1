@@ -102,8 +102,8 @@ class TestDiscourseMusicGen(unittest.TestCase):
     def test_send_long_data_toSC(self):
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
         for text in texts_long:
-            music_gen.send_music_data({'username': "gumbo", 'text': text})
-            time.sleep(random.random() * 5)
+            music_gen.send_music_data({'username': "Machiavelli", 'text': text})
+            time.sleep(10)
 
     def test_send_short_data_toSC(self):
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
@@ -113,6 +113,10 @@ class TestDiscourseMusicGen(unittest.TestCase):
 
     def test_send_var_data_toSC(self):
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
+        music_gen.send_music_data({'username': "Plato", 'text': "Why hello there!"})
+        music_gen.send_gui_data({'username': "Plato", 'text': "Why hello there!"})
+        time.sleep(10)
         for text in texts:
             music_gen.send_music_data({'username': "gumbo", 'text': text})
-            time.sleep(random.random() * 4)
+            music_gen.send_gui_data({'username': "gumbo", 'text': text})
+            time.sleep(10)
