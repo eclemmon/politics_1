@@ -2,9 +2,11 @@ import datetime
 import logging
 import os
 import time
+from pathlib import Path
 
-FILE_PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Log_Files/"
-# TODO: Automatically construct FILE_PATH via relative path
+path = Path(__file__).parent.parent
+FILE_PATH = os.path.join(path, 'Log_Files/')
+# FILE_PATH = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Log_Files/"
 
 
 def construct_filename(path):
