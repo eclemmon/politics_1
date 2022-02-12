@@ -25,26 +25,36 @@ class Countdown:
         return timeformat
 
     def voting_period(self):
-        while self.vote_period_count > 0:
+        if self.vote_period_count > 0:
             count = self.voting_countdown_print()
             self.vote_period_count -= 1
             return count
         else:
+            # Reset vote count
             self.vote_period_count = self.init_vote_period
-            self.resting_period()
+            self.is_voting_period = False
+            return self.resting_period()
 
     def resting_period(self):
-        while self.rest_period_count > 0:
+        if self.rest_period_count > 0:
             count = self.resting_countdown_print()
             self.rest_period_count -= 1
             return count
         else:
             self.rest_period_count = self.init_rest_period
-            self.voting_period()
+            self.is_voting_period = True
+            return self.voting_period()
+
+    def count(self):
+        if self.is_voting_period:
+            return self.voting_period()
+        else:
+            return self.resting_period()
 
 
 
 if __name__ == '__main__':
     new_countdown = Countdown(10, 5)
-    new_countdown.voting_period()
+    for _ in range(20):
+        print(new_countdown.count())
 
