@@ -69,7 +69,7 @@
 		(total_dur+0.5).wait;
 		sbus.free;
 		spatbus.free;
-		fbus.free
+		fbus.free;
 		splitter.free;
 		// spat.free;
 		// group.free;
