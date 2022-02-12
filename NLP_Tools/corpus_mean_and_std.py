@@ -36,8 +36,6 @@ class CorpusMeanAndStd:
         return CorpusMeanAndStd(new_mean, new_std)
 
 
-
-
 def mean_and_std_of_corpus(corpus):
     """
     Builds mean and std after determining levenshtein distance between texts in a corpus.
@@ -64,7 +62,10 @@ def mean_and_std_of_corpus(corpus):
     data_frame_similarity = pandas.DataFrame(similarity, index=corpus, columns=corpus)
     l_tri = numpy.tril(data_frame_similarity.values, -1)
     l_tri = l_tri[numpy.nonzero(l_tri)]
-    return l_tri.mean(), l_tri.std()
+    if len(l_tri) <= 0:
+        return 0, 0
+    else:
+        return l_tri.mean(), l_tri.std()
 
 
 if __name__ == '__main__':
