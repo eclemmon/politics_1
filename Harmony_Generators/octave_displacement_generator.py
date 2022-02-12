@@ -15,4 +15,4 @@ def get_octave_placement_linear(text):
         length = 0
     else:
         length = length
-    return int(lin2lin(length, 0, 144, 96, 24)) // 12
+    return int(lin2lin(length, 0, 54, 96, 24)) // 12
