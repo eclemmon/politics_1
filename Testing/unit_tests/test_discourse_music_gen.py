@@ -115,8 +115,8 @@ class TestDiscourseMusicGen(unittest.TestCase):
         music_gen.harmonic_walk(1, 100, 20, music_gen.web)
         music_gen.send_music_data({'username': "Plato", 'text': "Why hello there!"})
         music_gen.send_gui_data({'username': "Plato", 'text': "Why hello there!"})
-        time.sleep(10)
+        time.sleep(random.random())
         for text in texts:
             music_gen.send_music_data({'username': "gumbo", 'text': text})
             music_gen.send_gui_data({'username': "gumbo", 'text': text})
-            time.sleep(10)
+            time.sleep(random.random() )

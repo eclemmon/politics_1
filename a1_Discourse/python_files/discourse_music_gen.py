@@ -279,7 +279,7 @@ class DiscourseMusicGen:
         try:
             self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
         except ValueError:
-            self.logger_object.info("Seems like you haven'worker_thread gotten enough texts in the previous formal "
+            self.logger_object.info("Seems like you haven't gotten enough texts in the previous formal "
                                     "section?")
             diff = CorpusMeanAndStd(0.0, 0.0)
             self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
