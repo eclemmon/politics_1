@@ -1,15 +1,15 @@
 import tkinter as tk
 import tkinter.font as tkFont
-import countdown
+from Classes import countdown
 import vote_processor
 import threading
 import queue
-from Python2SC import StreamListener
-import Python2SC
+from scratch_scripts.Python2SC import StreamListener
+from scratch_scripts import Python2SC
 import tweepy
 import random
 import json
-from Python2SC import message_handler
+from scratch_scripts.Python2SC import message_handler
 from pythonosc import udp_client
 
 with open("../twitter_credentials.json", "r") as file:
