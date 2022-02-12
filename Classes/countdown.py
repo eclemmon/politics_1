@@ -1,39 +1,45 @@
 import time
 
+# set voting period and resting period
+# after 1 second update timer
+
 class Countdown:
     def __init__(self, voting_period, rest_period):
-        self.init_seconds = voting_period
-        self.seconds = self.init_seconds
+        # Set initial resting period and voting period
+        self.init_vote_period = voting_period
         self.init_rest_period = rest_period
-        self.rest_period = self.init_rest_period
+        # Set counts to initial values
+        self.vote_period_count = self.init_vote_period
+        self.rest_period_count = self.init_rest_period
+        # Set is_voting_period to false
+        self.is_voting_period = False
 
     def voting_countdown_print(self):
-        mins, secs = divmod(self.seconds, 60)
+        mins, secs = divmod(self.vote_period_count, 60)
         timeformat = '{:02d}:{:02d} SEND IN YOUR VOTES NOW! \r'.format(mins, secs)
         return timeformat
 
     def resting_countdown_print(self):
-        mins, secs = divmod(self.rest_period, 60)
+        mins, secs = divmod(self.rest_period_count, 60)
         timeformat = '{:02d}:{:02d} VOTING OPENS SOON! \r'.format(mins, secs)
         return timeformat
 
     def voting_period(self):
-        while self.seconds > 0:
-            self.voting_countdown_print()
+        while self.vote_period_count > 0:
             count = self.voting_countdown_print()
-            print(count)
-            self.seconds -= 1
+            self.vote_period_count -= 1
+            return count
         else:
-            self.seconds = self.init_seconds
+            self.vote_period_count = self.init_vote_period
             self.resting_period()
 
     def resting_period(self):
-        while self.rest_period > 0:
+        while self.rest_period_count > 0:
             count = self.resting_countdown_print()
-            print(count)
-            self.rest_period -= 1
+            self.rest_period_count -= 1
+            return count
         else:
-            self.rest_period = self.init_rest_period
+            self.rest_period_count = self.init_rest_period
             self.voting_period()
 
 
