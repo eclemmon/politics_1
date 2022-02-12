@@ -18,9 +18,9 @@ def on_connect(message):
 
 @client.on('handle_message')
 def message(data):
-    print(data)
+    # print(data)
     music_gen.trigger_sounds(data)
 
 
-client.connect('http://127.0.0.1:5000/')
+client.connect('http://127.0.0.1:8000/')
 client.wait()
