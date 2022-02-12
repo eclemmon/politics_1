@@ -51,19 +51,19 @@ class MyStream(tweepy.Stream):
                         'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip()}
         store_message(message_data)
         self.stream_sio.emit('handle_message', message_data)
-        # TODO: Send along all necessary information
 
 
 @app.route('/sms', methods=['POST'])
 def sms():
-    number = request.form['From']
+    full_number = request.form['From']
+    music_number = "XXX-XXX-" + request.form['From'][-4:]
+    # print(music_number)
     message_body = request.form['Body']
-    message_data = {"username": number, "text": message_body}
-    # TODO: Remove message response and test
-    # TODO: Emit username as censored phone number
+    music_data = {"username": music_number, "text": message_body}
+    message_data = {"username": full_number, "text": message_body}
     resp = MessagingResponse()
-    resp.message('Hello {}, you said: {}'.format(number, message_body))
-    sio.emit('handle_message', message_data)
+    resp.message('Hello {}, you said: {}'.format(full_number, message_body))
+    sio.emit('handle_message', music_data)
     handle_message(message_data)
     return str(resp)
 
@@ -136,4 +136,4 @@ def get_or_make_user(message_data):
 
 
 if __name__ == '__main__':
-    sio.run(app)
+    sio.run(app, port=8000)
