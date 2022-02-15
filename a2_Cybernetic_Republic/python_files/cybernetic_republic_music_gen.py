@@ -73,6 +73,7 @@ class CyberneticRepublicMusicGen:
         # stop
         print("shutting down")
 
+    # TODO: Send section title over to GUI
     def run_counter(self, total_time):
         total_count = 0
         while total_count <= total_time:
@@ -95,16 +96,12 @@ class CyberneticRepublicMusicGen:
             time.sleep(1)
             # On section change, generate new vote processor options/reset.
             if total_count % (self.countdown.init_rest_period + self.countdown.init_vote_period) == 0:
-                # print(self.vote_processor.display_current_results())
                 self.lock.acquire()
-                # print('locked')
                 try:
                     self.section += 1
                     self.vote_processor = self.build_vote_processor_options(self.section, self.vote_processor_dat)
                 finally:
                     self.lock.release()
-                    # print('released')
-                    # print(self.vote_processor.display_current_results())
         self.end()
         return None
 
@@ -118,7 +115,6 @@ if __name__ == "__main__":
     a = {'username': 'boop', 'text': '808'}
     b = {'username': 'lop', 'text': 'I want funk!'}
     logger = logger_launcher()
-    vp = ['a)', 'b)', 'c)', 'd)', 'e)']
     music_gen = CyberneticRepublicMusicGen(logger, vote_options)
     music_gen.run()
     for i in range(9):
