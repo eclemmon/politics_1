@@ -73,9 +73,6 @@ class TF_IDF:
             return self.all_documents[result_idx]
 
 
-
-
-
 class WordnetSentenceSimilarity:
     """
     This class constructs a value for one sentence's similarity to another's.
