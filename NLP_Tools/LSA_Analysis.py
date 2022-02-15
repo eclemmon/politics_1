@@ -24,6 +24,7 @@ def load_data(path, file_name):
     titles.append(text[0:min(len(text),100)])
     return documents_list, titles
 
+
 def preprocess_data(documents_list):
     """
     This function runs all the documents through a regexp tokenizer,
@@ -43,6 +44,7 @@ def preprocess_data(documents_list):
         texts.append(stemmed_tokens)
     return texts
 
+
 def prepare_corpus(cleaned_documents):
     """
     create term dictionary of our corpus and
@@ -53,6 +55,7 @@ def prepare_corpus(cleaned_documents):
     dictionary = corpora.Dictionary(cleaned_documents)
     document_term_matrix = [dictionary.doc2bow(doc) for doc in cleaned_documents]
     return dictionary, document_term_matrix
+
 
 def create_gensim_lsa_model(cleaned_documents, number_of_topics, words):
     """
@@ -66,6 +69,7 @@ def create_gensim_lsa_model(cleaned_documents, number_of_topics, words):
     lsamodel = LdaModel(doc_term_matrix, num_topics=number_of_topics, id2word=dictionary)
     print(lsamodel.print_topics(num_topics=number_of_topics, num_words=words))
     return lsamodel
+
 
 def compute_coherence_values(dictionary, doc_term_matrix, cleaned_documents,
                              stop, start=2, step=3):
