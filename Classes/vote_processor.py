@@ -1,7 +1,7 @@
 import time
 
 
-class Voteprocessor:
+class VoteProcessor:
     def __init__(self, *selectable_options):
         self.candidates = list(selectable_options)
         self.vote_tallies = {option: 0 for option in selectable_options}
@@ -18,7 +18,7 @@ class Voteprocessor:
             except TypeError:
                 print("Not a string, something went wrong")
                 continue
-        self.display_current_results()
+        return self.display_current_results()
 
     # @clock
     def tally_votes(self):
@@ -36,11 +36,11 @@ class Voteprocessor:
     # @clock
     def display_current_results(self):
         totals = self.tally_votes()
-        print('#####'*5, '\n')
+        text = ''
         for key, value in totals.items():
-            text = key + ':' + '{0:.2f}'.format(round(value*100, 2))
-            print(text)
-        print('\n')
+            text += key + ':' + ' {0:.2f}'.format(round(value*100, 2))
+            text += '\n'
+        return text
 
     # @clock
     def reset_vote_tallies(self):
@@ -50,13 +50,13 @@ class Voteprocessor:
 
 
 if __name__ == '__main__':
-    new_vote = Voteprocessor('a)', 'b)', 'c)', 'd)', 'e)')
+    new_vote = VoteProcessor('a)', 'b)', 'c)', 'd)', 'e)')
     print(new_vote.vote_tallies, new_vote.candidates)
     for i in range(9):
-        new_vote.on_message('a)')
+        print(new_vote.on_message('a)'))
         time.sleep(1)
     for i in range(5):
-        new_vote.on_message('I want b)!')
+        print(new_vote.on_message('I want b)!'))
         time.sleep(1)
     # for i in range(3):
     #     new_vote.on_message('give me an e)!')
