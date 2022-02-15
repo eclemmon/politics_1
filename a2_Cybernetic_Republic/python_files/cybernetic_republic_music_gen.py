@@ -2,6 +2,7 @@ import logging
 import random
 import time
 import threading
+import random
 
 import Classes.countdown
 import Classes.vote_processor
@@ -10,6 +11,7 @@ from Classes.worker_thread import WorkerThread
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 from Utility_Tools.politics_logger import logger_launcher
+from Data_Dumps.vote_options import vote_options
 
 
 class CyberneticRepublicMusicGen:
@@ -18,6 +20,7 @@ class CyberneticRepublicMusicGen:
         self.logger = logger_object
         self.countdown = Classes.countdown.Countdown(voting_period, resting_period)
         self.section = 0
+        self.vote_option_keys = list(vote_processor_dat.keys())
         self.vote_processor_dat = vote_processor_dat
         self.vote_processor = self.build_vote_processor_options(0, self.vote_processor_dat)
         self.voters = {}
@@ -33,6 +36,7 @@ class CyberneticRepublicMusicGen:
 
         self.msg_address = "\message"
         self.count_address = "\count"
+        self.end_address = "\end"
 
     def on_data(self, data):
         if self.is_voting_period:
@@ -58,7 +62,11 @@ class CyberneticRepublicMusicGen:
             self.worker_thread.start()
 
     def end(self):
-        # trigger something
+        msg = osc_message_builder.OscMessageBuilder(address=self.end_address)
+        msg.add_arg(1, arg_type='i')
+        msg = msg.build()
+        self.sc_client.send(msg)
+        self.gui_client.send(msg)
         self.shutdown()
 
     def shutdown(self):
@@ -74,7 +82,7 @@ class CyberneticRepublicMusicGen:
             self.is_voting_period = self.countdown.is_voting_period
             # Get message of count down as string
             count_msg = self.countdown.count()
-            print(count_msg)
+            # print(count_msg)
             # Create osc message object
             msg = osc_message_builder.OscMessageBuilder(address=self.count_address)
             # Add count string to osc message
@@ -101,15 +109,17 @@ class CyberneticRepublicMusicGen:
         return None
 
     def build_vote_processor_options(self, section, dat):
-        return Classes.vote_processor.VoteProcessor('a)', 'b)', 'c)', 'd)', 'e)')
+        section_vals = dat[self.vote_option_keys[section]]
+        section_vals = random.sample(section_vals, 4)
+        return Classes.vote_processor.VoteProcessor(*section_vals)
 
 
 if __name__ == "__main__":
-    a = {'username': 'boop', 'text': 'a)'}
-    b = {'username': 'lop', 'text': 'I want b)!'}
+    a = {'username': 'boop', 'text': '808'}
+    b = {'username': 'lop', 'text': 'I want funk!'}
     logger = logger_launcher()
     vp = ['a)', 'b)', 'c)', 'd)', 'e)']
-    music_gen = CyberneticRepublicMusicGen(logger, vp)
+    music_gen = CyberneticRepublicMusicGen(logger, vote_options)
     music_gen.run()
     for i in range(9):
         music_gen.on_data(a)
