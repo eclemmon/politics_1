@@ -3,6 +3,11 @@ from nltk import pos_tag
 
 
 def get_pos_tuples(text):
+    """
+    Gets tuples of the parts of speech of a text
+    :param text: String
+    :return: List of Lists of tuples. e.g. [[('I', 'PRP'), ('love', 'VBP')], [('Let', 'VB'), ('me', 'PRP')]]
+    """
     res = []
     sentences = tokenize.sent_tokenize(text, language="english")
     sentences = [tokenize.word_tokenize(sentence) for sentence in sentences]
@@ -12,10 +17,20 @@ def get_pos_tuples(text):
 
 
 def count_discrete_pos(pos_count_dict):
+    """
+    Counts the number of different parts of speech in a pos_count_dict
+    :param pos_count_dict: Dict. e.g. {'PRP': 3}
+    :return: Int
+    """
     return len(pos_count_dict)
 
 
 def count_total_pos(pos_count_dict):
+    """
+    Counts the total number of parts of speech
+    :param pos_count_dict: Dict. e.g. {'PRP': 3}
+    :return: Int
+    """
     res = 0
     for value in pos_count_dict.values():
         res += value
@@ -23,6 +38,11 @@ def count_total_pos(pos_count_dict):
 
 
 def build_pos_count_dict(text):
+    """
+    Builds a dictionary of parts of speech as the key and the number of each POS as the value.
+    :param text: String.
+    :return: Dict {String: Int}. e.g. {'PRP': 3, 'VBP': 1, 'DT': 1, 'NN': 2, '.': 3, 'VB': 2, 'IN': 1, 'VBZ': 1}
+    """
     pos_count = {}
     for sentence in get_pos_tuples(text):
         for word in sentence:
