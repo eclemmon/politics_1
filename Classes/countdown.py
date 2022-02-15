@@ -1,7 +1,5 @@
 import time
 
-# set voting period and resting period
-# after 1 second update timer
 
 class Countdown:
     def __init__(self, voting_period, rest_period):
@@ -50,7 +48,6 @@ class Countdown:
             return self.voting_period()
         else:
             return self.resting_period()
-
 
 
 if __name__ == '__main__':
