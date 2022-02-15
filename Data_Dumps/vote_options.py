@@ -4,5 +4,5 @@ vote_options = {
     'melody': ['sustained', 'random', 'leapy', 'cats', 'choppy'],
     'middle-voices': ['pads', 'random', 'choppy', 'off-beats'],
     'harmony': ['doo-wop', 'weaponized', 'pachelbel', 'andalusian', 'changes', 'giant-steps', 'norm-core'],
-    'rhythm': ['four on the floor', 'polyrhythms', 'take-five', '']
+    'rhythm': ['four on the floor', 'polyrhythms', 'take-five', 'compound']
 }
