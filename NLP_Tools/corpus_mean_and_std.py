@@ -3,8 +3,15 @@ import pandas
 import json
 from fuzzywuzzy import fuzz
 
+
 class CorpusMeanAndStd:
     def __init__(self, mean=None, std=None, corpus=None):
+        """
+        Constructs an object that helps find a corpus's mean topic value and the standard of deviation from the mean.
+        :param mean: Float of mean value.
+        :param std: Float of standard of deviation.
+        :param corpus:
+        """
         if mean is None or std is None:
             try:
                 mean_and_std = mean_and_std_of_corpus(corpus)
@@ -38,8 +45,7 @@ class CorpusMeanAndStd:
 
 def mean_and_std_of_corpus(corpus):
     """
-    Builds mean and std after determining levenshtein distance between texts in a corpus.
-    Better way? Also dumb O(n^2) double nested loop.
+    Builds mean and standard of deviation after determining levenshtein distance between texts in a corpus.
     :param corpus:
     :return:
     """
