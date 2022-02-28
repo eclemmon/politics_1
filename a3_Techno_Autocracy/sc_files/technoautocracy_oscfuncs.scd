@@ -1,5 +1,4 @@
 (
-~netaddress = NetAddr.new("127.0.0.1", 57120);
 OSCFunc({ |args|
 	"######################################".postln;
 	"OSCFUNC received the following values:".postln;
