@@ -11,11 +11,17 @@ path = thisProcess.nowExecutingPath.dirname;
 		~server.sync;
 		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_init.scd");
 		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_routine.scd");
+		~server.sync;
+
 	};
 
 );
-~main.value();
+
 )
+
+~main.value();
+
+
 
 
 
