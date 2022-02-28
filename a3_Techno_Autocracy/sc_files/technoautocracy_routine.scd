@@ -36,6 +36,7 @@
 
 		// Print for testing
 		~gm.at(\antiHumanAmpVal).postln;
+		~gm.at(\sinAmpVal).postln;
 		// Wait between 1 and 3 seconds
 		rrand(1, 3).wait;
 
@@ -81,7 +82,7 @@
 
 	// Resume Base Noise
 	~gm.put(\antiHumanBaseNoise, Array.fill(8, {arg i; Synth(\lowClip,
-				[\out, 0, \amp, 0.1, \filter_freq, i*10+40, \pos, 1.0.rand2]
+				[\out, 0, \amp, 1, \filter_freq, i*10+40, \pos, 1.0.rand2]
 	)}));
 
 	// Play AntiHuman instruments
@@ -123,7 +124,7 @@
 
 	// Resume Base Noise
 	~gm.put(\antiHumanBaseNoise, Array.fill(8, {arg i; Synth(\lowClip,
-				[\out, 0, \amp, 0.1, \filter_freq, i*10+40, \pos, 1.0.rand2]
+				[\out, 0, \amp, 1, \filter_freq, i*10+40, \pos, 1.0.rand2]
 	)}));
 
 	// Play AntiHuman instruments
@@ -153,21 +154,6 @@
 	// Call main logic function
 	~main.value();
 });
-
-~main = {
-	if(~gm.at(\introduction), {
-		"running introduction".postln;
-		~sendVisualsReadyToStart.value(~gm);
-		~introduction.reset;
-		~introduction.play();
-	}, {
-		"running main".postln;
-		~mainRoutine.reset;
-		~sendVisualsStartMain.value(~gm);
-		~mainRoutine.play();
-		~introduction.stop();
-	});
-};
 
 )
 

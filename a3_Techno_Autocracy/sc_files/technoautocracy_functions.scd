@@ -90,6 +90,10 @@
 		~updateAntiHumanAmp.value(mem, updateVal);
 	}, {
 	// Else:
+		if (mem.at(\sinHealing) == false, {
+			~setVisualsSinBarHealing.value(mem);
+			mem.put(\sinHealing, true);
+		});
 		~updateSin.value(mem, updateVal);
 	});
 };
@@ -146,8 +150,11 @@
 	*/
 	if (mem.at(\sinMaxed), {
 		// Set audience to defeated
-		mem.put(\audienceDefeated, true);
-		"audience defeated".postln;
+		if (mem.at(\audienceDefeated) == false, {
+			"audience defeated".postln;
+			~sendVisualsAudienceDefeated.value(mem);
+			mem.put(\audienceDefeated, true);
+		});
 		// If antiHuman Turned off and audience defeated
 		if (mem.at(\audienceDefeated) && (mem.at(\antiHumanAmpVal) <= 0), {
 			// if pure sin tones
@@ -171,8 +178,10 @@
 	}, {
 		~updateSinAmp.value(mem, updateVal);
 		if (mem.at(\sinAmpVal) >= mem.at(\sinMax), {
+			if ((mem.at(\sinMaxed) == false), {
+				mem.at(\antiHumanBaseNoise).do({arg item, i; item.set(\gate, 0) });
+			});
 			mem.put(\sinMaxed, true);
-			mem.at(\antiHumanBaseNoise).do({arg item, i; item.set(\gate, 0) });
 		});
 	});
 
@@ -287,7 +296,9 @@
 
 ~sendHeal2Visuals = {
 	arg mem, updateVal;
-	mem.at(\visuals_netaddress).sendMsg("/heal", updateVal);
+	if (mem.at(\audienceDefeated) == false) {
+		mem.at(\visuals_netaddress).sendMsg("/heal", updateVal);
+	};
 };
 
 ~sendChangeVisuals = {
@@ -318,6 +329,28 @@
 ~sendVisualsReadyToStart = {
 	arg mem;
 	mem.at(\visuals_netaddress).sendMsg("/readyToStart");
+};
+
+~setVisualsSinBarHealing = {
+	arg mem;
+	mem.at(\visuals_netaddress).sendMsg("/sinBarHealing");
+};
+
+~main = {
+	if(~gm.at(\introduction), {
+		"running introduction".postln;
+		~sendVisualsReadyToStart.value(~gm);
+		~gm.at(\antiHumanInst).do({arg item, i; item.set(\amp, 0.5)});
+		~gm.at(\antiHumanBaseNoise).do({arg item, i; item.set(\amp, 1)});
+		~introduction.reset;
+		~introduction.play();
+	}, {
+		"running main".postln;
+		~mainRoutine.reset;
+		~sendVisualsStartMain.value(~gm);
+		~mainRoutine.play();
+		~introduction.stop();
+	});
 };
 
 )
