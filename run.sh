@@ -13,7 +13,7 @@ source "$SCRIPT_DIR/venv/bin/activate"
 command() {
   # sleep 10s
   # source "$SCRIPT_DIR/venv/bin/activate"
-  # python3.8 "$SCRIPT_DIR/Message_Endpoints/flask_twilio_twitter_client.py"
+  # python3.8 "$SCRIPT_DIR/Message_Endpoints/a1_discourse_flask_twilio_twitter_client.py"
   echo 'why?'
 }
 
