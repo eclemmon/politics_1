@@ -9,12 +9,12 @@
 
 			// Maximum amplitude values
 			\antiHumanMax, 1,
-			\sinMax, 0.5,
+			\sinMax, 0.4,
 
 			// Anti human instruments
-			\antiHumanInst, ~buildAntiHumanInstrumentArray.value(\bitCrush, 0.5), // HERE GOES THE ANTI HUMAN inst
+			\antiHumanInst, ~buildAntiHumanInstrumentArray.value(\bitCrush, 0), // HERE GOES THE ANTI HUMAN inst
 			\antiHumanBaseNoise, Array.fill(8, {arg i; Synth(\lowClip,
-				[\out, 0, \amp, 0.1, \filter_freq, i*10+40, \pos, 1.0.rand2]
+				[\out, 0, \amp, 0, \filter_freq, i*10+40, \pos, 1.0.rand2]
 			)}),
 
 			// Sin tones
@@ -37,6 +37,7 @@
 			\antiHumanResponding, false,
 			\introduction, true,
 			\audienceDefeated, false,
+			\sinHealing, false,
 			\audienceWon, false,
 			\sinMaxed, false,
 			\pureSins, false,
