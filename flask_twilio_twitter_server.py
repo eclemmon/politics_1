@@ -62,7 +62,7 @@ def sms():
     music_data = {"username": music_number, "text": message_body}
     message_data = {"username": full_number, "text": message_body}
     resp = MessagingResponse()
-    resp.message('Hello {}, you said: {}'.format(full_number, message_body))
+    resp.message('Thanks for your message {}, I am processing your message. You said: {}'.format(full_number, message_body))
     sio.emit('handle_message', music_data)
     handle_message(message_data)
     return str(resp)
@@ -106,7 +106,7 @@ def store_message(message_data):
     with app.app_context():
         try:
             user = get_or_make_user(message_data)
-            msg = Message(text=message_data['msg'], date=datetime.datetime.now().isoformat(), user_id=user.id)
+            msg = Message(text=message_data['text'], date=datetime.datetime.now().isoformat(), user_id=user.id)
             db.session.add(msg)
             db.session.commit()
             res = True
