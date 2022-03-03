@@ -19,6 +19,10 @@ CONFIG_PATH = 'config.json'
 with open(CONFIG_PATH, "r") as file:
     config = json.load(file)
 
+SETTINGS_PATH = 'settings.json'
+with open(SETTINGS_PATH, "r") as file:
+    settings = json.load(file)
+
 MIGRATION_DIR = os.path.join('models', 'migrations')
 
 app = Flask(__name__)
@@ -32,10 +36,6 @@ from Models.user import User
 from Models.message import Message
 
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
-
-global search_term
-search_term = '@InteractiveMus4'
-
 
 class MyStream(tweepy.Stream):
     def __init__(self, consumer_key, consumer_secret, access_token, access_secret):
@@ -86,8 +86,8 @@ def connect():
     sio.emit('client_connected', "you connected")
     stream = MyStream(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
                       credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
-    stream.filter(track=[search_term], threaded=True)
-    sio.emit('client_connected', "the search term is {}".format(search_term))
+    stream.filter(track=[settings["SEARCH_TERM"]], threaded=True)
+    sio.emit('client_connected', "the search term is {}".format(settings["SEARCH_TERM"]))
 
 
 @sio.on('disconnect')
@@ -106,11 +106,17 @@ def store_message(message_data):
     with app.app_context():
         try:
             user = get_or_make_user(message_data)
-            msg = Message(text=message_data['text'], date=datetime.datetime.now().isoformat(), user_id=user.id)
+            msg = Message(text=message_data['text'],
+                          date=datetime.datetime.now().isoformat(),
+                          user_id=user.id,
+                          movement=settings["MOVEMENT"],
+                          scored=scored(settings))
             db.session.add(msg)
             db.session.commit()
             res = True
-        except:
+        except Exception as e:
+            print("There was an exception!")
+            print(e)
             db.session.rollback()
             res = False
         finally:
@@ -133,6 +139,13 @@ def get_or_make_user(message_data):
                 db.session.rollback()
             finally:
                 db.session.close()
+
+
+def scored(settings):
+    if settings["SCORED"] == "true":
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':
