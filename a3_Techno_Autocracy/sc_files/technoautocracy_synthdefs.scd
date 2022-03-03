@@ -16,7 +16,7 @@ SynthDef.new(\lowClip, {
 	noise = ClipNoise.ar(1);
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.1), gate: gate, doneAction: 2);
 	rand_amp = LFNoise1.kr(0.5 + LFNoise1.kr(10).range(-0.1, 0.5));
-	filter = RLPF.ar(noise*rand_amp, filter_freq, rq: 0.001, mul: amp / 5) * env;
+	filter = RLPF.ar(noise*rand_amp, filter_freq, rq: 0.001, mul: amp / 6) * env;
 	pan = Pan2.ar(filter, pos);
 	Out.ar(out, pan);
 }).add;
@@ -26,7 +26,7 @@ SynthDef.new(\standardNNoise, {
 	var sig, env, select, pan;
 	select = Select.kr(unhook, [0, 1, 2]);
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.1), gate: gate, doneAction: 2);
-	sig = StandardN.ar(SampleRate.ir/octave, (LFNoise1.kr(3, mul: 0.75, add: 1.5) + select)).dup * 0.3 * env * amp;
+	sig = StandardN.ar(SampleRate.ir/octave, (LFNoise1.kr(3, mul: 0.75, add: 1.5) + select)).dup * 0.3 * env * (amp / 1.5);
 	pan = Pan2.ar(sig, pos);
 	Out.ar(out, pan);
 }).add;
@@ -44,7 +44,7 @@ SynthDef.new(\gendy, {
 	arg out=0, amp=1, gate=1, pos=0, minFreq=440, maxFreq=660;
 	var env, gendy, pan;
 	env = EnvGen.kr(Env.adsr(releaseTime: 0.1), gate: gate, doneAction: 2);
-	gendy = Gendy5.ar(minfreq: minFreq, maxfreq: maxFreq) * (amp / 2);
+	gendy = Gendy5.ar(minfreq: minFreq, maxfreq: maxFreq) * (amp / 6);
 	pan = Pan2.ar(gendy, pos);
 	Out.ar(out, pan);
 }).add;
