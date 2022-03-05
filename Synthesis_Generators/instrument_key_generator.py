@@ -49,7 +49,7 @@ class InstrumentKeyAndNameGenerator:
 def generate_instrument_dict(inst_names: list):
     """
     Builds a dictionary of instruments that are agnostic to the names inserted. Keys are organized as
-    'sound[i+1]': 'name' based on the instrument_names list input.
+    'sound[i+1]': 'name' based on the instrument_names_sc list input.
     :param inst_names: List of instrument names e.g., ['sin', 'crazyness']
     :return: Dictionary of String:String e.g., {'sound1': 'sin', 'sound2': 'crazyness'}
     """
@@ -132,9 +132,9 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
 
 
 if __name__ == "__main__":
-    from Data_Dumps.instrument_names import instrument_names
+    from Data_Dumps.instrument_names import instrument_names_sc
     from NLP_Tools.emoji_counter import get_emoji_sentiment
 
-    key_gen = InstrumentKeyAndNameGenerator(instrument_names, 4)
+    key_gen = InstrumentKeyAndNameGenerator(instrument_names_sc, 4)
     print(key_gen.get_instrument_chain_keys({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
                                             get_emoji_sentiment("❤")))
