@@ -2,31 +2,24 @@
 var path;
 path = thisProcess.nowExecutingPath.dirname;
 
-o = Server.default.options;
-o.memSize = 16384;
-o.maxNodes = 4096;
-o.maxSynthDefs = 4096;
-s = Server.default;
+MIDIClient.init;
+~gm = Dictionary.new();
+~netaddress = NetAddr.new("127.0.0.1", 57120);
+thisProcess.interpreter.executeFile(path +/+ "/discourse_midi_cc_functions.scd");
+thisProcess.interpreter.executeFile(path +/+ "/discourse_helper_functions.scd");
+thisProcess.interpreter.executeFile(path +/+ "/discourse_build_sig_path.scd");
+thisProcess.interpreter.executeFile(path +/+ "/discourse_init.scd");
+thisProcess.interpreter.executeFile(path +/+ "/discourse_oscfuncs.scd");
 
-s.waitForBoot(
-	{
-		~gm = Dictionary.new();
-		~netaddress = NetAddr.new("127.0.0.1", 57120);
-		thisProcess.interpreter.executeFile(path +/+ "/discourse_synthdefs.scd");
-		s.sync;
-		thisProcess.interpreter.executeFile(path +/+ "/discourse_pattern_builders.scd");
-		thisProcess.interpreter.executeFile(path +/+ "/discourse_helper_functions.scd");
-		thisProcess.interpreter.executeFile(path +/+ "/discourse_build_sig_path.scd");
-		thisProcess.interpreter.executeFile(path +/+ "/discourse_init.scd");
-		~discourse_init.value(~gm, s, 10);
-		thisProcess.interpreter.executeFile(path +/+ "/discourse_oscfuncs.scd");
-	}
-);
 )
 
-~buildSignalPath.value(['sound_triggers', 15, 8, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 0.1203999966383, 0.0, 0.0, 0.0, 4, 5, 4, 'wavetable1', 'wavetable1', 'wavetable1', 'wavetable1', 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5], ~gm);
 
-~buildSignalPath.value(['sound_triggers', 15, 8, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 0.1203999966383, 0.0, 0.0, 0.0, 4, 5, 4, 'wavetable2', 'wavetable2', 'wavetable2', 'wavetable2', 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5], ~gm);
+~buildSignalPath.value(['sound_triggers', 1, 2, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 1, -1, 0.0, 0.0, 5, 8, 1, 0, 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5], ~gm);
+
+
+~buildSignalPath.value(['sound_triggers', 15, 8, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 0.1203999966383, 0.0, 0.0, 0.0, 4, 5, 4, 2, 3, 4, 9, 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5], ~gm);
+
+~buildSignalPath.value(['sound_triggers', 0, 0, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 0.1203999966383, 0.0, 0.0, 0.0, 4, 5, 1, 9, 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5], ~gm);
 
 ~buildSignalPath.value(['sound_triggers', 15, 8, 0.0, 0.9383333325386, 0.061666667461395, 0.1203999966383, 6.5357141494751, 0.1203999966383, 0.0, 0.0, 0.0, 4, 5, 4, 'wavetable3', 'wavetable3', 'wavetable3', 'wavetable3', 0.6691871881485, 3.0, 0.0, 3.0, 7.0, 0.49402922391891, 3.0, 0.0, 4.0, 9.0, 0.83678364753723, 3.0, 0.0, 5.0, 8.0, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, 1.0, -1.5, -1.5, -1.5, 1.0, -1.5], ~gm);
 

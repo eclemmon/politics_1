@@ -33,10 +33,13 @@
 ~controlPan = {
 	arg midiOut, channel, startVal, endVal, time;
 	var routine, increment, distance, waitTime, currentVal;
+	"PORT:".postln;
+	midiOut.port.postln;
+	"CHANNEL:".postln;
+	channel.postln;
 	distance = abs(endVal.linlin(-1, 1, 0, 127) - startVal.linlin(-1, 1, 0, 127));
 	waitTime = time / distance;
 	currentVal = startVal.linlin(-1, 1, 0, 127);
-	currentVal.postln;
 	if(startVal >= endVal, {
 		increment = -1;
 	}, {
@@ -48,7 +51,6 @@
 				currentVal = currentVal + increment;
 				if(currentVal > 127, {currentVal = 127});
 				midiOut.control(channel, 6, currentVal);
-				currentVal.postln;
 				waitTime.wait;
 			});
 		}, {
@@ -61,7 +63,7 @@
 
 		});
 	});
-	routine.play;
+	routine;
 };
 
 ~controlModFreq = {
@@ -75,7 +77,7 @@
 };
 
 ~createMidiPattern = {
-	arg array, mOut;
+	arg array, mOut, channel;
 	var pattern, modvals, octave, total_dur, chords_data, rhythm_data, sus_vals;
 	// Get input data
 	modvals = ~get_mod_values.value(array);
@@ -84,13 +86,19 @@
 	chords_data = ~get_chords_data.value(array);
 	rhythm_data = ~get_rhythm_data.value(array);
 	sus_vals = ~build_sus_data.value(rhythm_data, total_dur);
+/*	"sustain values".postln;
+	sus_vals.postln;
+	"chords_data".postln;
+	chords_data.postln;
+	"rhythm_data".postln;
+	rhythm_data.postln;*/
 
 	pattern = Pbind(
 		\type, \midi,
 		\midicmd, \noteOn,
 		\midiout, mOut,
-		\chan, 0,
-		\sustain, Pseq(sus_vals, 1), //(total_dur / array.size),
+		\chan, channel,
+		\sustain, Pseq(sus_vals, array.size), //(total_dur / array.size),
 		\dur, ~build_dur_Pseq.value(rhythm_data, total_dur),
 		\degree, ~build_notes_Pwrand.value(chords_data),
 		\octave, octave + 1,
