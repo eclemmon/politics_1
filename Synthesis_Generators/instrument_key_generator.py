@@ -133,8 +133,10 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
 
 if __name__ == "__main__":
     from Data_Dumps.instrument_names import instrument_names_sc
+    from Data_Dumps.instrument_names import instrument_indices_daw
     from NLP_Tools.emoji_counter import get_emoji_sentiment
 
-    key_gen = InstrumentKeyAndNameGenerator(instrument_names_sc, 4)
-    print(key_gen.get_instrument_chain_keys({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
-                                            get_emoji_sentiment("❤")))
+    key_gen = InstrumentKeyAndNameGenerator(instrument_indices_daw, 4)
+    keys = key_gen.get_instrument_chain_keys({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
+                                            get_emoji_sentiment("❤"))
+    print(key_gen.get_n_instrument_chain_names(keys, 1))

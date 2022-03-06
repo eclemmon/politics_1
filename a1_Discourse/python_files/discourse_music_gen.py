@@ -35,7 +35,7 @@ class DiscourseMusicGen:
     def __init__(self, logger_object: logging.Logger, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
                  formal_section_length=30, harmonic_rhythm=30, message_comparison=TF_IDF(),
                  web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
-                 profanity_word_list_path=None, max_time_interval=20):
+                 profanity_word_list_path=None, max_time_interval=20, daw=True):
         """
         Initializes DiscourseMusicGen
         :param logger_object: Logger, built from Utility_Tools.politics_logger.py
@@ -81,6 +81,7 @@ class DiscourseMusicGen:
         self.num_chords_walked_multiplier = ncw_multiplier
         self.inst_key_name_gen = instrument_key_and_name_gen
         self.max_time_interval = max_time_interval
+        self.daw = daw
 
         # Initialize OSC clients.
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
@@ -170,7 +171,10 @@ class DiscourseMusicGen:
         # Add instrument names to osc message: var num of vals
         msg.add_arg(len(inst_names), arg_type='i')
         for inst in inst_names:
-            msg.add_arg(inst, arg_type='s')
+            if self.daw:
+                msg.add_arg(inst, arg_type='i')
+            else:
+                msg.add_arg(inst, arg_type='s')
 
         # Neighbor Chord Borrowing Vector distance mapping (Sentiment Values) {Weight of neighbor chords}
         w_c_array = self.get_chord_and_weights(sent)
