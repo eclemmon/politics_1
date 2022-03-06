@@ -7,7 +7,7 @@ from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGe
 from Utility_Tools.politics_logger import logger_launcher
 
 # Load settings
-SETTINGS_PATH = 'settings.json'
+SETTINGS_PATH = '../settings.json'
 with open(SETTINGS_PATH, "r") as file:
     settings = json.load(file)
 
