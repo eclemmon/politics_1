@@ -3,3 +3,7 @@ instrument_names_sc = [
 ]
 
 instrument_indices_daw = [i for i in range(16)]
+
+
+if __name__ == "__main__":
+    print(instrument_indices_daw)

@@ -20,7 +20,7 @@ else:
 # Initialize client, logger and music generator
 client = socketio.Client()
 logger = logger_launcher()
-inst_key_name_gen = InstrumentKeyAndNameGenerator(instruments, 4)
+inst_key_name_gen = InstrumentKeyAndNameGenerator(instruments, 16)
 music_gen = DiscourseMusicGen(logger, inst_key_name_gen)
 
 

@@ -136,7 +136,7 @@ if __name__ == "__main__":
     from Data_Dumps.instrument_names import instrument_indices_daw
     from NLP_Tools.emoji_counter import get_emoji_sentiment
 
-    key_gen = InstrumentKeyAndNameGenerator(instrument_indices_daw, 4)
-    keys = key_gen.get_instrument_chain_keys({'neg': 0.4734343, 'neu': 0.657, 'pos': 0.403, 'compound': -0.863},
-                                            get_emoji_sentiment("❤"))
-    print(key_gen.get_n_instrument_chain_names(keys, 1))
+    key_gen = InstrumentKeyAndNameGenerator(instrument_indices_daw, 16)
+    keys = key_gen.get_instrument_chain_keys({'neg': 0.24, 'neu': 1, 'pos': 0, 'compound': -1},
+                                            None)
+    print(key_gen.get_n_instrument_chain_names(keys, 4))
