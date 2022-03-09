@@ -1,4 +1,5 @@
 import random
+import hashlib
 
 
 class InstrumentKeyAndNameGenerator:
@@ -87,7 +88,10 @@ def get_next_instrument(inst_graph: dict, current_instrument: str, value: float,
     :param total_no_instruments: Integer of number of instruments.
     :return: String of next instrument key name. e.g. 'sound2'
     """
-    index = int(hash(value) % total_no_instruments - 1)
+    h = better_hash(value)
+    print(h)
+    index = int(better_hash(value) % total_no_instruments - 1)
+    print(index)
     return inst_graph[current_instrument][index]
 
 
@@ -99,7 +103,7 @@ def get_first_instrument(value: float, instrument_keys: list, total_no_instrumen
     :param total_no_instruments: Integer of total number of instruments available.
     :return: String of first instrument. e.g. 'sound1'
     """
-    index = (hash(value) % total_no_instruments)
+    index = (better_hash(value) % total_no_instruments)
     return instrument_keys[index]
 
 
@@ -130,6 +134,9 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
         res.append(get_next_instrument(inst_graph, res[-1], values[_], total_no_instruments))
     return res
 
+def better_hash(input):
+    return int.from_bytes(hashlib.sha3_256(repr(input).encode()).digest()[:8], 'little')
+
 
 if __name__ == "__main__":
     from Data_Dumps.instrument_names import instrument_names_sc
@@ -137,6 +144,6 @@ if __name__ == "__main__":
     from NLP_Tools.emoji_counter import get_emoji_sentiment
 
     key_gen = InstrumentKeyAndNameGenerator(instrument_indices_daw, 16)
-    keys = key_gen.get_instrument_chain_keys({'neg': 0.24, 'neu': 1, 'pos': 0, 'compound': -1},
+    keys = key_gen.get_instrument_chain_keys({'neg': 0.24, 'neu': 0.955466, 'pos': 0.245, 'compound': -1},
                                             None)
     print(key_gen.get_n_instrument_chain_names(keys, 4))

@@ -156,7 +156,7 @@ class DiscourseMusicGen:
 
         # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
         # od = octave_displacement_generator.get_octave_placement_sigmoid(data['text'])
-        od = octave_displacement_generator.get_octave_placement_linear(data['text'])
+        od = octave_displacement_generator.get_octave_placement_piecewise(data['text'])
         # Add octave displacement to osc message: 1 val
         msg.add_arg(od, arg_type='i')
 
