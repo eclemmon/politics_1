@@ -20,11 +20,15 @@ def count_emojis(tokens):
 
 
 def get_emoji_sentiment(token):
-    rank = emosent.get_emoji_sentiment_rank(token)
-    return {'neg': rank['negative'],
-            'neu': rank['neutral'],
-            'pos': rank['positive'],
-            'compound': rank['sentiment_score']}
+    try:
+        rank = emosent.get_emoji_sentiment_rank(token)
+    except:
+        rank = {'negative': 0.0, 'neutral': 0.0, 'positive': 0.0, 'sentiment_score': 0.0}
+    finally:
+        return {'neg': rank['negative'],
+                'neu': rank['neutral'],
+                'pos': rank['positive'],
+                'compound': rank['sentiment_score']}
 
 
 def get_emojis(text):

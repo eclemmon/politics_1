@@ -1,11 +1,9 @@
 (
 ~buildSignalPath = {
 	arg vals, mem;
-	var total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, octave, rhythm, sus_vals, mod_vals, modAmp, modFreq, mOut, panRoutine;
+	var total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, octave, rhythm, sus_vals, mod_vals, modAmp, modFreq, mOut, panRoutine, panRoutines, panChannel;
 	// Get MidiOut
 	mOut = mem.at(\mOut).at(mem.at(\mOutIndex));
-	// Update MidiOut index
-	mem.put(\mOutIndex, (mem.at(\mOutIndex) + 1 % mem.at(\mOut).size));
 
 	total_dur = ~get_total_dur_value.value(vals);
 	dvals = ~get_delay_values.value(vals);
@@ -38,7 +36,10 @@
 
 
 	~print_vals.value([total_dur, dvals, rvals, spatvals, instruments, time_interval, total_dur, octave, rhythm, sus_vals]).postln;
-
+	// Stop pan Routines at current mOutIndex
+	"MOutIndex:".postln;
+	mem.at(\mOutIndex).postln;
+	mem.at(\panRoutines).at(mem.at(\mOutIndex)).stop;
 	// Set control values
 	instruments.do({
 		arg item;
@@ -51,15 +52,25 @@
 		~controlReverbDryWet.value(mOut, channel, mix);
 		~controlModFreq.value(mOut, channel, modFreq);
 		~controlModAmp.value(mOut, channel, modAmp);
-		// start pan motion routine
-/*		panRoutine = ~controlPan.value(mOut, channel, start_point, target, time_interval);
-		panRoutine.play;*/
+		// make pan routine for the instrument
 	});
+
+	// get pan Channel
+	panChannel = mem.at(\panChannels).at(mem.at(\mOutIndex));
+	"panChannel".postln;
+	panChannel.postln;
+	// Create panRoutine
+	panRoutine = ~controlPan.value(mem.at(\mOut).at(0), panChannel, start_point, target, time_interval);
+	// Play pan routine
+	panRoutine.play;
+	// Add Pan Routine to storage
+	mem.at(\panRoutines).put(mem.at(\mOutIndex), panRoutine);
 
 	// Create midi pattern
 	patterns = Array.fill(instruments.size, {arg i; ~createMidiPattern.value(vals, mOut, instruments[i])} );
 	Ppar(patterns).play;
-
+	// Update MidiOut index
+	mem.put(\mOutIndex, ((mem.at(\mOutIndex) + 1) % mem.at(\mOut).size));
 
 
 };

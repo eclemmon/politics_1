@@ -50,14 +50,14 @@
 			forBy(currentVal, endVal.linlin(-1, 1, 0, 127), increment, {
 				currentVal = currentVal + increment;
 				if(currentVal > 127, {currentVal = 127});
-				midiOut.control(channel, 6, currentVal);
+				midiOut.control(0, channel, currentVal);
 				waitTime.wait;
 			});
 		}, {
 			forBy(currentVal, endVal.linlin(-1, 1, 0, 127), increment, {
 				currentVal = currentVal + increment;
 				if(currentVal < 0, {currentVal = 0});
-				midiOut.control(channel, 6, currentVal);
+				midiOut.control(0, channel, currentVal);
 				waitTime.wait;
 			});
 

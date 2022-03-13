@@ -166,7 +166,7 @@ class DiscourseMusicGen:
         # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
         # Lower octaves == less instruments
         num_insts = int(linear_to_linear(od, 2, 8, 1, self.inst_key_name_gen.max_instruments + 1))
-        inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent)
+        inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent.sent_dict)
         inst_names = self.inst_key_name_gen.get_n_instrument_chain_names(inst_keys, num_insts)
         # Add instrument names to osc message: var num of vals
         msg.add_arg(len(inst_names), arg_type='i')
