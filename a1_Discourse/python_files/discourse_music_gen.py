@@ -77,7 +77,8 @@ class DiscourseMusicGen:
         self.worker_thread = None
         self.formal_section_length = formal_section_length
         self.harmonic_rhythm = harmonic_rhythm
-        self.osc_func_address = '/sound_triggers'
+        self.synth_osc_address = '/sound_triggers'
+        self.gui_osc_address = '/gui_address'
         self.num_chords_walked_multiplier = ncw_multiplier
         self.inst_key_name_gen = instrument_key_and_name_gen
         self.max_time_interval = max_time_interval
@@ -116,7 +117,7 @@ class DiscourseMusicGen:
     def send_music_data(self, data):
         # Send Data to Super Collider.
         # Build OSC Message Object Constructor
-        msg = osc_message_builder.OscMessageBuilder(address=self.osc_func_address)
+        msg = osc_message_builder.OscMessageBuilder(address=self.synth_osc_address)
         # Builds the time interval data
         time_interval = self.get_time_interval_data(data['text'])
         # Builds a dictionary of counts of parts of speech
@@ -205,7 +206,7 @@ class DiscourseMusicGen:
     def send_gui_data(self, data):
         # Send Data to GUI
         # Build OSC Message Object Constructor
-        msg = osc_message_builder.OscMessageBuilder(address="\hallo")
+        msg = osc_message_builder.OscMessageBuilder(address=self.gui_osc_address)
         # Construct text to display and censor any text for profanity.
         display = data['username'] + " said: " + self.profanity.censor(data['text'])
         print(display)
