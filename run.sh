@@ -20,7 +20,7 @@ python3.8 "$SCRIPT_DIR/flask_twilio_twitter_server.py" &
 python3.8 "$SCRIPT_DIR/Utility_Tools/set_web_hook.py";
 
 
-trap "{ echo 'SHUTTING DOWN'; redis-cli shutdown; kill $(pgrep -f flask); }" INT
+trap "{ echo 'SHUTTING DOWN'; redis-cli shutdown; kill $(pgrep -f flask); kill $(pgrep ngrok)}" INT
 
 exit
 
