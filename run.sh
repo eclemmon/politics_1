@@ -3,6 +3,10 @@
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 SC_DIR="~/Applications/SuperCollider.app/Contents/MacOS/"
 SECRET_KEY="abc123"
+NGROK_PID=$(pgrep ngrok)
+
+# Kill running ngrok
+kill -9 "($NGROK_PID)"
 
 echo "##################"
 echo "Running Politics 1"
