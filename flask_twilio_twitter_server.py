@@ -48,7 +48,8 @@ class MyStream(tweepy.Stream):
     def on_data(self, data):
         json_data = json.loads(data)
         message_data = {'username': json_data['user']['screen_name'],
-                        'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip()}
+                        'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip(),
+                        'tweet': True}
         store_message(message_data)
         self.stream_sio.emit('handle_message', message_data)
 
@@ -56,15 +57,15 @@ class MyStream(tweepy.Stream):
 @app.route('/sms', methods=['POST'])
 def sms():
     full_number = request.form['From']
-    music_number = "XXX-XXX-" + request.form['From'][-4:]
+
     # print(music_number)
     message_body = request.form['Body']
-    music_data = {"username": music_number, "text": message_body}
-    message_data = {"username": full_number, "text": message_body}
+    music_data = {"username": full_number, "text": message_body}
+    message_data = {"username": full_number, "text": message_body, "sms": True}
     resp = MessagingResponse()
     resp.message('Thanks for your message {}, I am processing your message. You said: {}'.format(full_number, message_body))
     sio.emit('handle_message', music_data)
-    handle_message(message_data)
+    store_message(message_data)
     return str(resp)
 
 
