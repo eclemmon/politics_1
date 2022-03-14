@@ -115,6 +115,11 @@ class DiscourseMusicGen:
             self.send_gui_data(data=data)
 
     def send_music_data(self, data):
+        """
+        This is the big NLP processing and OSC logic function.
+        :param data: The message contents of a text or tweet.
+        :return: True
+        """
         # Send Data to Super Collider.
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.synth_osc_address)
