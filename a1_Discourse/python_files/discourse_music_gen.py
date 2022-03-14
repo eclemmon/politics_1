@@ -202,6 +202,8 @@ class DiscourseMusicGen:
         # Send the message to SuperCollider
         self.sc_client.send(msg)
 
+
+
         # CLEAN UP AND UPDATE ANY VALUES
         # Update average sentiment value
         self.average_sent.add_value_average(sent_dict)
@@ -213,7 +215,12 @@ class DiscourseMusicGen:
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.gui_osc_address)
         # Construct text to display and censor any text for profanity.
-        display = data['username'] + " said: " + self.profanity.censor(data['text'])
+        if data.get('sms') == True:
+            display = "XXX-XXX-" + data['username'][-4:] + " said: " + self.profanity.censor(data['text'])
+        elif data.get('tweet') == True:
+            display = data['username'] + " said: " + self.profanity.censor(data['text'])
+        else:
+            display = data['username'] + " said: " + self.profanity.censor(data['text'])
         print(display)
         print(data)
         # Add data to the message
