@@ -11,16 +11,22 @@ SETTINGS_PATH = '../settings.json'
 with open(SETTINGS_PATH, "r") as file:
     settings = json.load(file)
 
+TWITTER_PATH = '../twitter_credentials.json'
+with open(TWITTER_PATH, "r") as file:
+    credentials = json.load(file)
+
 # Determine instrument names
 if settings["DAW"] == 'true':
     instruments = instrument_indices_daw
+    inst_key_name_gen = InstrumentKeyAndNameGenerator(instruments, 16)
 else:
     instruments = instrument_names_sc
+    inst_key_name_gen = InstrumentKeyAndNameGenerator(instruments, 4)
 
 # Initialize client, logger and music generator
 client = socketio.Client()
 logger = logger_launcher()
-inst_key_name_gen = InstrumentKeyAndNameGenerator(instruments, 16)
+
 music_gen = DiscourseMusicGen(logger, inst_key_name_gen)
 
 
