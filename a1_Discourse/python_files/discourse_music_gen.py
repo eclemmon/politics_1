@@ -1,11 +1,15 @@
 import logging
 import time
-import random
+import json
+import tweepy
 
+from dotenv import dotenv_values
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Classes.worker_thread import WorkerThread
 from Utility_Tools.mapping_functions import linear_to_linear
+from Utility_Tools.message_response import PoliticsMessageResponder
+from Utility_Tools.message_response import generate_discourse_message_response
 
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.corpus_mean_and_std import CorpusMeanAndStd
@@ -87,6 +91,18 @@ class DiscourseMusicGen:
         # Initialize OSC clients.
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
         self.gui_client = udp_client.SimpleUDPClient("127.0.0.1", 12000)
+
+        # Make Message Responder
+        config = dotenv_values()
+
+        twitter_path = '/Users/ericlemmon/Documents/PhD/PhD_Project_v2/twitter_credentials.json'
+        with open(twitter_path, "r") as file:
+            credentials = json.load(file)
+
+        self.twitter_auth = tweepy.OAuth1UserHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
+                                                     credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
+        self.responder = PoliticsMessageResponder(config['TWILIO_ACCOUNT_SID'], config['TWILIO_AUTH_TOKEN'],
+                                                  config['TWILIO_PHONE_NUMBER'], self.twitter_auth)
 
         # Initialize time_passed
         self.starting_time = time.time()
@@ -194,14 +210,18 @@ class DiscourseMusicGen:
         for item in rhythm:
             msg.add_arg(item, arg_type='f')
 
-        # Build the message
+        # Send Message Response
+        kwargs = {'od': od, 'time_interval': time_interval, 'rhythm': rhythm, 'delay_t_a_d': delay_t_a_d, 'spat': spat,
+                  'pmod': pmod}
+        generate_discourse_message_response(self.responder, data, kwargs)
+
+        # Build the osc message
         msg = msg.build()
         # Log the message
         self.logger_object.info(data)
         self.logger_object.info(msg.params)
         # Send the message to SuperCollider
         self.sc_client.send(msg)
-
 
 
         # CLEAN UP AND UPDATE ANY VALUES

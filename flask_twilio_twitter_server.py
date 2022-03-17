@@ -37,6 +37,7 @@ from Models.message import Message
 
 sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 
+
 class MyStream(tweepy.Stream):
     def __init__(self, consumer_key, consumer_secret, access_token, access_secret):
         super(MyStream, self).__init__(consumer_key, consumer_secret, access_token, access_secret)
@@ -49,7 +50,7 @@ class MyStream(tweepy.Stream):
         json_data = json.loads(data)
         message_data = {'username': json_data['user']['screen_name'],
                         'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip(),
-                        'tweet': True}
+                        'tweet': True, "twitter_user_id": json_data['user']['id'], "tweet_id": json_data['id']}
         store_message(message_data)
         self.stream_sio.emit('handle_message', message_data)
 
@@ -57,16 +58,14 @@ class MyStream(tweepy.Stream):
 @app.route('/sms', methods=['POST'])
 def sms():
     full_number = request.form['From']
-
-    # print(music_number)
     message_body = request.form['Body']
-    music_data = {"username": full_number, "text": message_body}
     message_data = {"username": full_number, "text": message_body, "sms": True}
-    resp = MessagingResponse()
-    resp.message('Thanks for your message {}, I am processing your message. You said: {}'.format(full_number, message_body))
-    sio.emit('handle_message', music_data)
+    # resp = MessagingResponse()
+    # resp.message('Thanks for your message {}, I am processing your message. You said: {}'.format(full_number,
+    #                                                                                              message_body))
+    sio.emit('handle_message', message_data)
     store_message(message_data)
-    return str(resp)
+    return ""
 
 
 @app.route('/shutdown', methods=['POST'])
