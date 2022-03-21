@@ -8,9 +8,10 @@ class PoliticsMessageResponder:
     def __init__(self, twilio_account_sid, twilio_auth_token, from_number, tweepy_auth):
         """
         Constructs the politics message responder that will be used to send messages back to users.
-        :param account_sid: Twilio account session ID
-        :param auth_token: Twilio authentication token
+        :param twilio_account_sid: Twilio account session ID
+        :param twilio_auth_token: Twilio authentication token
         :param from_number: Phone number to send messages from (if, for example the phone number owned changes)
+        :param tweepy_auth: tweepy auth object.
         """
         self.client = Client(twilio_account_sid, twilio_auth_token)
         self.tweepy_api = tweepy.API(tweepy_auth)
