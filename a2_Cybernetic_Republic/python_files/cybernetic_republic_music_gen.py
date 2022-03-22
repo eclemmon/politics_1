@@ -34,9 +34,10 @@ class CyberneticRepublicMusicGen:
         self.layer = 0
         self.total_time = (voting_period + resting_period) * num_cycles
 
-        self.msg_address = "\message"
-        self.count_address = "\count"
-        self.end_address = "\end"
+        self.msg_address = "/message"
+        self.count_address = "/count"
+        self.flash_address = "/flash"
+        self.end_address = "/end"
 
     def on_data(self, data):
         if self.is_voting_period:
@@ -77,7 +78,7 @@ class CyberneticRepublicMusicGen:
     def run_counter(self, total_time):
         total_count = 0
         while total_count <= total_time:
-            print(total_count)
+            # print(total_count)
             # reset vote processor after
             # Set is voting period to match countdown
             self.is_voting_period = self.countdown.is_voting_period
@@ -94,10 +95,13 @@ class CyberneticRepublicMusicGen:
             # Increment aggregate count of time passed and sleep one second
             total_count += 1
             time.sleep(1)
-            # On section change, generate new vote processor options/reset.
+            # On section change, generate new vote processor options/reset, flash
             if total_count % (self.countdown.init_rest_period + self.countdown.init_vote_period) == 0:
                 self.lock.acquire()
                 try:
+                    flash_msg = osc_message_builder.OscMessageBuilder(address=self.flash_address)
+                    flash_msg = flash_msg.build()
+                    self.gui_client.send(flash_msg)
                     self.section += 1
                     self.vote_processor = self.build_vote_processor_options(self.section, self.vote_processor_dat)
                 finally:
