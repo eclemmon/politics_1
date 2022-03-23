@@ -240,9 +240,9 @@ class DiscourseMusicGen:
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.gui_osc_address)
         # Construct text to display and censor any text for profanity.
-        if data.get('sms') == True:
+        if data.get('sms'):
             display = "XXX-XXX-" + data['username'][-4:] + " said: " + self.profanity.censor(data['text'])
-        elif data.get('tweet') == True:
+        elif data.get('tweet'):
             display = data['username'] + " said: " + self.profanity.censor(data['text'])
         else:
             display = data['username'] + " said: " + self.profanity.censor(data['text'])
@@ -359,6 +359,12 @@ class DiscourseMusicGen:
             self.worker_thread.start()
 
     def set_output_chord(self, time_interval, chords):
+        """
+
+        :param time_interval:
+        :param chords:
+        :return:
+        """
         for chord in chords:
             if self.worker_thread.stopped():
                 break
