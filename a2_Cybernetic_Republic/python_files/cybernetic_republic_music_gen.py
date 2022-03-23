@@ -40,7 +40,15 @@ class CyberneticRepublicMusicGen:
         self.end_address = "/end"
 
     def on_data(self, data):
+        """
+        Checks if a user has already submitted a vote. If not, via the vote processor, checks to see if an option has
+        been voted for. If something has been voted for, it modifies the vote percentage tally and sends the returned
+        vote string off to the GUI.
+        :param data: Dictionary of data e.g. {'username': "voter", 'text': "I want a)"}
+        :return: None
+        """
         if self.is_voting_period:
+            # skip voter if they have already voted
             if self.voters.get(data['username']):
                 pass
             else:
@@ -53,14 +61,24 @@ class CyberneticRepublicMusicGen:
             pass
 
     def run(self):
+        """
+        Runs the main program which spins off a subtask via self.worker_thread to count through the sections and update
+        any values in a thread-safe manner.
+        :return: None
+        """
         # Set initial GUI string
         vote = self.vote_processor.display_current_results()
         self.send_vote_message_to_gui(vote)
+        # Start worker thread that counts through the sections
         if self.worker_thread is None:
             self.worker_thread = WorkerThread(target=self.run_counter, args=[self.total_time])
             self.worker_thread.start()
 
     def end(self):
+        """
+        Sends graceful shutdown messages and then runs shutdown on the python side.
+        :return: None
+        """
         msg = osc_message_builder.OscMessageBuilder(address=self.end_address)
         msg.add_arg(1, arg_type='i')
         msg = msg.build()
@@ -69,7 +87,10 @@ class CyberneticRepublicMusicGen:
         self.shutdown()
 
     def shutdown(self):
-        # stop
+        """
+        Prints shutting down and ends the program.
+        :return: None
+        """
         print("shutting down")
 
     # TODO: Send section title over to GUI
