@@ -110,7 +110,7 @@ class DiscourseMusicGen:
     def trigger_sounds(self, data):
         """
         Triggers sounds and calls a cascading stack of functions and methods to generate music.
-        :param data: Currently the message contents of a tweet.
+        :param data: Dict of data, i.e. {'text': "lorum ipsum", 'username': "Confucius"}
         """
         # Get current time and time elapsed and add text to current partial corpus.
         current_time = time.time()
@@ -133,7 +133,7 @@ class DiscourseMusicGen:
     def send_music_data(self, data):
         """
         This is the big NLP processing and OSC logic function.
-        :param data: The message contents of a text or tweet.
+        :param data: Dict of data, i.e. {'text': "lorum ipsum", 'username': "Confucius"}
         :return: True
         """
         # Send Data to Super Collider.
@@ -231,6 +231,11 @@ class DiscourseMusicGen:
         return True
 
     def send_gui_data(self, data):
+        """
+        Sends osc message over to GUI.
+        :param data: Dict of data, i.e. {'text': "lorum ipsum", 'username': "Confucius"}
+        :return: Boolean True
+        """
         # Send Data to GUI
         # Build OSC Message Object Constructor
         msg = osc_message_builder.OscMessageBuilder(address=self.gui_osc_address)
@@ -330,8 +335,15 @@ class DiscourseMusicGen:
         else:
             self.send_chord_walk()
 
-    def schedule_random_walk_only_new(self, num_chords_walked, harmonic_web, time_interval=None,
-                                      harmonic_rhythm=None):
+    def schedule_random_walk_only_new(self, num_chords_walked, harmonic_web, time_interval=None):
+        """
+        Spins off a thread that schedules a random walk through the harmonic web
+        :param num_chords_walked: Integer of number of chords walked
+        :param harmonic_web: HarmonicWeb subclass representing a graph of potential chords and their iterative
+        progressions.
+        :param time_interval: Float or Integer of the amount of time in between chord changes
+        :return: None
+        """
         if time_interval is None:
             time_interval = 5
 
