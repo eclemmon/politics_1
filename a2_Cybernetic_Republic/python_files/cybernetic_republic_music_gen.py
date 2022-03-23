@@ -95,6 +95,12 @@ class CyberneticRepublicMusicGen:
 
     # TODO: Send section title over to GUI
     def run_counter(self, total_time):
+        """
+        This function runs the main logic of the cybernetic republic music generator. The counter handles the timing
+        of section changeovers in a thread-safe manner.
+        :param total_time: Integer of total time to run the movement.
+        :return: None
+        """
         total_count = 0
         while total_count <= total_time:
             # print(total_count)
@@ -128,14 +134,25 @@ class CyberneticRepublicMusicGen:
                 finally:
                     self.lock.release()
         self.end()
-        return None
 
     def build_vote_processor_options(self, section, dat):
+        """
+        Gets a random selection of values (that then become keys for the sound synthesis side of the program) to present
+        as votes.
+        :param section: String of the passed section.
+        :param dat: Dictionary constructed as {String: List}
+        :return: VoteProcessor with the section values as the selectable options
+        """
         section_vals = dat[self.vote_option_keys[section]]
         section_vals = random.sample(section_vals, 4)
         return Classes.vote_processor.VoteProcessor(*section_vals)
 
     def send_vote_message_to_gui(self, text):
+        """
+        Helper function that updates the vote string on the GUI side.
+        :param text: String from VoteProcessor object returned by a vote.
+        :return: None
+        """
         msg = osc_message_builder.OscMessageBuilder(address=self.msg_address)
         msg.add_arg(text, arg_type='s')
         msg = msg.build()
