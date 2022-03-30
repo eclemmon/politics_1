@@ -23,7 +23,7 @@ class ComplexMeter(Meter):
 
 class CompoundMeter(Meter):
     def __init__(self, num_beats, accent_weights, subdivisions):
-        if num_beats % 3 != 0 and num_beats >= 6 and sum(subdivisions) != num_beats:
+        if (num_beats % 3 == 0) and num_beats >= 6 and sum(subdivisions) == num_beats:
             if num_beats != len(accent_weights):
                 raise ValueError(
                     'The number of accent_weights and subdivisions in compound meter must equal the number of beats.')
