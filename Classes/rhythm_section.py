@@ -4,6 +4,23 @@ from Classes.meter import ComplexMeter
 from Classes.meter import CompoundMeter
 
 
+def rr(i):
+    """
+    Helper function that returns a range of rests as a list
+    :param i: Integer of number of rests
+    :return: List of strings that represent rests
+    """
+    return ['/r' for _ in range(i)]
+
+
+def nr(i, note_length=0.25):
+    """
+    Helper function that returns a range of notes as a list
+    :param i: Integer of number of notes
+    :param note_length: Float of length of note value — should be in multiples of 0.25
+    :return: List of floats that represent note values
+    """
+    return [note_length for _ in range(i)]
 
 class RhythmSection:
     def __init__(self, meter, midi_note_arrays=None, midi_note_duration_arrays=None):
@@ -66,6 +83,7 @@ class RhythmSection:
                 new_array = new_array + array[sl]
             new_midi_note_durations_array.append(new_array)
         return new_midi_note_durations_array
+
 
 
 class BreakBeat(RhythmSection):
@@ -173,6 +191,41 @@ class BreakBeat(RhythmSection):
     def rhythm_to_twelve(self):
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(6, 12), slice(0, 6),
                                                                                  slice(0, 6), slice(0, 6))
+
+
+class CompoundSix(RhythmSection):
+    def __init__(self, meter):
+        super().__init__(meter)
+        self.midi_notes = [i for i in range(44, 49)]
+        self.midi_note_duration_arrays = [
+            [0.25] + rr(11) + [0.25] + rr(9) + [0.25, '/r', 0.25] + rr(11) + [0.25] + rr(5) + [0.25] + rr(3) +
+            [0.25, '/r'],
+            rr(5) + [0.25] + rr(11) + [0.25] + rr(11) + [0.25] + rr(11) + [0.25] + rr(2) + [0.25] + rr(3),
+            zip(nr(24), rr(24)),
+            rr(6) + [0.25] + rr(11) + [0.25] + rr(11) + [0.25] + rr(11) + [0.25] + rr(2) + [0.25] + rr(2)
+        ]
+        self.transform_rhythm_to_meter()
+
+    def rhythm_to_duple(self):
+        pass
+
+    def rhythm_to_triple(self):
+        pass
+
+    def rhythm_to_four(self):
+        pass
+
+    def rhythm_to_five(self):
+        pass
+
+    def rhythm_to_seven(self):
+        pass
+
+    def rhythm_to_nine(self):
+        pass
+
+    def rhythm_to_twelve(self):
+        pass
 
 
 
