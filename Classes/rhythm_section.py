@@ -250,6 +250,75 @@ class CompoundSix(RhythmSection):
                                                                                  slice(5, 11), slice(41, 48))
 
 
+class TakeFive(RhythmSection):
+    def __init__(self, meter):
+        super().__init__(meter)
+        self.midi_notes = [midi_note for midi_note in range(48, 53)]
+        self.midi_note_duration_arrays = [
+            [0.25] + rr(9) + [0.25] + rr(5) + [0.25] + rr(3) + [0.25] + rr(9) + [0.25] + rr(5) + [0.25] + rr(3),
+            [0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25,
+            '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r'],
+            rr(2) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25,
+            '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(2),
+            rr(6) + [0.25] + rr(11) + [0.25, 0.25] + rr(2) + [0.25, 0.25] + rr(2) + [0.25, '/r', 0.25, 0.25, '/r'] +
+            nr(5) + rr(2) + nr(2),
+            rr(10) + [0.25] + rr(19) + [0.25] + rr(5) + [0.25, '/r', 0.25, '/r']
+        ]
+        self.transform_rhythm_to_meter()
+
+    def rhythm_to_duple(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
+                                                                                 slice(30, 34), slice(36, 40))
+
+    def rhythm_to_triple(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
+                                                                                 slice(6, 10), slice(30, 34),
+                                                                                 slice(36, 40), slice(36, 40))
+
+    def rhythm_to_four(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 6), slice(6, 10),
+                                                                                 slice(2, 6), slice(20, 28),
+                                                                                 slice(32, 40))
+
+    def rhythm_to_five(self):
+        if self.meter.subdivisions == [3, 2]:
+            pass
+        else:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(16, 20), slice(6, 10),
+                                                                                     slice(8, 10),
+                                                                                     slice(36, 40), slice(30, 36))
+
+    def rhythm_to_six(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10), slice(8, 10),
+                                                                                 slice(20, 26), slice(36, 40),
+                                                                                 slice(38, 40))
+
+    def rhythm_to_seven(self):
+        if self.meter.subdivisions == [2, 2, 3]:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
+                                                                                     slice(6, 8), slice(6, 8),
+                                                                                     slice(6, 8), slice(0, 4),
+                                                                                     slice(10, 14),
+                                                                                     slice(30, 36))
+        elif self.meter.subdivisions == [2, 3, 2]:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 8),
+                                                                                     slice(6, 8), slice(6, 8),
+                                                                                     slice(16, 20), slice(20, 24),
+                                                                                     slice(32, 34), slice(32, 34),
+                                                                                     slice(32, 34), slice(36, 40))
+        else:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
+                                                                                     slice(6, 10), slice(30, 36),
+                                                                                     slice(36, 40), slice(36, 40))
+
+    def rhythm_to_nine(self):
+        pass
+
+    def rhythm_to_twelve(self):
+        pass
+
+
+
 if __name__ == "__main__":
     from pythonosc import udp_client
     from pythonosc import osc_message_builder
@@ -289,6 +358,15 @@ if __name__ == "__main__":
     cc322 = CompoundSix(threetwotwo)
     cc9 = CompoundSix(nine)
     cc12 = CompoundSix(twelve)
+    tf32 = TakeFive(threetwo)
+    tf2 = TakeFive(duplemeter)
+    tf3 = TakeFive(triplemeter)
+    tf4 = TakeFive(meter)
+    tf23 = TakeFive(twothree)
+    tf6 = TakeFive(six)
+    tf223 = TakeFive(twotwothree)
+    tf232 = TakeFive(twothreetwo)
+    tf322 = TakeFive(threetwotwo)
 
     def send_to_sc(rhythm_section, address="/break_beat_1"):
         for i in range(len(rhythm_section.midi_notes)):
@@ -316,7 +394,7 @@ if __name__ == "__main__":
     # send_to_sc(bbtwotwothree)
     # send_to_sc(bbnine)
     # send_to_sc(bbtwelve)
-    send_to_sc(cc12)
+    send_to_sc(tf322)
     # for i in range(len(bb.midi_notes)):
     #     msg = osc_message_builder.OscMessageBuilder(address="/break_beat_1")
     #     msg.add_arg(bb.midi_notes[i], 'i')
