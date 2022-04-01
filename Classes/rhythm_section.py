@@ -3,6 +3,7 @@ from Classes.meter import SimpleTriple
 from Classes.meter import ComplexMeter
 from Classes.meter import CompoundMeter
 from itertools import chain
+import random
 
 
 def rr(i):
@@ -22,6 +23,7 @@ def nr(i, note_length=0.25):
     :return: List of floats that represent note values
     """
     return [note_length for _ in range(i)]
+
 
 class RhythmSection:
     def __init__(self, meter, midi_note_arrays=None, midi_note_duration_arrays=None):
@@ -86,7 +88,6 @@ class RhythmSection:
         return new_midi_note_durations_array
 
 
-
 class BreakBeat(RhythmSection):
     def __init__(self, meter, option=2):
         super().__init__(meter)
@@ -97,22 +98,23 @@ class BreakBeat(RhythmSection):
                  '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r', '/r', 0.25, '/r', 0.25, '/r',
                  0.25, '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25,
                  '/r', '/r', '/r', 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r'],
-                [0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25 , '/r',
+                [0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, '/r',
                  '/r', '/r', 0.25, 0.25, 0.25, '/r', '/r', '/r', 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25,
-                 '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', '/r',
+                 '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r',
+                 '/r',
                  0.25, 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', 0.25],
                 ['/r', '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r',
-                '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r',
+                 '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r',
                  0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', 0.25, '/r', '/r', '/r', 0.25,
                  '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', 0.25, '/r'],
                 ['/r', '/r', '/r', '/r', '/r', '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r',
                  '/r', '/r', '/r', '/r', '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r',
                  '/r', '/r', '/r', '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r',
                  '/r', '/r', '/r', '/r', 0.25, '/r', '/r', '/r', '/r', '/r', '/r', '/r', '/r'],
-                ['/r' for _ in range(4*4+1)] + [0.25, '/r', '/r', '/r', '/r', '/r', '/r', 0.25] +
-                ['/r' for _ in range(9*4+3)],
-                ['/r' for _ in range(5*4+3)] + [0.25] + ['/r' for _ in range(10*4)],
-                [0.25] + ['/r' for _ in range(6*4+1)] + [0.25] + ['/r' for _ in range(3*4+3)] + [0.25, 0.25] +
+                ['/r' for _ in range(4 * 4 + 1)] + [0.25, '/r', '/r', '/r', '/r', '/r', '/r', 0.25] +
+                ['/r' for _ in range(9 * 4 + 3)],
+                ['/r' for _ in range(5 * 4 + 3)] + [0.25] + ['/r' for _ in range(10 * 4)],
+                [0.25] + ['/r' for _ in range(6 * 4 + 1)] + [0.25] + ['/r' for _ in range(3 * 4 + 3)] + [0.25, 0.25] +
                 ['/r' for _ in range(4)] + [0.25, 0.25] + ['/r', '/r', '/r'] + [0.25, 0.25] + ['/r', '/r', '/r'] +
                 [0.25, 0.25] + ['/r', '/r', '/r'] + [0.25],
                 ['/r' for _ in range(4)] + [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] +
@@ -124,24 +126,41 @@ class BreakBeat(RhythmSection):
             self.midi_notes = [i for i in range(36, 42)]
             self.midi_note_duration_arrays = [
                 [0.25, '/r', 0.25] + ['/r' for _ in range(3)] + [0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', '/r', 0.25,
-                '/r', 0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25] + ['/r' for _ in range(4)] + [0.25,
-                '/r', 0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25] + ['/r' for _ in range(5)] + [0.25,
-                0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r'],
+                                                                 '/r', 0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25,
+                                                                 '/r', 0.25] + ['/r' for _ in range(4)] + [0.25,
+                                                                                                           '/r', 0.25,
+                                                                                                           '/r', 0.25,
+                                                                                                           '/r', '/r',
+                                                                                                           '/r', 0.25,
+                                                                                                           0.25, '/r',
+                                                                                                           0.25] + ['/r'
+                                                                                                                    for
+                                                                                                                    _ in
+                                                                                                                    range(
+                                                                                                                        5)] + [
+                    0.25,
+                    0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r'],
                 ['/r' for _ in range(4)] + [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] +
                 [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] + [0.25] +
                 ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(9)] +
                 [0.25, 0.25],
                 [0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] +
                 [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25,
-                '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25,
-                0.25, '/r'] + [0.25, 0.25, 0.25, '/r', '/r'] + [0.25, 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, 0.25,
-                0.25, '/r', 0.25],
+                                                                                                  '/r'] + [0.25, 0.25,
+                                                                                                           0.25,
+                                                                                                           '/r'] + [
+                    0.25, 0.25, 0.25, '/r'] + [0.25, 0.25, 0.25, '/r'] + [0.25, 0.25,
+                                                                          0.25, '/r'] + [0.25, 0.25, 0.25, '/r',
+                                                                                         '/r'] + [0.25, 0.25, '/r',
+                                                                                                  '/r', 0.25, 0.25,
+                                                                                                  '/r', 0.25, 0.25,
+                                                                                                  0.25, '/r', 0.25],
                 ['/r' for _ in range(6)] + [0.25] + ['/r' for _ in range(15)] + [0.25] + ['/r' for _ in range(15)] +
                 [0.25] + ['/r' for _ in range(16)] + [0.25] + ['/r' for _ in range(8)],
                 ['/r', '/r', 0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] + [0.25] +
                 ['/r' for _ in range(15)] + [0.25] + ['/r' for _ in range(11)] + [0.25] + ['/r' for _ in range(3)] +
                 [0.25] + ['/r' for _ in range(11)] + [0.25, '/r'],
-                ['/r' for _ in range(6*4+2)] + [0.25] + ['/r' for _ in range(15)] + [0.25, 0.25] +
+                ['/r' for _ in range(6 * 4 + 2)] + [0.25] + ['/r' for _ in range(15)] + [0.25, 0.25] +
                 ['/r' for _ in range(4)] + [0.25, '/r', '/r', 0.25, '/r', '/r', 0.25, '/r', '/r', 0.25, '/r', '/r',
                                             0.25, 0.25, 0.25, 0.25]
             ]
@@ -157,7 +176,7 @@ class BreakBeat(RhythmSection):
 
     def rhythm_to_triple(self):
         new_midi_note_durations_array = self.build_new_midi_note_duration_array(slice(0, 12), slice(16, 28),
-                                                                               slice(0, 12), slice(16, 28))
+                                                                                slice(0, 12), slice(16, 28))
         self.midi_note_duration_arrays = new_midi_note_durations_array
 
     def rhythm_to_five(self):
@@ -213,12 +232,14 @@ class CompoundSix(RhythmSection):
 
     def rhythm_to_triple(self):
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 3), slice(5, 9), slice(5, 10),
-                                                                                 slice(0, 3), slice(5, 9), slice(41, 44),
+                                                                                 slice(0, 3), slice(5, 9),
+                                                                                 slice(41, 44),
                                                                                  slice(2, 4))
 
     def rhythm_to_four(self):
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10), slice(0, 4),
-                                                                                 slice(6, 10), slice(0, 4), slice(6, 10),
+                                                                                 slice(6, 10), slice(0, 4),
+                                                                                 slice(6, 10),
                                                                                  slice(36, 37), slice(41, 48))
 
     def rhythm_to_five(self):
@@ -245,7 +266,7 @@ class CompoundSix(RhythmSection):
                                                                                  slice(0, 11), slice(41, 48))
 
     def rhythm_to_twelve(self):
-        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 11),  slice(5, 11),
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 11), slice(5, 11),
                                                                                  slice(17, 24), slice(0, 11),
                                                                                  slice(5, 11), slice(41, 48))
 
@@ -257,9 +278,18 @@ class TakeFive(RhythmSection):
         self.midi_note_duration_arrays = [
             [0.25] + rr(9) + [0.25] + rr(5) + [0.25] + rr(3) + [0.25] + rr(9) + [0.25] + rr(5) + [0.25] + rr(3),
             [0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25,
-            '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r'],
+                                                                                                                '/r',
+                                                                                                                0.25,
+                                                                                                                '/r',
+                                                                                                                0.25] + rr(
+                5) + [0.25, '/r', 0.25, '/r'],
             rr(2) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25,
-            '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(2),
+                                                                                                                   '/r',
+                                                                                                                   0.25,
+                                                                                                                   '/r',
+                                                                                                                   '/r',
+                                                                                                                   0.25] + rr(
+                4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(2),
             rr(6) + [0.25] + rr(11) + [0.25, 0.25] + rr(2) + [0.25, 0.25] + rr(2) + [0.25, '/r', 0.25, 0.25, '/r'] +
             nr(5) + rr(2) + nr(2),
             rr(10) + [0.25] + rr(19) + [0.25] + rr(5) + [0.25, '/r', 0.25, '/r']
@@ -289,7 +319,8 @@ class TakeFive(RhythmSection):
                                                                                      slice(36, 40), slice(30, 36))
 
     def rhythm_to_six(self):
-        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10), slice(8, 10),
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
+                                                                                 slice(8, 10),
                                                                                  slice(20, 26), slice(36, 40),
                                                                                  slice(38, 40))
 
@@ -312,11 +343,91 @@ class TakeFive(RhythmSection):
                                                                                      slice(36, 40), slice(36, 40))
 
     def rhythm_to_nine(self):
-        pass
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
+                                                                                 slice(8, 10), slice(6, 10),
+                                                                                 slice(8, 10), slice(20, 26),
+                                                                                 slice(6, 10), slice(8, 10),
+                                                                                 slice(36, 40), slice(38, 40))
 
     def rhythm_to_twelve(self):
-        pass
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
+                                                                                 slice(8, 10), slice(6, 10),
+                                                                                 slice(8, 10), slice(6, 10),
+                                                                                 slice(8, 10), slice(20, 26),
+                                                                                 slice(6, 10), slice(8, 10),
+                                                                                 slice(6, 10), slice(8, 10),
+                                                                                 slice(36, 40), slice(38, 40))
 
+
+class FourOnTheFloor(RhythmSection):
+    def __init__(self, meter):
+        super().__init__(meter)
+        self.midi_notes = [midi_note for midi_note in range(76, 85)]
+        self.midi_note_duration_arrays = [
+            list(chain.from_iterable([[0.25, '/r'] for _ in range(32)])),
+            rr(3 * 12 + 1) + nr(2) + ['/r'] + [0.25] + rr(10) + [0.25, '/r', 0.25, '/r', 0.25, '/r'],
+            rr(2) + [0.25] + rr(3) + [0.25] + rr(3) + [0.25] + rr(3) + [0.25] + rr(3) + [0.25] + rr(3) + [0.25] +
+            rr(3) + [0.25] + rr(3) + [0.25] + rr(1),
+            nr(32),
+            rr(7) + [0.25] + rr(6 * 4),
+            rr(5) + nr(1) + rr(6 * 4 + 2),
+            rr(2) + nr(2) + rr(4 * 6 + 2) + nr(1) + rr(8),
+            rr(12) + nr(1) + rr(8) + nr(1) + rr(4) + nr(1) + rr(3) + nr(1) + rr(1),
+            rr(6 * 4) + nr(1) + rr(3) + nr(1) + rr(1) + nr(1) + rr(1)
+        ]
+        self.transform_rhythm_to_meter()
+
+    def rhythm_to_triple(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(4, 8), slice(10, 12),
+                                                                                 slice(16, 20), slice(18, 20),
+                                                                                 slice(24, 28), slice(26, 28),
+                                                                                 slice(28, 32), slice(30, 32))
+
+    def rhythm_to_five(self):
+        if self.meter.subdivisions == [2, 3]:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 8), slice(6, 8),
+                                                                                     slice(24, 32), slice(30, 32))
+        else:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 4),
+                                                                                     slice(4, 8), slice(24, 28),
+                                                                                     slice(26, 32))
+
+    def rhythm_to_six(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 4),
+                                                                                 slice(4, 8), slice(6, 8),
+                                                                                 slice(16, 20), slice(18, 20),
+                                                                                 slice(28, 32), slice(30, 32))
+
+    def rhythm_to_seven(self):
+        if self.meter.subdivisions == [2, 2, 3]:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 8), slice(0, 4),
+                                                                                     slice(2, 4), slice(24, 32),
+                                                                                     slice(28, 32), slice(30, 32))
+        elif self.meter.subdivisions == [2, 3, 2]:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(16, 20), slice(16, 20),
+                                                                                     slice(18, 20), slice(28, 32))
+        else:
+            self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(16, 20), slice(18, 20),
+                                                                                     slice(24, 32))
+
+    def rhythm_to_nine(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 4),
+                                                                                 slice(4, 8), slice(6, 8),
+                                                                                 slice(28, 32), slice(30, 32))
+
+    def rhythm_to_twelve(self):
+        self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(16, 20), slice(18, 20),
+                                                                                 slice(16, 20), slice(18, 20),
+                                                                                 slice(12, 16), slice(18, 20),
+                                                                                 slice(28, 32), slice(30, 32))
+
+
+class PolyRhythms(RhythmSection):
+    def __init__(self, meter):
+        super().__init__(meter)
+        self.midi_notes = [midi_note for midi_note in range(60, 80)]
+        self.midi_note_duration_arrays = [[random.uniform(0.1, 5) for _ in range(24)] for
+                                          midi_note in range(len(self.midi_notes))]
 
 
 if __name__ == "__main__":
@@ -368,6 +479,20 @@ if __name__ == "__main__":
     tf232 = TakeFive(twothreetwo)
     tf322 = TakeFive(threetwotwo)
 
+    ff = FourOnTheFloor(meter)
+    ff3 = FourOnTheFloor(triplemeter)
+    ff23 = FourOnTheFloor(twothree)
+    ff32 = FourOnTheFloor(threetwo)
+    ff6 = FourOnTheFloor(six)
+    ff223 = FourOnTheFloor(twotwothree)
+    ff232 = FourOnTheFloor(twothreetwo)
+    ff322 = FourOnTheFloor(threetwotwo)
+    ff9 = FourOnTheFloor(nine)
+    ff12 = FourOnTheFloor(twelve)
+
+    pr = PolyRhythms(meter)
+
+
     def send_to_sc(rhythm_section, address="/break_beat_1"):
         for i in range(len(rhythm_section.midi_notes)):
             msg = osc_message_builder.OscMessageBuilder(address=address)
@@ -383,6 +508,7 @@ if __name__ == "__main__":
         msg = msg.build()
         sc_client.send(msg)
 
+
     # send_to_sc(bb)
     # send_to_sc(bb2beats)
     # send_to_sc(bb3beats)
@@ -394,7 +520,8 @@ if __name__ == "__main__":
     # send_to_sc(bbtwotwothree)
     # send_to_sc(bbnine)
     # send_to_sc(bbtwelve)
-    send_to_sc(tf322)
+    # send_to_sc(ff12)
+    send_to_sc(pr)
     # for i in range(len(bb.midi_notes)):
     #     msg = osc_message_builder.OscMessageBuilder(address="/break_beat_1")
     #     msg.add_arg(bb.midi_notes[i], 'i')
