@@ -422,12 +422,17 @@ class FourOnTheFloor(RhythmSection):
                                                                                  slice(28, 32), slice(30, 32))
 
 
-class PolyRhythms(RhythmSection):
+class RandomRhythms(RhythmSection):
     def __init__(self, meter):
         super().__init__(meter)
         self.midi_notes = [midi_note for midi_note in range(60, 80)]
         self.midi_note_duration_arrays = [[random.uniform(0.1, 5) for _ in range(24)] for
                                           midi_note in range(len(self.midi_notes))]
+
+
+class PolyRhythms(RhythmSection):
+    def __init__(self, meter):
+        super().__init__(meter)
 
 
 if __name__ == "__main__":
@@ -490,7 +495,7 @@ if __name__ == "__main__":
     ff9 = FourOnTheFloor(nine)
     ff12 = FourOnTheFloor(twelve)
 
-    pr = PolyRhythms(meter)
+    pr = RandomRhythms(meter)
 
 
     def send_to_sc(rhythm_section, address="/break_beat_1"):
