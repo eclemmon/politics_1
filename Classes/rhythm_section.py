@@ -24,6 +24,8 @@ def nr(i, note_length=0.25):
     """
     return [note_length for _ in range(i)]
 
+def subdivide_meter_into_polyrhythm(num_beats, subdivided_by):
+    return [num_beats * 0.25 * 4 / subdivided_by for _ in range(subdivided_by)]
 
 class RhythmSection:
     def __init__(self, meter, midi_note_arrays=None, midi_note_duration_arrays=None):
