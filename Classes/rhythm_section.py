@@ -6,7 +6,7 @@ from itertools import chain
 import random
 
 
-def rr(i):
+def rr(i, note_length=0.25):
     """
     Helper function that returns a range of rests as a list
     :param i: Integer of number of rests
@@ -495,7 +495,14 @@ if __name__ == "__main__":
     ff9 = FourOnTheFloor(nine)
     ff12 = FourOnTheFloor(twelve)
 
-    pr = RandomRhythms(meter)
+    pr = PolyRhythms(meter)
+    pr2 = PolyRhythms(duplemeter)
+    pr3 = PolyRhythms(triplemeter)
+    pr23 = PolyRhythms(twothree)
+    pr6 = PolyRhythms(six)
+    pr7 = PolyRhythms(twothreetwo)
+    pr9 = PolyRhythms(nine)
+    pr12 = PolyRhythms(twelve)
 
 
     def send_to_sc(rhythm_section, address="/break_beat_1"):
@@ -526,7 +533,8 @@ if __name__ == "__main__":
     # send_to_sc(bbnine)
     # send_to_sc(bbtwelve)
     # send_to_sc(ff12)
-    send_to_sc(pr)
+    print(pr.midi_note_duration_arrays)
+    send_to_sc(pr12)
     # for i in range(len(bb.midi_notes)):
     #     msg = osc_message_builder.OscMessageBuilder(address="/break_beat_1")
     #     msg.add_arg(bb.midi_notes[i], 'i')
