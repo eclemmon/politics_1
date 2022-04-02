@@ -32,6 +32,9 @@ class Chord:
     def transpose(self, num):
         self.notes = tuple([note.transpose(num) for note in self.notes])
 
+    def get_bass_note(self):
+        return self.note[0]
+
 
 if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
