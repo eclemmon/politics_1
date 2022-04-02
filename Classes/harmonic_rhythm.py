@@ -82,5 +82,3 @@ if __name__ == "__main__":
     # print(hrhythm.build_phrase_accents_one())
     # print(hrhythm.base_case_one_chord())
     # print(hrhythm.base_case_two_chords())
-
-    print(fhrwd.get_zipped_hr_chords_and_durations())
