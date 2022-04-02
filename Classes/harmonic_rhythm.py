@@ -38,7 +38,11 @@ class HarmonicRhythm:
         return [i for i in zip(self.harmony.chords, self.hr_durations)]
 
     def get_chords_and_durations(self):
-        return [self.harmony.chords, self.hr_durations]
+        return [self.harmony.chords, self.flattened_hr_durations]
+
+
+def build_harmonic_rhythm(meter, chords):
+    return HarmonicRhythm(meter, Harmony(chords))
 
 
 if __name__ == "__main__":

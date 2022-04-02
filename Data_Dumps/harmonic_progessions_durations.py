@@ -77,5 +77,4 @@ cybernetic_republic_harmonic_progressions = {
 }
 
 
-def build_harmonic_rhythm(meter, chords):
-    return HarmonicRhythm(meter, Harmony(chords))
+
