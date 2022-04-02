@@ -37,11 +37,13 @@ OSCFunc({ |args|
 	// args.postcs;
 	~add_midinotes_durations_to_dict.value(~gm, \break_beat_1, Array.fill(args[2..].size, {arg i; args[1]}), Array.fill(args[2..].size, {
 		arg i;
-		if((args[i+2].beginsWith('/r')), {
+		if((args[i+2].asString.beginsWith("/r")), {
 			if(args[i+2] == '/r', {
 				Rest(0.25);
+				0.25.postln;
 			}, {
 				Rest(args[i+2].asString[2..].asFloat);
+				args[i+2].asString[2..].asFloat.postln;
 			});
 		}, {
 			args[i+2];
