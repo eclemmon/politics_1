@@ -12,7 +12,7 @@ def rr(i, note_length=0.25):
     :param i: Integer of number of rests
     :return: List of strings that represent rests
     """
-    return ['/r' for _ in range(i)]
+    return ['/r'+str(note_length) for _ in range(i)]
 
 
 def nr(i, note_length=0.25):
