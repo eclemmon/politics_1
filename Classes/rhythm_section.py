@@ -431,8 +431,16 @@ class RandomRhythms(RhythmSection):
 
 
 class PolyRhythms(RhythmSection):
-    def __init__(self, meter):
+    def __init__(self, meter, number_notes=6):
         super().__init__(meter)
+        self.midi_notes = random.sample([midi_note for midi_note in range(60, 80)], number_notes)
+        self.midi_note_duration_arrays = [subdivide_meter_into_polyrhythm(meter.num_beats, random.randint(1, 13))
+                                          for _ in range(len(self.midi_notes))]
+
+    def transform_rhythm_to_meter(self, meter):
+        self.meter = meter
+        self.midi_note_duration_arrays = [subdivide_meter_into_polyrhythm(meter.num_beats, random.randint(1, 13))
+                                          for _ in range(len(self.midi_notes))]
 
 
 if __name__ == "__main__":
