@@ -64,14 +64,14 @@ cybernetic_republic_harmonic_progressions = {
         Chord(Note(6), Note(10), Note(1), Note(4)),  # F#7
     ]),
     'norm-core': ChordProgression([
-        Chord(Note(0), Note(4), Note(7), Note(0)),
-        Chord(Note(7), Note(4), Note(7), Note(0)),
-        Chord(Note(0), Note(4), Note(7), Note(0)),
-        Chord(Note(7), Note(4), Note(7), Note(0)),
-        Chord(Note(0), Note(4), Note(7), Note(0)),
-        Chord(Note(7), Note(4), Note(7), Note(0)),
-        Chord(Note(0), Note(4), Note(7), Note(0)),
-        Chord(Note(7), Note(4), Note(7), Note(0)),
+        Chord(Note(12), Note(16), Note(19), Note(24)),
+        Chord(Note(7), Note(16), Note(19), Note(24)),
+        Chord(Note(12), Note(16), Note(19), Note(24)),
+        Chord(Note(7), Note(16), Note(19), Note(24)),
+        Chord(Note(12), Note(16), Note(19), Note(24)),
+        Chord(Note(7), Note(16), Note(19), Note(24)),
+        Chord(Note(12), Note(16), Note(19), Note(24)),
+        Chord(Note(7), Note(16), Note(19), Note(24)),
     ])
 }
 
