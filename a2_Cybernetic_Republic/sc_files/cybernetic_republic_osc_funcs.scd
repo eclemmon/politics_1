@@ -54,8 +54,43 @@ OSCFunc({ |args|
 	"######################################".postln;
 }, '/break_beat_1');
 
+// #######################
+// MIDDLE VOICES OSC FUNCS
+// #######################
+
+OSCFunc({ |args|
+	// Clear the middle voices array so that a new pattern can be built
+	~clear_middle_voices.value(~gm);
+}, '/clear_middle_voice');
+
+OSCFunc({ |args|
+	args.postcs;
+	// Add chords as they come in to build a 2d array
+	~gm.at(\middle_voice).at(\midinotes).add(args[1..]);
+}, '/middle_voice_chords');
+
+OSCFunc({ |args|
+	// Add durations to ~gm.at(\middle_voice_durations). Needs to be a 1d array
+	var durations;
+	args.postcs;
+	durations = ~parse_rests_and_notes.value(args[1..]);
+	~gm.at(\middle_voice).put(\durations, durations);
+}, '/middle_voice_durations');
+
+OSCFunc({ |args|
+	var durations, chords, channel;
+	// Get middle voice channel (random instrument selected)
+	channel = args[1];
+	// build and run the pattern
+	~gm.put(\middle_voice_pattern, ~build_pattern.value(~gm, \middle_voice, \middle_voice, channel));
+	"MIDDLE VOICES INITIALIZED!".postln;
+	~gm.at(\middle_voice_pattern).play;
+	~clear_middle_voices.value(~gm);
+}, 'middle_voice_init');
+
+
 )
 
-~gm.at(\break_beat_1).postcs;
-
+~gm.at(\middle_voice);
+~gm.at(\middle_voice_pattern).postcs
 ~gm.at('rhythm').stop;
