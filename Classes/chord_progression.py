@@ -12,7 +12,8 @@ class ChordProgression:
         return str([chord for chord in self.chords])
 
     def transpose(self, num):
-        self.chords = [chord.transpose(num) for chord in self.chords]
+        for chord in self.chords:
+            chord.transpose(num)
 
 
 if __name__ == "__main__":

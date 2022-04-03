@@ -30,7 +30,8 @@ class Chord:
         return hash(tuple(sorted(self.__dict__.items())))
 
     def transpose(self, num):
-        self.notes = tuple([note.transpose(num) for note in self.notes])
+        for note in self.notes:
+            note.transpose(num)
 
     def get_bass_note(self):
         return self.note[0]
@@ -40,4 +41,6 @@ if __name__ == '__main__':
     c_major = Chord(Note(60), Note(64), Note(67))
     c7 = Chord(Note(60), Note(64), Note(67), Note(70))
     print(c_major)
+    print(c7)
+    c7.transpose(4)
     print(c7)
