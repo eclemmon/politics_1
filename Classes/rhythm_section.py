@@ -24,8 +24,10 @@ def nr(i, note_length=0.25):
     """
     return [note_length for _ in range(i)]
 
+
 def subdivide_meter_into_polyrhythm(num_beats, subdivided_by):
     return [num_beats * 0.25 * 4 / subdivided_by for _ in range(subdivided_by)]
+
 
 class RhythmSection:
     def __init__(self, meter, midi_note_arrays=None, midi_note_duration_arrays=None):
@@ -128,20 +130,9 @@ class BreakBeat(RhythmSection):
             self.midi_notes = [i for i in range(36, 42)]
             self.midi_note_duration_arrays = [
                 [0.25, '/r', 0.25] + ['/r' for _ in range(3)] + [0.25, 0.25, '/r', 0.25, 0.25, 0.25, '/r', '/r', 0.25,
-                                                                 '/r', 0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25,
-                                                                 '/r', 0.25] + ['/r' for _ in range(4)] + [0.25,
-                                                                                                           '/r', 0.25,
-                                                                                                           '/r', 0.25,
-                                                                                                           '/r', '/r',
-                                                                                                           '/r', 0.25,
-                                                                                                           0.25, '/r',
-                                                                                                           0.25] + ['/r'
-                                                                                                                    for
-                                                                                                                    _ in
-                                                                                                                    range(
-                                                                                                                        5)] + [
-                    0.25,
-                    0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r'],
+                '/r', 0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25] + ['/r' for _ in range(4)] + [0.25,
+                '/r', 0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, 0.25, '/r', 0.25] + ['/r' for _ in range(5)] + [0.25,
+                0.25, '/r', 0.25, '/r', '/r', '/r', 0.25, '/r', '/r', 0.25, 0.25, '/r', 0.25, '/r', '/r', '/r'],
                 ['/r' for _ in range(4)] + [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] +
                 [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] + [0.25] +
                 ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(7)] + [0.25] + ['/r' for _ in range(9)] +
@@ -447,7 +438,6 @@ class PolyRhythms(RhythmSection):
 
 if __name__ == "__main__":
     from pythonosc import udp_client
-    from pythonosc import osc_message_builder
 
     sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
     meter = SimpleDuple(4)
@@ -513,48 +503,3 @@ if __name__ == "__main__":
     pr7 = PolyRhythms(twothreetwo)
     pr9 = PolyRhythms(nine)
     pr12 = PolyRhythms(twelve)
-
-
-    def send_to_sc(rhythm_section, address="/break_beat_1"):
-        for i in range(len(rhythm_section.midi_notes)):
-            msg = osc_message_builder.OscMessageBuilder(address=address)
-            msg.add_arg(rhythm_section.midi_notes[i], 'i')
-            for note_event in rhythm_section.midi_note_duration_arrays[i]:
-                msg.add_arg(note_event)
-            msg = msg.build()
-            sc_client.send(msg)
-
-        msg = osc_message_builder.OscMessageBuilder(address="/init")
-        msg.add_arg("break_beat_1")
-        msg.add_arg("rhythm")
-        msg = msg.build()
-        sc_client.send(msg)
-
-
-    # send_to_sc(bb)
-    # send_to_sc(bb2beats)
-    # send_to_sc(bb3beats)
-    # send_to_sc(bbthreetwo)
-    # send_to_sc(bbtwothree)
-    # send_to_sc(bbsix)
-    # send_to_sc(bbthreetwotwo)
-    # send_to_sc(bbtwothreetwo)
-    # send_to_sc(bbtwotwothree)
-    # send_to_sc(bbnine)
-    # send_to_sc(bbtwelve)
-    # send_to_sc(ff12)
-    print(pr.midi_note_duration_arrays)
-    send_to_sc(pr12)
-    # for i in range(len(bb.midi_notes)):
-    #     msg = osc_message_builder.OscMessageBuilder(address="/break_beat_1")
-    #     msg.add_arg(bb.midi_notes[i], 'i')
-    #     for note_event in bb.midi_note_duration_arrays[i]:
-    #         msg.add_arg(note_event)
-    #     msg = msg.build()
-    #     sc_client.send(msg)
-    #
-    # msg = osc_message_builder.OscMessageBuilder(address="/init")
-    # msg.add_arg("break_beat_1")
-    # msg.add_arg("rhythm")
-    # msg = msg.build()
-    # sc_client.send(msg)
