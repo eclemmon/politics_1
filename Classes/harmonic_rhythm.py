@@ -1,7 +1,7 @@
 import numpy as np
 
 from Classes.meter import *
-from Classes.harmony import Harmony
+from Classes.chord_progression import ChordProgression
 from Classes.chord import Chord
 from Classes.note import Note
 
@@ -29,9 +29,9 @@ def recursive_split_meter(meter_subdivision, n_splits, n_recusions=0):
 
 
 class HarmonicRhythm:
-    def __init__(self, meter, harmony, num_bars=4, hr_durations=None):
+    def __init__(self, meter, progression, num_bars=4, hr_durations=None):
         self.meter = meter
-        self.harmony = harmony
+        self.progression = progression
         self.num_bars = num_bars
         if hr_durations is None:
             self.hr_durations = self.get_hr_durations()
@@ -41,9 +41,9 @@ class HarmonicRhythm:
         self.flattened_hr_durations = [item for sublist in self.hr_durations for item in sublist]
 
     def get_hr_durations(self):
-        # split harmony accross num_bars number of bars
-        chords = np.array_split(self.harmony.chords, self.num_bars)
-        # split the remaining harmony amongst by strong metrical subdivisions within the bar
+        # split progression accross num_bars number of bars
+        chords = np.array_split(self.progression.chords, self.num_bars)
+        # split the remaining progression amongst by strong metrical subdivisions within the bar
         res = []
         for i in chords:
             chords_subdivided_into_bar = i.tolist()
@@ -52,14 +52,14 @@ class HarmonicRhythm:
         return res
 
     def get_zipped_hr_chords_and_durations(self):
-        return [i for i in zip(self.harmony.chords, self.flattened_hr_durations)]
+        return [i for i in zip(self.progression.chords, self.flattened_hr_durations)]
 
     def get_chords_and_durations(self):
-        return [self.harmony.chords, self.flattened_hr_durations]
+        return [self.progression.chords, self.flattened_hr_durations]
 
 
 def build_harmonic_rhythm(meter, chords):
-    return HarmonicRhythm(meter, Harmony(chords))
+    return HarmonicRhythm(meter, ChordProgression(chords))
 
 
 if __name__ == "__main__":
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     Cmm7 = Chord(Note(0), Note(3), Note(7), Note(10))
     a = Chord(Note(9), Note(0), Note(3))
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
-    harmony = Harmony([c_major, CM7, Cmm7, a, G7])
+    harmony = ChordProgression([c_major, CM7, Cmm7, a, G7])
     hrhythm = HarmonicRhythm(meter, harmony)
     print(hrhythm.get_zipped_hr_chords_and_durations())
     print(hrhythm.get_chords_and_durations())
