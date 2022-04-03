@@ -11,6 +11,9 @@ class Harmony:
     def __repr__(self):
         return str([chord for chord in self.chords])
 
+    def transpose(self, num):
+        self.chords = [chord.transpose(num) for chord in self.chords]
+
 
 if __name__ == "__main__":
     c_major = Chord(Note(0), Note(4), Note(7))
