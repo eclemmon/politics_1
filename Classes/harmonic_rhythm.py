@@ -24,15 +24,27 @@ def recursive_split_meter(meter_subdivision, n_splits, n_recusions=0):
         for count, value in enumerate(meter_subdivision):
             if value >= meter_subdivision[greatest_index]:
                 greatest_index = count
-        new_meter_subdivision = split_off_duration(meter_subdivision, greatest_index)
+        meter_subdivision_copy = meter_subdivision[:]
+        new_meter_subdivision = split_off_duration(meter_subdivision_copy, greatest_index)
         return recursive_split_meter(new_meter_subdivision, n_splits, n_recusions + 1)
 
+
+def fill_chords_to_number_of_bars(progression, num_bars):
+    res = progression.chords
+    while len(res) < num_bars:
+        for chord in range(num_bars-len(progression.chords)):
+            res += [progression.chords[chord], progression.chords[chord]]
+            if len(progression.chords) >= num_bars:
+                break
+    return res
 
 class HarmonicRhythm:
     def __init__(self, meter, progression, num_bars=4, hr_durations=None):
         self.meter = meter
         self.progression = progression
         self.num_bars = num_bars
+        if len(self.progression.chords) < self.num_bars:
+            self.progression = ChordProgression(fill_chords_to_number_of_bars(self.progression, num_bars))
         if hr_durations is None:
             self.hr_durations = self.get_hr_durations()
         else:
@@ -49,6 +61,7 @@ class HarmonicRhythm:
             chords_subdivided_into_bar = i.tolist()
             chords_durations = recursive_split_meter(self.meter.subdivisions, len(chords_subdivided_into_bar) - len(self.meter.subdivisions))
             res.append(chords_durations)
+        print(res)
         return res
 
     def get_zipped_hr_chords_and_durations(self):
@@ -62,6 +75,7 @@ def build_harmonic_rhythm(meter, chords):
     return HarmonicRhythm(meter, ChordProgression(chords))
 
 
+
 if __name__ == "__main__":
     meter = SimpleDuple(num_beats=4)
     c_major = Chord(Note(0), Note(4), Note(7))
@@ -69,14 +83,14 @@ if __name__ == "__main__":
     Cmm7 = Chord(Note(0), Note(3), Note(7), Note(10))
     a = Chord(Note(9), Note(0), Note(3))
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
-    harmony = ChordProgression([c_major, CM7, Cmm7, a, G7])
+    harmony = ChordProgression([c_major, CM7, Cmm7])
     hrhythm = HarmonicRhythm(meter, harmony)
-    print(hrhythm.get_zipped_hr_chords_and_durations())
-    print(hrhythm.get_chords_and_durations())
+    # print(hrhythm.get_zipped_hr_chords_and_durations())
+    # print(hrhythm.get_chords_and_durations())
 
     five = ComplexMeter(5, [3, 1, 2, 1, 1], [2, 3])
     fhrhythm = HarmonicRhythm(five, harmony)
-    print(fhrhythm.get_zipped_hr_chords_and_durations())
+    # print(fhrhythm.get_zipped_hr_chords_and_durations())
     print(fhrhythm.get_chords_and_durations())
     print(fhrhythm.hr_durations)
     # print(hrhythm.build_phrase_accents_one())
