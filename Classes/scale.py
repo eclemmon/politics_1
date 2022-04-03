@@ -1,0 +1,20 @@
+from Classes.note import Note
+
+
+class Scale:
+    def __init__(self, notes):
+        for i in notes:
+            assert isinstance(i, Note)
+        self.notes = notes
+
+    def __eq__(self, other):
+        if not isinstance(other, Scale):
+            return NotImplemented
+
+        return self.notes == other.notes
+
+    def transpose(self, num):
+        self.notes = tuple([note.transpose(num) for note in self.notes])
+
+    def modal_transpose(self, scale_degree):
+        self.notes = tuple(self.notes[scale_degree:] + self.note[:scale_degree])
