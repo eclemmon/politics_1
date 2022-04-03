@@ -1,22 +1,21 @@
 from Classes.harmony import Harmony
 from Classes.chord import Chord
 from Classes.note import Note
-from Classes.harmonic_rhythm import HarmonicRhythm
 
 cybernetic_republic_harmonic_progressions = {
-    'doo-wop': [
+    'doo-wop': Harmony([
         Chord(Note(0), Note(4), Note(7), Note(0)),
         Chord(Note(9), Note(0), Note(4), Note(9)),
         Chord(Note(5), Note(0), Note(5), Note(9)),
         Chord(Note(7), Note(11), Note(2), Note(7)),
-    ],
-    'weaponized': [
+    ]),
+    'weaponized': Harmony([
         Chord(Note(9), Note(0), Note(4), Note(9)),
         Chord(Note(5), Note(0), Note(5), Note(9)),
         Chord(Note(0), Note(4), Note(7), Note(0)),
         Chord(Note(7), Note(11), Note(2), Note(7))
-    ],
-    'pachelbel': [
+    ]),
+    'pachelbel': Harmony([
         Chord(Note(0), Note(7), Note(0), Note(3)),
         Chord(Note(7), Note(7), Note(11), Note(2)),
         Chord(Note(9), Note(4), Note(9), Note(0)),
@@ -25,8 +24,8 @@ cybernetic_republic_harmonic_progressions = {
         Chord(Note(0), Note(0), Note(4), Note(7)),
         Chord(Note(9), Note(0), Note(2), Note(5)),
         Chord(Note(7), Note(11), Note(2), Note(5))
-    ],
-    'chromatic-lament': [
+    ]),
+    'chromatic-lament': Harmony([
         Chord(Note(0), Note(3), Note(7)),
         Chord(Note(11), Note(7), Note(2)),
         Chord(Note(10), Note(7), Note(0), Note(3)),
@@ -34,8 +33,8 @@ cybernetic_republic_harmonic_progressions = {
         Chord(Note(8), Note(3), Note(0), Note(6)),
         Chord(Note(7), Note(3), Note(0)),
         Chord(Note(7), Note(2), Note(11), Note(5))
-    ],
-    'changes': [
+    ]),
+    'changes': Harmony([
         Chord(Note(4), Note(7), Note(11), Note(2)),  # Em7
         Chord(Note(5), Note(9), Note(0), Note(3)),  # F7
         Chord(Note(10), Note(2), Note(5), Note(9)),  # BbMM7
@@ -50,8 +49,8 @@ cybernetic_republic_harmonic_progressions = {
         Chord(Note(4), Note(8), Note(11), Note(3)),  # EMM7
         Chord(Note(7), Note(11), Note(2), Note(5)),  # G7
         Chord(Note(0), Note(4), Note(7), Note(11)),  # CMM7
-    ],
-    'giant-steps': [
+    ]),
+    'giant-steps': Harmony([
         Chord(Note(11), Note(3), Note(6), Note(10)),  # BMM7
         Chord(Note(2), Note(6), Note(9), Note(0)),  # D7
         Chord(Note(7), Note(11), Note(2), Note(5)),  # GMM7
@@ -63,8 +62,8 @@ cybernetic_republic_harmonic_progressions = {
         Chord(Note(10), Note(2), Note(5), Note(8)),  # Bb7
         Chord(Note(3), Note(7), Note(10), Note(2)),  # EbMM7
         Chord(Note(6), Note(10), Note(1), Note(4)),  # F#7
-    ],
-    'norm-core': [
+    ]),
+    'norm-core': Harmony([
         Chord(Note(0), Note(4), Note(7), Note(0)),
         Chord(Note(7), Note(4), Note(7), Note(0)),
         Chord(Note(0), Note(4), Note(7), Note(0)),
@@ -73,7 +72,7 @@ cybernetic_republic_harmonic_progressions = {
         Chord(Note(7), Note(4), Note(7), Note(0)),
         Chord(Note(0), Note(4), Note(7), Note(0)),
         Chord(Note(7), Note(4), Note(7), Note(0)),
-    ]
+    ])
 }
 
 
