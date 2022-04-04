@@ -38,6 +38,7 @@ def fill_chords_to_number_of_bars(progression, num_bars):
                 break
     return res
 
+
 class HarmonicRhythm:
     def __init__(self, meter, progression, num_bars=4, hr_durations=None):
         self.meter = meter
@@ -61,7 +62,6 @@ class HarmonicRhythm:
             chords_subdivided_into_bar = i.tolist()
             chords_durations = recursive_split_meter(self.meter.subdivisions, len(chords_subdivided_into_bar) - len(self.meter.subdivisions))
             res.append(chords_durations)
-        print(res)
         return res
 
     def get_zipped_hr_chords_and_durations(self):
