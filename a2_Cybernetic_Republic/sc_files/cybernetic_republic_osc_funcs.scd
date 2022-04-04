@@ -88,9 +88,25 @@ OSCFunc({ |args|
 	~clear_middle_voices.value(~gm);
 }, 'middle_voice_init');
 
+OSCFunc({ |args|
+	if(~gm.at(\arpeggiator_on) == true, {
+		// Turn off Arpeggiator
+		"Turning Arpeggiator off".postln;
+		16.do({arg i; ~gm.at(\mOuts).at(\middle_voice).control(i, 0, 0)});
+		// Set \arpeggiator_on to false
+		~gm.put(\arpeggiator_on, false);
+	}, {
+		// Turn on Arpeggiator
+		"Turning Arpeggiator On".postln;
+		16.do({arg i; ~gm.at(\mOuts).at(\middle_voice).control(i, 0, 127)});
+		~gm.put(\arpeggiator_on, true);
+	});
+}, '/arpeggiator');
 
 )
 
+~gm.at(\mOuts).at(\middle_voice).control(15, 0, 0)
 ~gm.at(\middle_voice);
 ~gm.at(\middle_voice_pattern).postcs
 ~gm.at('rhythm').stop;
+~gm.at('arpeggiator_on');

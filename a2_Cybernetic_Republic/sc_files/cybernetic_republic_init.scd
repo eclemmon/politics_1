@@ -11,10 +11,14 @@ TempoClock.tempo = 2;
 		\break_beat_1, List.new(),
 		\middle_voice, Dictionary.newFrom([\durations, List.new(), \midinotes, List.new()]),
 		\rhythm_pattern, nil,
-		\middle_voice_pattern, nil
+		\middle_voice_pattern, nil,
+		\arpeggiator_on, false
 	]
-)
+);
 
-CmdPeriod.add({(0..127).do{arg n; ~gm.at(\mOuts).do({arg out; out.noteOff(0, n)})}});
+CmdPeriod.add({
+	(0..127).do({arg n; ~gm.at(\mOuts).do({arg out; out.noteOff(0, n)})});
+	16.do({arg i; ~gm.at(\mOuts).at(\middle_voice).control(i, 0, 0)});
+});
 
 )
