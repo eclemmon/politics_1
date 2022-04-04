@@ -26,6 +26,12 @@ def send_middle_voice_initialization_to_sc(channel, sc_client, address='/middle_
     sc_client.send(msg)
 
 
+def send_arpeggiator_on_off_to_sc(sc_client, address='/arpeggiator'):
+    msg = osc_message_builder.OscMessageBuilder(address=address)
+    msg = msg.build()
+    sc_client.send(msg)
+
+
 def send_rhythm_to_sc(rhythm_section, sc_client, address="/break_beat_1"):
     for i in range(len(rhythm_section.midi_notes)):
         msg = osc_message_builder.OscMessageBuilder(address=address)
