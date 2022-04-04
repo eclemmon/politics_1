@@ -45,8 +45,49 @@ class Pads(MiddleVoices):
     def build_chords_and_durations(self):
         return self.harmonic_rhythm.get_chords_and_durations()
 
-    def get_random_instrument_channel(self):
-        return random.choice(self.instrument_channels)
+
+class RandomMiddleVoices(MiddleVoices):
+    def __init__(self, harmonic_rhythm_object, octave=4):
+        super().__init__(harmonic_rhythm_object, octave)
+
+    def build_chords_and_durations(self):
+        chords = []
+        durations = []
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            duration_left = chord_and_dur_block[1]
+            while duration_left > 0:
+                duration = random.uniform(0.05, duration_left)
+                durations.append(self.make_note_or_rest(duration, 0.25))
+                duration_left -= duration
+                chords.append(chord_and_dur_block[0])
+        return [chords, durations]
+
+
+class OffBeatMiddleVoices(MiddleVoices):
+    def __init__(self, harmonic_rhythm_object, octave=4):
+        super().__init__(harmonic_rhythm_object, octave)
+
+    def build_chords_and_durations(self):
+        chords = []
+        durations = []
+        beat_in_meter = 0
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            total_beats = chord_and_dur_block[1]
+            beat = 0
+            while beat < total_beats:
+                accent_index = beat_in_meter % len(self.harmonic_rhythm.meter.accent_weights)
+                chords.append(chord_and_dur_block[0])
+                if self.harmonic_rhythm.meter.accent_weights[accent_index] > 1:
+                    durations.append(self.build_rest())
+                else:
+                    durations.append(1)
+                beat += 1
+                beat_in_meter += 1
+        return [chords, durations]
+
+
+
 
 
 if __name__ == "__main__":
@@ -57,12 +98,14 @@ if __name__ == "__main__":
 
     meter = meter.ComplexMeter(5, [3,1,2,1,1], [2, 3])
     hr = harmonic_rhythm.HarmonicRhythm(meter, cybernetic_republic_harmonic_progressions['giant-steps'])
-    pads = Pads(hr)
-    print(pads.chords_and_durations)
+    # pads = Pads(hr)
 
-    send_middle_voice_chords_to_sc(pads, sc_client)
-    send_middle_voice_durations_to_sc(pads, sc_client)
-    send_middle_voice_initialization_to_sc(pads.get_random_instrument_channel(), sc_client)
+    # rand = RandomMiddleVoices(hr)
+    offbeat = OffBeatMiddleVoices(hr)
+
+    send_middle_voice_chords_to_sc(offbeat, sc_client)
+    send_middle_voice_durations_to_sc(offbeat, sc_client)
+    send_middle_voice_initialization_to_sc(offbeat.get_random_instrument_channel(), sc_client)
 
 
 
