@@ -1,6 +1,8 @@
 (
 MIDIClient.init;
 TempoClock.tempo = 2;
+
+
 ~gm = Dictionary.newFrom(
 	[
 		\recv_netaddress, NetAddr.new("127.0.0.1", 57120),
@@ -12,5 +14,7 @@ TempoClock.tempo = 2;
 		\middle_voice_pattern, nil
 	]
 )
+
+CmdPeriod.add({(0..127).do{arg n; ~gm.at(\mOuts).do({arg out; out.noteOff(0, n)})}});
 
 )
