@@ -87,6 +87,9 @@ class OffBeatMiddleVoices(MiddleVoices):
         return [chords, durations]
 
 
+class ArpeggiatedMiddleVoices(Pads):
+    def __init__(self, harmonic_rhythm_object, octave=5):
+        super().__init__(harmonic_rhythm_object, octave)
 
 
 
@@ -101,12 +104,13 @@ if __name__ == "__main__":
     # pads = Pads(hr)
 
     # rand = RandomMiddleVoices(hr)
-    offbeat = OffBeatMiddleVoices(hr)
+    # offbeat = OffBeatMiddleVoices(hr)
+    arp = ArpeggiatedMiddleVoices(hr)
 
-    send_middle_voice_chords_to_sc(offbeat, sc_client)
-    send_middle_voice_durations_to_sc(offbeat, sc_client)
-    send_middle_voice_initialization_to_sc(offbeat.get_random_instrument_channel(), sc_client)
-
+    send_middle_voice_chords_to_sc(arp, sc_client)
+    send_middle_voice_durations_to_sc(arp, sc_client)
+    send_middle_voice_initialization_to_sc(arp.get_random_instrument_channel(), sc_client)
+    send_arpeggiator_on_off_to_sc(sc_client)
 
 
 
