@@ -41,7 +41,7 @@ class SimpleTriple(Meter):
 class SimpleDuple(Meter):
     def __init__(self, num_beats):
         if num_beats == 2:
-            super().__init__(2, [3, 2], [1, 1])
+            super().__init__(2, [3, 1], [1, 1])
         elif num_beats == 4:
             super().__init__(4, [3, 1, 2, 1], [2, 2])
         else:
