@@ -92,6 +92,24 @@ class ArpeggiatedMiddleVoices(Pads):
         super().__init__(harmonic_rhythm_object, octave)
 
 
+class ChoppyMiddleVoices(Pads):
+    def __init__(self, harmonic_rhythm_object, octave=5):
+        super().__init__(harmonic_rhythm_object, octave)
+
+    def build_chords_and_durations(self):
+        note_values = [0.25, 0.5, 0.75, 1]
+        chords = []
+        durations = []
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            duration_left = chord_and_dur_block[1]
+            while duration_left > 0:
+                duration = random.choice(note_values)
+                durations.append(self.make_note_or_rest(duration, 0.33))
+                duration_left -= duration
+                chords.append(chord_and_dur_block[0])
+        return [chords, durations]
+
 
 if __name__ == "__main__":
     from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
@@ -105,12 +123,14 @@ if __name__ == "__main__":
 
     # rand = RandomMiddleVoices(hr)
     # offbeat = OffBeatMiddleVoices(hr)
-    arp = ArpeggiatedMiddleVoices(hr)
+    # arp = ArpeggiatedMiddleVoices(hr)
+    chop = ChoppyMiddleVoices(hr)
+    print(chop.chords_and_durations)
 
-    send_middle_voice_chords_to_sc(arp, sc_client)
-    send_middle_voice_durations_to_sc(arp, sc_client)
-    send_middle_voice_initialization_to_sc(arp.get_random_instrument_channel(), sc_client)
-    send_arpeggiator_on_off_to_sc(sc_client)
+    send_middle_voice_chords_to_sc(chop, sc_client)
+    send_middle_voice_durations_to_sc(chop, sc_client)
+    send_middle_voice_initialization_to_sc(chop.get_random_instrument_channel(), sc_client)
+    # send_arpeggiator_on_off_to_sc(sc_client)
 
 
 

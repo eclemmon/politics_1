@@ -6,5 +6,5 @@ vote_options = {
     'rhythm': ['four-on-the-floor', 'polyrhythms', 'take-five', 'compound', 'breakbeat', 'random']
 }
 
-# DONE: RHYTHM, Progression
+# DONE: Rhythm, Progression, Middle Voices
 # TODO: Fix Rhythm in SC side of things....
