@@ -20,6 +20,23 @@ class MiddleVoices:
     def build_next_temporal_unit(self):
         pass
 
+    def get_random_instrument_channel(self):
+        return random.choice(self.instrument_channels)
+
+    @staticmethod
+    def build_rest(duration=1):
+        return '/r' + str(duration)
+
+    @staticmethod
+    def is_rest(probability=0.50):
+        return random.random() < probability
+
+    def make_note_or_rest(self, duration=1, probability=0.50):
+        if self.is_rest(probability):
+            return self.build_rest(duration)
+        else:
+            return duration
+
 
 class Pads(MiddleVoices):
     def __init__(self, harmonic_rhythm_object, octave=5):
