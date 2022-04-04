@@ -14,7 +14,7 @@ def send_middle_voice_chords_to_sc(middle_voices, sc_client, address='/middle_vo
 def send_middle_voice_durations_to_sc(middle_voices, sc_client, address='/middle_voice_durations'):
     msg = osc_message_builder.OscMessageBuilder(address=address)
     for duration in middle_voices.chords_and_durations[1]:
-        msg.add_arg(duration, 'f')
+        msg.add_arg(duration)
     msg = msg.build()
     sc_client.send(msg)
 
