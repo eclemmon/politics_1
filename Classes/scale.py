@@ -14,7 +14,8 @@ class Scale:
         return self.notes == other.notes
 
     def transpose(self, num):
-        self.notes = tuple([note.transpose(num) for note in self.notes])
+        for note in self.notes:
+            note.transpose(num)
 
     def modal_transpose(self, scale_degree):
         self.notes = tuple(self.notes[scale_degree:] + self.note[:scale_degree])
