@@ -34,7 +34,7 @@ class Chord:
             note.transpose(num)
 
     def get_bass_note(self):
-        return self.note[0]
+        return self.notes[0]
 
 
 if __name__ == '__main__':
