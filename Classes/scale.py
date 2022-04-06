@@ -2,7 +2,7 @@ from Classes.note import Note
 
 
 class Scale:
-    def __init__(self, notes):
+    def __init__(self, *notes):
         for i in notes:
             assert isinstance(i, Note)
         self.notes = notes
