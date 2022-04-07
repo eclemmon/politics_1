@@ -7,4 +7,5 @@ vote_options = {
 }
 
 # DONE: Rhythm, Progression, Middle Voices
+# Bass done: Alberti
 # TODO: Fix Rhythm in SC side of things....
