@@ -43,7 +43,6 @@ class AlbertiBass(Bass):
         self.note_duration = note_duration
         super().__init__(harmonic_rhythm, scale)
 
-
     def build_notes_and_durations(self):
         notes = []
         durations = []
@@ -84,6 +83,22 @@ class AlbertiBass(Bass):
             return chord.notes[sl]
 
 
+class PadsBass(Bass):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+        print(self.harmonic_rhythm.hr_durations)
+
+        for i, chord in enumerate(self.harmonic_rhythm.progression.chords):
+            print(i, chord)
+            notes.append(self.harmonic_rhythm.progression.chords[i].get_bass_note())
+            print(self.harmonic_rhythm.flattened_hr_durations[i])
+            durations.append(self.harmonic_rhythm.flattened_hr_durations[i])
+        return [notes, durations]
+
 if __name__ == "__main__":
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
@@ -92,9 +107,9 @@ if __name__ == "__main__":
     Cmm7 = Chord(Note(0), Note(3), Note(7), Note(10))
     a = Chord(Note(9), Note(0), Note(4))
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
-    harmony = ChordProgression([c_major, CM7, Cmm7, a])
+    harmony = ChordProgression([c_major, CM7, Cmm7, G7, a])
     hr = HarmonicRhythm(meter, harmony)
-    ab = AlbertiBass(hr, scale)
+    ab = PadsBass(hr, scale)
     print(ab.notes_and_durations)
     # ab.build_notes_and_durations()
 
