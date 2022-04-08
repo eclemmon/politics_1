@@ -8,6 +8,10 @@ import random
 from Classes.chord import Chord
 
 
+def subdivide_meter_into_polyrhythm(num_beats, subdivided_by):
+    return [num_beats * 0.25 * 4 / subdivided_by for _ in range(subdivided_by)]
+
+
 class Bass:
     def __init__(self, harmonic_rhythm, scale):
         self.harmonic_rhythm = harmonic_rhythm
@@ -83,19 +87,16 @@ class AlbertiBass(Bass):
             return chord.notes[sl]
 
 
-class PadsBass(Bass):
+class SustainedBass(Bass):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
         notes = []
         durations = []
-        print(self.harmonic_rhythm.hr_durations)
 
         for i, chord in enumerate(self.harmonic_rhythm.progression.chords):
-            print(i, chord)
             notes.append(self.harmonic_rhythm.progression.chords[i].get_bass_note())
-            print(self.harmonic_rhythm.flattened_hr_durations[i])
             durations.append(self.harmonic_rhythm.flattened_hr_durations[i])
         return [notes, durations]
 
@@ -107,10 +108,19 @@ if __name__ == "__main__":
     Cmm7 = Chord(Note(0), Note(3), Note(7), Note(10))
     a = Chord(Note(9), Note(0), Note(4))
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
-    harmony = ChordProgression([c_major, CM7, Cmm7, G7, a])
+    harmony = ChordProgression([c_major, G7, a, c_major, a, G7])
     hr = HarmonicRhythm(meter, harmony)
-    ab = PadsBass(hr, scale)
-    print(ab.notes_and_durations)
+    ab = SustainedBass(hr, scale)
+    rb = RandomBass(hr, scale)
+    pr = PolyrhythmicBass(hr, scale)
+    obb = OnBeatBass(hr, scale)
+    wb = WalkingBass(hr, scale)
+    # print(rb.notes_and_durations)
+    # print(pr.notes_and_durations)
+    chrom = wb.get_shortest_distance_data_chromatic(c_major.get_bass_note(), a.get_bass_note())
+    scalar = wb.get_shortest_distance_data_scalar(c_major.get_bass_note(), a.get_bass_note())
+    steps_chrom = wb.step_between_notes_chromatic(c_major.get_bass_note(), chrom)
+    print(steps_chrom)
+    steps_scalar = wb.step_between_notes_scalar(c_major.get_bass_note(), scalar)
+    print(steps_scalar)
     # ab.build_notes_and_durations()
-
-
