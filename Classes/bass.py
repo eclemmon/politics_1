@@ -100,6 +100,112 @@ class SustainedBass(Bass):
             durations.append(self.harmonic_rhythm.flattened_hr_durations[i])
         return [notes, durations]
 
+
+class RandomBass(Bass):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            duration_left = chord_and_dur_block[1]
+            while duration_left > 0:
+                duration = random.uniform(0.05, duration_left)
+                durations.append(self.make_note_or_rest(duration, 0.25))
+                duration_left -= duration
+                notes.append(chord_and_dur_block[0].get_bass_note())
+        return [notes, durations]
+
+
+class PolyrhythmicBass(Bass):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            durations += subdivide_meter_into_polyrhythm(chord_and_dur_block[1], random.randint(3, 7))
+            notes += [chord_and_dur_block[0].get_bass_note() for _ in range(len(durations))]
+
+        durations = [self.make_note_or_rest(duration) for duration in durations]
+        return [notes, durations]
+
+
+class OnBeatBass(Bass):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            durations.append(1)
+            if chord_and_dur_block[1] - 1 > 0:
+                durations.append(self.build_rest(chord_and_dur_block[1] - 1))
+            notes.append(chord_and_dur_block[0].get_bass_note())
+        return [notes, durations]
+
+
+class WalkingBass(Bass):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+    def get_shortest_distance_data_chromatic(self, bn1: Note, bn2: Note):
+        untransposed = bn2.midi_note_number - bn1.midi_note_number
+        transposed = bn1.midi_note_number + 12 - bn2.midi_note_number
+        if untransposed <= transposed:
+            return {'ascending': True, 'steps': bn2.midi_note_number - bn1.midi_note_number}
+        else:
+            return {'ascending': False, 'steps': -(bn1.midi_note_number + 12 - bn2.midi_note_number)}
+
+    def get_shortest_distance_data_scalar(self, bn1: Note, bn2: Note):
+        index_1 = self.scale.notes.index(bn1)
+        index_2 = self.scale.notes.index(bn2)
+        untransposed = index_1 - index_2
+        transposed = index_1 + len(self.scale.notes) - index_2
+        if abs(untransposed) <= abs(transposed):
+            return {'ascending': True, 'steps': index_2 - index_1}
+        else:
+            return {'ascending': False, 'steps': -(index_1 + len(self.scale.notes) - index_2)}
+
+    def step_between_notes_scalar(self, bn1, distance_data):
+        current_index = self.scale.notes.index(bn1)
+        if distance_data['ascending']:
+            return [self.scale.notes[current_index + i] for i in range(0, distance_data['steps'])]
+        else:
+            return [self.scale.notes[current_index + i] for i in range(0, distance_data['steps'], -1)]
+
+    def step_between_notes_chromatic(self, bn1, distance_data):
+        if distance_data['ascending']:
+            return [Note(bn1.midi_note_number + i) for i in range(0, distance_data['steps'])]
+        else:
+            return [Note(bn1.midi_note_number + i) for i in range(0, distance_data['steps'], -1)]
+
+    def build_notes_and_durations(self):
+        chords_and_durations = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
+
+    def step_chromatic_or_scalar(self, probability):
+        return random.random() < probability
+
+    def next_beat_fourth_down_tonicization(self, duration, next_note):
+        return (next_note - 7, duration)
+
+    def next_beat_leading_tone_tonicization(self, duration, next_note):
+        return (next_note - 1, duration)
+
+    def next_beat_chromatic_upper_neighbor_tonicization(self, duration, next_note):
+        return (next_note + 1, duration)
+
+    def build_notes_for_current_subdivision(self, current_chord_and_dur_block, next_chord_and_dur_block):
+        # choose between scalar and chromatic
+        pass
+
+
 if __name__ == "__main__":
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
