@@ -13,6 +13,9 @@ class Scale:
 
         return self.notes == other.notes
 
+    def __len__(self):
+        return len(self.notes)
+
     def transpose(self, num):
         for note in self.notes:
             note.transpose(num)
