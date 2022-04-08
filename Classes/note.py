@@ -39,6 +39,46 @@ class Note:
         else:
             return NotImplemented
 
+    def __lt__(self, other):
+        if isinstance(other, Note):
+            return self.midi_note_number < other.midi_note_number
+        elif isinstance(other, int):
+            return self.midi_note_number < other
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Note):
+            return self.midi_note_number <= other.midi_note_number
+        elif isinstance(other, int):
+            return self.midi_note_number <= other
+        else:
+            return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, Note):
+            return self.midi_note_number > other.midi_note_number
+        elif isinstance(other, int):
+            return self.midi_note_number > other
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Note):
+            return self.midi_note_number >= other.midi_note_number
+        elif isinstance(other, int):
+            return self.midi_note_number >= other
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Note):
+            return self.midi_note_number != other.midi_note_number
+        elif isinstance(other, int):
+            return self.midi_note_number != other
+        else:
+            return NotImplemented
+
     def transpose(self, num):
         self.midi_note_number = self.midi_note_number + (num * 12)
 
