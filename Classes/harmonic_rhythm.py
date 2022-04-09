@@ -98,6 +98,7 @@ def build_harmonic_rhythm(meter, chords):
     return HarmonicRhythm(meter, ChordProgression(chords))
 
 
+
 if __name__ == "__main__":
     # meter = ComplexMeter(7, [3, 1, 2, 1, 2, 1, 1], [2, 2, 3])
     # meter = CompoundMeter(9, [3,1,1,2,1,1,2,1,1], [3, 3, 3])
