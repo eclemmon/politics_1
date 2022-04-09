@@ -300,55 +300,56 @@ class WalkingBass(Bass):
                 k=100
             )[0]
 
-class FunkBass(Bass):
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
-        super().__init__(harmonic_rhythm, scale)
 
-    def major3_to_5_chromatic(self):
-        tonic = self.scale.notes[0]
-        M3 = Note(tonic.midi_note_number + 4)
-        return [Note(i) for i in range(M3.midi_note_number, M3.midi_note_number + 3)]
-
-    def major6_to_8_chromatic(self):
-        tonic = self.scale.notes[0]
-        M6 = Note(tonic.midi_note_number + 9)
-        return [Note(i) for i in range(M6.midi_note_number, M6.midi_note_number + 3)]
-
-    def flat7_to_6(self):
-        tonic = self.scale.notes[0]
-        b7 = Note(tonic.midi_note_number + 10)
-        M6 = Note(tonic.midi_note_number +9)
-        return [b7, M6]
-
-    def major6_to_flat7(self):
-        tonic = self.scale.notes[0]
-        b7 = Note(tonic.midi_note_number + 10)
-        M6 = Note(tonic.midi_note_number +9)
-        return [M6, b7]
-
-    def two_eighths_on_the_one(self, chord_and_dur_block):
-        notes = [chord_and_dur_block[0].get_bass_note(), chord_and_dur_block[0].get_bass_note()]
-        durations = [0.5, 0.5]
-        return notes, durations
-
-    def heavy_on_the_one(self, chord_and_dur_block):
-        return [chord_and_dur_block[0].get_bass_note()], [self.harmonic_rhythm.meter.subdivisions[0]]
-
-    def on_the_one(self, chord_and_dur_block):
-        return random.choices(
-            population=[
-                self.heavy_on_the_one,
-                self.two_eighths_on_the_one
-            ],
-            weights=[50, 50],
-            k=100
-        )[0](chord_and_dur_block)
-
-    def next_duration_is_syncopation(self, durations):
-        if sum(durations) % 1 == 0:
-            return True
-        else:
-            return False
+# class FunkBass(Bass):
+#     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+#         super().__init__(harmonic_rhythm, scale)
+#
+#     def major3_to_5_chromatic(self):
+#         tonic = self.scale.notes[0]
+#         M3 = Note(tonic.midi_note_number + 4)
+#         return [Note(i) for i in range(M3.midi_note_number, M3.midi_note_number + 3)]
+#
+#     def major6_to_8_chromatic(self):
+#         tonic = self.scale.notes[0]
+#         M6 = Note(tonic.midi_note_number + 9)
+#         return [Note(i) for i in range(M6.midi_note_number, M6.midi_note_number + 3)]
+#
+#     def flat7_to_6(self):
+#         tonic = self.scale.notes[0]
+#         b7 = Note(tonic.midi_note_number + 10)
+#         M6 = Note(tonic.midi_note_number +9)
+#         return [b7, M6]
+#
+#     def major6_to_flat7(self):
+#         tonic = self.scale.notes[0]
+#         b7 = Note(tonic.midi_note_number + 10)
+#         M6 = Note(tonic.midi_note_number +9)
+#         return [M6, b7]
+#
+#     def two_eighths_on_the_one(self, chord_and_dur_block):
+#         notes = [chord_and_dur_block[0].get_bass_note(), chord_and_dur_block[0].get_bass_note()]
+#         durations = [0.5, 0.5]
+#         return notes, durations
+#
+#     def heavy_on_the_one(self, chord_and_dur_block):
+#         return [chord_and_dur_block[0].get_bass_note()], [self.harmonic_rhythm.meter.subdivisions[0]]
+#
+#     def on_the_one(self, chord_and_dur_block):
+#         return random.choices(
+#             population=[
+#                 self.heavy_on_the_one,
+#                 self.two_eighths_on_the_one
+#             ],
+#             weights=[50, 50],
+#             k=100
+#         )[0](chord_and_dur_block)
+#
+#     def next_duration_is_syncopation(self, durations):
+#         if sum(durations) % 1 == 0:
+#             return True
+#         else:
+#             return False
 
 
 if __name__ == "__main__":
@@ -370,7 +371,7 @@ if __name__ == "__main__":
     pr = PolyrhythmicBass(hr, scale)
     obb = OnBeatBass(hr, scale)
     wb = WalkingBass(hr, scale)
-    fb = FunkBass(hr, scale)
+    # fb = FunkBass(hr, scale)
     chrom = wb.get_shortest_distance_data_chromatic(c_major.get_bass_note(), a.get_bass_note())
     scalar = wb.get_shortest_distance_data_scalar(c_major.get_bass_note(), a.get_bass_note())
     # steps_chrom = wb.step_between_notes_chromatic(c_major.get_bass_note(), chrom)
@@ -380,4 +381,4 @@ if __name__ == "__main__":
 
     wb.build_notes_for_current_subdivision((c_major, 2), (CM7, 2))
     # print(wb.notes_and_durations)
-    print(fb.M3_to_5_chromatic())
+    # print(fb.M3_to_5_chromatic())
