@@ -76,7 +76,7 @@ class Melody:
             appoggiatura_duration = self.get_random_duration()
         durations.append(appoggiatura_duration)
         # duration of resolution note fills rest of duration
-        durations.append(chord_and_duration_block[1]-appoggiatura_duration)
+        durations.append(chord_and_duration_block[1] - appoggiatura_duration)
         return notes, durations
 
     def suspension(self, current_duration_left, current_chord_and_duration_block, next_chord_and_duration_block):
@@ -114,8 +114,28 @@ class Melody:
         remaining_duration = (current_chord_and_duration_block[1] + next_chord_and_duration_block[1]) - sum(durations)
         return notes, durations, remaining_duration
 
-    def upper_mordent(self):
-        pass
+    def mordent(self, chord_and_duration_block, upper_mordent: bool = False):
+        notes = []
+        durations = []
+        # get random indicated note
+        indicated_note = random.choice(chord_and_duration_block[0].notes)
+        # upper_mordent input determines whether its a lower mordent or upper mordent
+        if upper_mordent:
+            neighbor = self.scalar_upper_neighbor(indicated_note)
+        else:
+            neighbor = self.scalar_lower_neightbor(indicated_note)
+        # add all notes to notes list
+        notes += [indicated_note, neighbor, indicated_note]
+        # add ornamental notes to durations
+        durations += [0.125, 0.125]
+        # build resolution duration and append to durations
+        resolution_duration = self.get_random_duration()
+        while resolution_duration > chord_and_duration_block[1] - 0.25:
+            resolution_duration = self.get_random_duration()
+        durations.append(resolution_duration)
+        # Get the remaining duration in the harmonic rhythm subunit
+        remaining_duration = chord_and_duration_block[1] - sum(durations)
+        return notes, durations, remaining_duration
 
     def set_scale(self, scale: Scale):
         """
@@ -128,7 +148,8 @@ class Melody:
     def get_closest_scale_tone_to_chord_tone(self, chord_note: Note):
         closest_tone = self.scale.notes[0]
         for tone in self.scale.notes:
-            if abs(chord_note.midi_note_number - tone.midi_note_number) < (chord_note.midi_note_number - closest_tone.midi_note_number):
+            if abs(chord_note.midi_note_number - tone.midi_note_number) < (
+                    chord_note.midi_note_number - closest_tone.midi_note_number):
                 closest_tone = tone
         return closest_tone
 
@@ -155,13 +176,13 @@ class Melody:
         ])(note)
 
     def get_random_duration(self):
-        return random.choice([0.25, 1/3, 0.5, 2/3, 0.75, 1, 1.25, 1.5, 1.75, 2])
+        return random.choice([0.25, 1 / 3, 0.5, 2 / 3, 0.75, 1, 1.25, 1.5, 1.75, 2])
 
     def get_random_chord_tone(self, chord: Chord):
         return random.choice(chord.notes)
 
     def is_tuplet(self, duration):
-        if duration == 1/3:
+        if duration == 1 / 3:
             return True
         else:
             return False
