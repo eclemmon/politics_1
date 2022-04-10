@@ -57,7 +57,7 @@ class Melody:
         Makes an appoggiatura based on the entire duration of the chord and duration block. Can be an accented
         upper or lower neighbor.
         :param chord_and_duration_block: Tuple of (Chord, float || int)
-        :return: Tuple of (List of Notes, List of float || int),
+        :return: Tuple of (List of Notes, List of float || int, float || int),
         """
         notes = []
         durations = []
@@ -72,12 +72,23 @@ class Melody:
         notes.append(chord_tone)
         # duration of the appoggiatura is usually less than the length of the harmonic rhythm unit
         appoggiatura_duration = self.get_random_duration()
-        while appoggiatura_duration >= chord_and_duration_block[1]:
+        while appoggiatura_duration > chord_and_duration_block[1]:
             appoggiatura_duration = self.get_random_duration()
         durations.append(appoggiatura_duration)
-        # duration of resolution note fills rest of duration
-        durations.append(chord_and_duration_block[1] - appoggiatura_duration)
-        return notes, durations
+        # make duration of resolution note
+        # if remaining duration is less than minimum duration amount, resolution_duration is remainder. Otherwise
+        # get a random duration smaller than the remainder
+        remaining_duration = chord_and_duration_block[1] - appoggiatura_duration
+        if remaining_duration <= 0.25:
+            resolution_duration = remaining_duration
+        else:
+            resolution_duration = self.get_random_duration()
+            while resolution_duration > remaining_duration:
+                resolution_duration = self.get_random_duration()
+        durations.append(resolution_duration)
+        # get remaining duration in chord and dur block
+        remaining_duration = remaining_duration - resolution_duration
+        return notes, durations, remaining_duration
 
     def suspension(self, current_duration_left, current_chord_and_duration_block, next_chord_and_duration_block):
         notes = []
