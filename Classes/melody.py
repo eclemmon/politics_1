@@ -115,6 +115,12 @@ class Melody:
         return notes, durations, remaining_duration
 
     def mordent(self, chord_and_duration_block, upper_mordent: bool = False):
+        """
+        Makes a mordent based on the chord_and_duration block given.
+        :param chord_and_duration_block: tuple of (Chord, int || float)
+        :param upper_mordent: boolean, defaults to False as lower mordents are more common
+        :return: tuple of (List of Notes, List of float || int, float || int)
+        """
         notes = []
         durations = []
         # get random indicated note
