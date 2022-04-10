@@ -23,6 +23,12 @@ class Melody:
 
     @staticmethod
     def is_rest(probability=0.50):
+        """
+        Helper fucntion that determines whether a rest is constructed based on a passed in probability.
+        :param probability: Float less than one.
+        :return: Boolean
+        """
+        assert 0 <= probability <= 1, "Probability must be greater than or equal to 0 and less than or equal to 1."
         return random.random() < probability
 
     def make_note_or_rest(self, duration=1, probability=0.50):
