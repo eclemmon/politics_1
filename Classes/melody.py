@@ -8,7 +8,7 @@ import random
 
 
 class Melody:
-    def __init__(self, harmonic_rhythm, scale):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
 
@@ -225,10 +225,74 @@ class Melody:
         else:
             return False
 
+    def is_sustainable(self, next_chord_and_dur_block, current_chord_and_dur_block=None, current_note_and_dur_block=None):
+        """
+        Tests to see if the current note or chord is sustainable to the next chord and dur block.
+        :param next_chord_and_dur_block: tuple of (Chord, int || float)
+        :param current_chord_and_dur_block: tuple of (Chord, int || float)
+        :param current_note_and_dur_block: tuple of (Note, int || float)
+        :return: boolean
+        """
+        c2 = next_chord_and_dur_block[0]
+
+        assert current_note_and_dur_block is not None and current_chord_and_dur_block is not None, "You must pass " \
+                                                                                                   "either a note or " \
+                                                                                                   "a chord. Try " \
+                                                                                                   "declaring " \
+                                                                                                   "explicitly "
+
+        if current_chord_and_dur_block is not None:
+            c1 = current_chord_and_dur_block[0]
+            for note1 in c1.notes:
+                for note2 in c2.notes:
+                    if note1 == note2:
+                        return True
+            return False
+
+        if current_note_and_dur_block is not None:
+            note1 = current_note_and_dur_block[0]
+            for note2 in c2.notes:
+                if note1 == note2:
+                    return True
+            return False
+
+
+    def sustain_across_chord_and_dur_block(self, current_chord_and_dur_block, next_chord_and_dur_block):
+        """
+        Sustains the current chord_and_dur_block to the next chord and dur block
+        :param current_chord_and_dur_block: tuple of (Chord, int || float)
+        :param next_chord_and_dur_block: tuple of (Chord, int || float)
+        :return: tuple of (Note, int || float)
+        """
+        # get the current chords
+        c1 = current_chord_and_dur_block[0]
+        c2 = next_chord_and_dur_block[0]
+        # Loop through them and return the note and the added durational values
+        for note1 in c1.notes:
+            for note2 in c2.notes:
+                if note1 == note2:
+                    return [note1], [current_chord_and_dur_block[1]+next_chord_and_dur_block[1]]
+
+    def sustain_across_note_and_dur_with_chord(self, note_and_duration, next_chord_and_dur_block):
+        pass
+
 
 class SustainedMelody(Melody):
-    def __init__(self, harmonic_rhythm, scale):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+        chords_and_durations = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
+
+    def get_next_note_and_dur(self, current_chord_and_dur_block, next_chord_and_dur_block):
+        pass
+
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -245,7 +309,11 @@ if __name__ == "__main__":
     harmony = ChordProgression([c_major, G7, a, c_major, a, G7, e])
     hr = HarmonicRhythm(duple, harmony)
     melody = Melody(hr, scale)
+    sm = SustainedMelody(hr, scale)
     # print(melody.get_closest_scale_tone_to_chord_tone(Note(8)))
-    print(melody.appoggiatura((b, 2)))
+    print(sm.sustain_across_chord_and_dur_block((a,2), (CM7, 2)))
+    # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
     # for i in range(100):
+    #     print(melody.appoggiatura((b, 2)))
     #     print(melody.suspension(1, (b, 2), (a, 2)))
+    #     print(melody.turn((b, 2), 2))
