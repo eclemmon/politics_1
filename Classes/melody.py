@@ -198,7 +198,7 @@ class Melody:
 
     def scalar_upper_neighbor(self, note: Note):
         """
-        Gets the scalar upper neighbor. to a given note.
+        Gets the scalar upper neighbor to a given note.
         :param note: Note
         :return: Note
         """
@@ -206,16 +206,36 @@ class Melody:
         return self.scale.notes[(note_index + 1) % len(self.scale.notes)]
 
     def scalar_lower_neightbor(self, note: Note):
+        """
+        Get the scalar lower neighbor to a given note.
+        :param note: Note
+        :return: Note
+        """
         note_index = self.scale.notes.index(note)
         return self.scale.notes[(note_index - 1) % len(self.scale.notes)]
 
     def chromatic_upper_neighbor(self, note: Note):
+        """
+        Get the chromatic upper neighbor to a given note.
+        :param note: Note
+        :return: Note
+        """
         return Note(note.midi_note_number + 1)
 
     def chromatic_lower_neighbor(self, note: Note):
+        """
+        get the chromatic lower neighbor to a given note.
+        :param note: Note
+        :return: Note
+        """
         return Note(note.midi_note_number - 1)
 
     def get_random_neighbor(self, note: Note):
+        """
+        Get a random neighbor to a given note.
+        :param note: Note
+        :return: Note
+        """
         return random.choice([
             self.scalar_upper_neighbor,
             self.scalar_lower_neightbor,
