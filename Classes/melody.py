@@ -53,6 +53,12 @@ class Melody:
         pass
 
     def appoggiatura(self, chord_and_duration_block):
+        """
+        Makes an appoggiatura based on the entire duration of the chord and duration block. Can be an accented
+        upper or lower neighbor.
+        :param chord_and_duration_block: Tuple of (Chord, float || int)
+        :return: Tuple of (List of Notes, List of float || int),
+        """
         notes = []
         durations = []
         # get a chord tone
