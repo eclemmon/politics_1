@@ -143,6 +143,27 @@ class Melody:
         remaining_duration = chord_and_duration_block[1] - sum(durations)
         return notes, durations, remaining_duration
 
+    def turn(self,  chord_and_duration_block, current_duration_left, chromatic: bool = False):
+        notes = []
+        # get random indicated note
+        indicated_note = random.choice(chord_and_duration_block[0].notes)
+        # get upper and lower neighbor
+        if chromatic:
+            ln = self.chromatic_lower_neighbor(indicated_note)
+            un = self.chromatic_upper_neighbor(indicated_note)
+        else:
+            ln = self.scalar_lower_neightbor(indicated_note)
+            un = self.scalar_upper_neighbor(indicated_note)
+        # put turn into notes list
+        notes += [un, indicated_note, ln, indicated_note]
+        # get durations
+        total_duration = self.get_random_duration()
+        while total_duration > current_duration_left:
+            total_duration = self.get_random_duration()
+        durations = [total_duration / len(notes) for _ in range(len(notes))]
+        remaining_duration = current_duration_left - total_duration
+        return notes, durations, remaining_duration
+
     def set_scale(self, scale: Scale):
         """
         Setter function to change the scale as needed.
