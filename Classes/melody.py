@@ -11,6 +11,7 @@ class Melody:
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
+        self.notes_and_durations = self.build_notes_and_durations()
 
     @staticmethod
     def build_rest(duration=1):
@@ -154,7 +155,7 @@ class Melody:
         remaining_duration = chord_and_duration_block[1] - sum(durations)
         return notes, durations, remaining_duration
 
-    def turn(self,  chord_and_duration_block, current_duration_left, chromatic: bool = False):
+    def turn(self, chord_and_duration_block, current_duration_left, chromatic: bool = False):
         notes = []
         # get random indicated note
         indicated_note = random.choice(chord_and_duration_block[0].notes)
@@ -258,13 +259,26 @@ class Melody:
         """
         return random.choice(chord.notes)
 
+    def get_closest_chord_tone_to_note(self, note: Note, chord: Chord):
+        closest_tone = chord.notes[0]
+        for tone in chord.notes:
+            if abs(note.midi_note_number - tone.midi_note_number) < (note.midi_note_number - closest_tone.midi_note_number):
+                closest_tone = tone
+        return closest_tone
+
     def is_tuplet(self, duration):
-        if duration == 1 / 3:
+        """
+        Helper function to determine whether a duration is a tuplet
+        :param duration: int or float
+        :return: boolean
+        """
+        if duration % 1/3 == 0:
             return True
         else:
             return False
 
-    def is_sustainable(self, next_chord_and_dur_block, current_chord_and_dur_block=None, current_note_and_dur_block=None):
+    def is_sustainable(self, next_chord_and_dur_block, current_chord_and_dur_block=None,
+                       current_note_and_dur_block=None):
         """
         Tests to see if the current note or chord is sustainable to the next chord and dur block.
         :param next_chord_and_dur_block: tuple of (Chord, int || float)
@@ -273,12 +287,11 @@ class Melody:
         :return: boolean
         """
         c2 = next_chord_and_dur_block[0]
-
-        assert current_note_and_dur_block is not None and current_chord_and_dur_block is not None, "You must pass " \
-                                                                                                   "either a note or " \
-                                                                                                   "a chord. Try " \
-                                                                                                   "declaring " \
-                                                                                                   "explicitly "
+        assert current_note_and_dur_block is not None or current_chord_and_dur_block is not None, "You must pass " \
+                                                                                                  "either a note or " \
+                                                                                                  "a chord. Try " \
+                                                                                                  "declaring only " \
+                                                                                                  "one explicitly "
 
         if current_chord_and_dur_block is not None:
             c1 = current_chord_and_dur_block[0]
@@ -295,7 +308,6 @@ class Melody:
                     return True
             return False
 
-
     def sustain_across_chord_and_dur_block(self, current_chord_and_dur_block, next_chord_and_dur_block):
         """
         Sustains the current chord_and_dur_block to the next chord and dur block
@@ -310,10 +322,16 @@ class Melody:
         for note1 in c1.notes:
             for note2 in c2.notes:
                 if note1 == note2:
-                    return [note1], [current_chord_and_dur_block[1]+next_chord_and_dur_block[1]]
+                    return note1, current_chord_and_dur_block[1] + next_chord_and_dur_block[1]
 
-    def sustain_across_note_and_dur_with_chord(self, note_and_duration, next_chord_and_dur_block):
-        pass
+    def sustain_across_note_to_chord_and_dur_block(self, note_and_duration, next_chord_and_dur_block):
+        # get note
+        note1 = note_and_duration[0]
+        # get chord
+        c2 = next_chord_and_dur_block[0]
+        for note2 in c2.notes:
+            if note1 == note2:
+                return note1, note_and_duration[1] + next_chord_and_dur_block[1]
 
 
 class SustainedMelody(Melody):
@@ -324,14 +342,65 @@ class SustainedMelody(Melody):
         notes = []
         durations = []
         chords_and_durations = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
+        i = 0
+        while i < len(chords_and_durations) - 1:
+            if i == 0:
+                note_and_duration = self.get_next_note_and_dur(next_chord_and_dur_block=chords_and_durations[i + 1],
+                                                               current_chord_and_dur_block=chords_and_durations[i])
+                notes.append(note_and_duration[0])
+                durations.append(note_and_duration[1])
+            else:
+                print(i, notes, durations)
+                current_note_and_dur_block = notes[-1], durations[-1]
+                if self.is_sustainable(next_chord_and_dur_block=chords_and_durations[i + 1],
+                                       current_note_and_dur_block=current_note_and_dur_block):
+                    note_and_duration = self.get_next_note_and_dur(chords_and_durations[i + 1],
+                                                                   current_note_and_dur_block=current_note_and_dur_block)
+                    notes[-1], durations[-1] = note_and_duration[0], note_and_duration[1]
+                else:
+                    note_and_duration = self.get_next_note_and_dur(chords_and_durations[i + 1],
+                                                                   current_chord_and_dur_block=chords_and_durations[i])
+                    notes.append(note_and_duration[0])
+                    durations.append(note_and_duration[1])
+            i += 1
+        return [notes, durations]
 
-    def get_next_note_and_dur(self, current_chord_and_dur_block, next_chord_and_dur_block):
-        pass
-
-
-
-
-
+    def get_next_note_and_dur(self, next_chord_and_dur_block,
+                              current_chord_and_dur_block=None,
+                              current_note_and_dur_block=None):
+        """
+        Gets the next note and duration, either by generating a summed durational value of the existing, sustained note,
+        or by getting a new, random chord note.
+        :param next_chord_and_dur_block: tuple (Chord, int || float)
+        :param current_chord_and_dur_block: tuple (Chord, int || float)
+        :param current_note_and_dur_block: tuple (Note, int || float)
+        :return: tuple (Note, int || float)
+        """
+        assert current_note_and_dur_block is not None or current_chord_and_dur_block is not None, "You must pass " \
+                                                                                                  "either a note or " \
+                                                                                                  "a chord. Try " \
+                                                                                                  "declaring only " \
+                                                                                                  "one explicitly "
+        if self.is_sustainable(next_chord_and_dur_block, current_chord_and_dur_block=current_chord_and_dur_block,
+                               current_note_and_dur_block=current_note_and_dur_block):
+            try:
+                if current_chord_and_dur_block is not None:
+                    return self.sustain_across_chord_and_dur_block(current_chord_and_dur_block,
+                                                                   next_chord_and_dur_block)
+                if current_note_and_dur_block is not None:
+                    return self.sustain_across_note_to_chord_and_dur_block(current_note_and_dur_block,
+                                                                           next_chord_and_dur_block)
+            except RuntimeError as e:
+                print("Somehow this was considered sustainable, but none of the possible sustain conditions ran...", e)
+        else:
+            try:
+                if current_chord_and_dur_block is not None:
+                    # get closest closest tone to last note
+                    return self.get_random_chord_tone(current_chord_and_dur_block[0]), current_chord_and_dur_block[1]
+                if current_note_and_dur_block is not None:
+                    return current_note_and_dur_block
+            except RuntimeError as e:
+                print("Somehow you didn't return a tuple at all?", e)
 
 
 if __name__ == "__main__":
@@ -346,11 +415,13 @@ if __name__ == "__main__":
     e = Chord(Note(4), Note(7), Note(11))
     b = Chord(Note(11), Note(2), Note(5))
     harmony = ChordProgression([c_major, G7, a, c_major, a, G7, e])
-    hr = HarmonicRhythm(duple, harmony)
+    hr = HarmonicRhythm(meter, harmony)
     melody = Melody(hr, scale)
     sm = SustainedMelody(hr, scale)
     # print(melody.get_closest_scale_tone_to_chord_tone(Note(8)))
-    print(sm.sustain_across_chord_and_dur_block((a,2), (CM7, 2)))
+    # print(sm.sustain_across_chord_and_dur_block((a, 2), (b, 2)))
+    # print(sm.get_next_note_and_dur((a, 2), current_note_and_dur_block=(Note(4), 7)))
+    print(sm.notes_and_durations)
     # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
     # for i in range(100):
     #     print(melody.appoggiatura((b, 2)))
