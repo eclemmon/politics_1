@@ -64,7 +64,7 @@ class Melody:
         # get a chord tone
         chord_tone = random.choice(chord_and_duration_block[0].notes)
         # appoggiatura is an accented neighbor
-        appoggiatura_note = self.get_closest_scale_tone_to_chord_tone(chord_tone)
+        appoggiatura_note = self.get_closest_scale_tone_to_note(chord_tone)
         while appoggiatura_note == chord_tone:
             appoggiatura_note = self.get_random_neighbor(chord_tone)
         notes.append(appoggiatura_note)
@@ -102,7 +102,7 @@ class Melody:
         if current_chord_and_duration_block[0] == next_chord_and_duration_block[0]:
             suspension_note = self.get_random_neighbor(next_chord_tone)
         else:
-            suspension_note = self.get_closest_scale_tone_to_chord_tone(next_chord_tone)
+            suspension_note = self.get_closest_scale_tone_to_note(next_chord_tone)
         # while suspension is same as the next chord tone, make a new next chord tone and get another suspension.
         # solve edge cases where suspension is same as next chord
         while suspension_note == next_chord_tone:
@@ -183,15 +183,25 @@ class Melody:
         """
         self.scale = scale
 
-    def get_closest_scale_tone_to_chord_tone(self, chord_note: Note):
+    def get_closest_scale_tone_to_note(self, note: Note):
+        """
+        Gets the closest scalar note to a given note.
+        :param note: Note
+        :return: Note
+        """
         closest_tone = self.scale.notes[0]
         for tone in self.scale.notes:
-            if abs(chord_note.midi_note_number - tone.midi_note_number) < (
-                    chord_note.midi_note_number - closest_tone.midi_note_number):
+            if abs(note.midi_note_number - tone.midi_note_number) < (
+                    note.midi_note_number - closest_tone.midi_note_number):
                 closest_tone = tone
         return closest_tone
 
     def scalar_upper_neighbor(self, note: Note):
+        """
+        Gets the scalar upper neighbor. to a given note.
+        :param note: Note
+        :return: Note
+        """
         note_index = self.scale.notes.index(note)
         return self.scale.notes[(note_index + 1) % len(self.scale.notes)]
 
