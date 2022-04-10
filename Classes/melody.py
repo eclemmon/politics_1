@@ -24,7 +24,7 @@ class Melody:
     @staticmethod
     def is_rest(probability=0.50):
         """
-        Helper fucntion that determines whether a rest is constructed based on a passed in probability.
+        Helper function that determines whether a rest is constructed based on a passed in probability.
         :param probability: Float less than one.
         :return: Boolean
         """
@@ -32,10 +32,22 @@ class Melody:
         return random.random() < probability
 
     def make_note_or_rest(self, duration=1, probability=0.50):
-        if self.is_rest(probability):
-            return self.build_rest(duration)
-        else:
-            return duration
+        """
+        Helper function that makes a note or a rest depending on the probability in self.is_rest.
+        :param duration: Integer or float.
+        :param probability: Float between 0 and 1
+        :return: String ('/r1.5'), integer or float.
+        """
+        try:
+            if self.is_rest(probability):
+                return self.build_rest(duration)
+            else:
+                return duration
+        except AssertionError as msg:
+            print(msg)
+        finally:
+            # make a really short note and pray
+            return 0.25
 
     def build_notes_and_durations(self):
         pass
@@ -50,8 +62,6 @@ class Melody:
         while appoggiatura_note == chord_tone:
             appoggiatura_note = self.get_random_neighbor(chord_tone)
         notes.append(appoggiatura_note)
-        # # appoggiatura resolves
-        # notes.append(self.get_closest_scale_tone_to_chord_tone(chord_tone))
         # it must resolve to a chord tone
         notes.append(chord_tone)
         # duration of the appoggiatura is usually less than the length of the harmonic rhythm unit
