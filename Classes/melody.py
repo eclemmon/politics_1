@@ -244,9 +244,18 @@ class Melody:
         ])(note)
 
     def get_random_duration(self):
+        """
+        Get a random duration between 0.25 and 2 beats.
+        :return: float || int
+        """
         return random.choice([0.25, 1 / 3, 0.5, 2 / 3, 0.75, 1, 1.25, 1.5, 1.75, 2])
 
     def get_random_chord_tone(self, chord: Chord):
+        """
+        Get a random chord tone from a given chord.
+        :param chord: Chord
+        :return: Note
+        """
         return random.choice(chord.notes)
 
     def is_tuplet(self, duration):
