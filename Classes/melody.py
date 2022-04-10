@@ -14,6 +14,11 @@ class Melody:
 
     @staticmethod
     def build_rest(duration=1):
+        """
+        Helper function that builds a rest out of a given duration.
+        :param duration: Integer or float
+        :return: String of '/r' key + a cocatenated duration
+        """
         return '/r' + str(duration)
 
     @staticmethod
