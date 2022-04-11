@@ -260,6 +260,12 @@ class Melody:
         return random.choice(chord.notes)
 
     def get_closest_chord_tone_to_note(self, note: Note, chord: Chord):
+        """
+        Gets the closest tone in a chord to a given note.
+        :param note: Note
+        :param chord: Chord
+        :return: Note
+        """
         closest_tone = chord.notes[0]
         for tone in chord.notes:
             if abs(note.midi_note_number - tone.midi_note_number) < (note.midi_note_number - closest_tone.midi_note_number):
