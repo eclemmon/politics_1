@@ -3,14 +3,10 @@ from Classes.chord_progression import ChordProgression
 from Classes.scale import Scale
 from Classes.meter import *
 from Classes.note import Note
+from Rhythm_Generators.subdivision_generator import subdivide_meter_into_polyrhythm
 import random
 
 from Classes.chord import Chord
-
-
-def subdivide_meter_into_polyrhythm(num_beats, subdivided_by):
-    return [num_beats * 0.25 * 4 / subdivided_by for _ in range(subdivided_by)]
-
 
 class Bass:
     def __init__(self, harmonic_rhythm, scale):

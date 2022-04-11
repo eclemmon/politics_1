@@ -4,6 +4,7 @@ from Classes.scale import Scale
 from Classes.meter import *
 from Classes.note import Note
 from Classes.chord import Chord
+from Rhythm_Generators.subdivision_generator import subdivide_meter_into_polyrhythm
 import random
 
 
@@ -46,9 +47,6 @@ class Melody:
                 return duration
         except AssertionError as msg:
             print(msg)
-        finally:
-            # make a really short note and pray
-            return 0.25
 
     def build_notes_and_durations(self):
         pass
@@ -495,11 +493,12 @@ if __name__ == "__main__":
     melody = Melody(hr, scale)
     sm = SustainedMelody(hr, scale)
     rm = RandomMelody(hr, scale)
+    cm = ChoppyMelody(hr, scale)
     # print(melody.get_closest_scale_tone_to_chord_tone(Note(8)))
     # print(sm.sustain_across_chord_and_dur_block((a, 2), (b, 2)))
     # print(sm.get_next_note_and_dur((a, 2), current_note_and_dur_block=(Note(4), 7)))
     # print(sm.notes_and_durations)
-    print(rm.notes_and_durations)
+    print(cm.notes_and_durations)
     # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
     # for i in range(100):
     #     print(melody.appoggiatura((b, 2)))
