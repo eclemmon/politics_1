@@ -455,6 +455,29 @@ class RandomMelody(Melody):
         return [notes, durations]
 
 
+class LeapyMelody(Melody):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+
+class ChoppyMelody(Melody):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+
+class PolyrhythmicMelody(Melody):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+
+class MaxOrnamentationMelody(Melody):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+
+class SuspensionsMelody(Melody):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
 
 if __name__ == "__main__":
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
