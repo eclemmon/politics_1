@@ -495,6 +495,20 @@ class PolyrhythmicMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            durations += subdivide_meter_into_polyrhythm(chord_and_dur_block[1], random.randint(3, 7))
+            notes += [self.get_random_chord_or_scale_tone(self.scale, chord_and_dur_block[0]) for _ in range(len(durations))]
+
+        durations = [self.make_note_or_rest(duration) for duration in durations]
+        return [notes, durations]
+
+    def get_random_chord_or_scale_tone(self, scale, chord):
+        return random.choice([self.get_random_chord_tone(chord), self.get_random_scale_tone(scale)])
+
 
 class MaxOrnamentationMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
