@@ -500,10 +500,14 @@ class PolyrhythmicMelody(Melody):
         durations = []
 
         for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
-            durations += subdivide_meter_into_polyrhythm(chord_and_dur_block[1], random.randint(3, 7))
-            notes += [self.get_random_chord_or_scale_tone(self.scale, chord_and_dur_block[0]) for _ in range(len(durations))]
+            polyrhythm = subdivide_meter_into_polyrhythm(chord_and_dur_block[1], random.randint(3, 7))
+            durations += polyrhythm
+            notes += [self.get_random_chord_or_scale_tone(self.scale, chord_and_dur_block[0]) for _ in
+                      range(len(polyrhythm))]
+
 
         durations = [self.make_note_or_rest(duration) for duration in durations]
+
         return [notes, durations]
 
     def get_random_chord_or_scale_tone(self, scale, chord):
@@ -513,6 +517,14 @@ class PolyrhythmicMelody(Melody):
 class MaxOrnamentationMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
+
+    def build_notes_and_durations(self):
+        pass
+
+    def get_next_ornamentation(self, chord_and_duration, current_duration_left):
+        self.appoggiatura(chord_and_duration_block=chord_and_duration)
+        self.mordent(chord_and_duration, random.choice([True, False]))
+        self.turn(chord_and_duration, current_duration_left, random.choice([True, False]))
 
 
 class SuspensionsMelody(Melody):
@@ -536,11 +548,12 @@ if __name__ == "__main__":
     sm = SustainedMelody(hr, scale)
     rm = RandomMelody(hr, scale)
     cm = ChoppyMelody(hr, scale)
+    prm = PolyrhythmicMelody(hr, scale)
     # print(melody.get_closest_scale_tone_to_chord_tone(Note(8)))
     # print(sm.sustain_across_chord_and_dur_block((a, 2), (b, 2)))
     # print(sm.get_next_note_and_dur((a, 2), current_note_and_dur_block=(Note(4), 7)))
     # print(sm.notes_and_durations)
-    print(cm.notes_and_durations)
+    print(prm.notes_and_durations)
     # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
     # for i in range(100):
     #     print(melody.appoggiatura((b, 2)))

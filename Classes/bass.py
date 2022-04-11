@@ -124,8 +124,9 @@ class PolyrhythmicBass(Bass):
         durations = []
 
         for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
-            durations += subdivide_meter_into_polyrhythm(chord_and_dur_block[1], random.randint(3, 7))
-            notes += [chord_and_dur_block[0].get_bass_note() for _ in range(len(durations))]
+            polyrhythm = subdivide_meter_into_polyrhythm(chord_and_dur_block[1], random.randint(3, 7))
+            durations += polyrhythm
+            notes += [chord_and_dur_block[0].get_bass_note() for _ in range(len(polyrhythm))]
 
         durations = [self.make_note_or_rest(duration) for duration in durations]
         return [notes, durations]
