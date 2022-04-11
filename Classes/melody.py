@@ -268,7 +268,9 @@ class Melody:
         """
         closest_tone = chord.notes[0]
         for tone in chord.notes:
-            if abs(note.midi_note_number - tone.midi_note_number) < (note.midi_note_number - closest_tone.midi_note_number):
+            closest_tone_distance = abs(note.midi_note_number - closest_tone.midi_note_number)
+            tone_distance = abs(note.midi_note_number - tone.midi_note_number)
+            if tone_distance < closest_tone_distance:
                 closest_tone = tone
         return closest_tone
 
