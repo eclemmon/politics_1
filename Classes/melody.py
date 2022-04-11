@@ -262,6 +262,23 @@ class Melody:
         """
         return random.choice(chord.notes)
 
+    def get_random_scale_tone(self, scale: Scale):
+        """
+        Get a random note from a given scale.
+        :param scale: Scale
+        :return: Note
+        """
+        return random.choice(scale.notes)
+
+    def get_random_scale_note_and_dur(self):
+        """
+        Gets a random scale tone and duration
+        :return: tuple (Note, int || float)
+        """
+        note = self.get_random_scale_tone(self.scale)
+        duration = self.get_random_duration()
+        return note, duration
+
     def get_closest_chord_tone_to_note(self, note: Note, chord: Chord):
         """
         Gets the closest tone in a chord to a given note.
