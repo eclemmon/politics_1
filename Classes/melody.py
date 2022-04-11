@@ -462,6 +462,34 @@ class ChoppyMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
+    def build_notes_and_durations(self):
+        """
+        Builts notes and durations for Choppy Melody
+        :return: List of Lists [[Notes], [floats]]
+        """
+        note_duration_values = [0.25, 0.5, 0.75]
+        notes = []
+        durations = []
+
+        for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            duration_left = chord_and_dur_block[1]
+            # While there is duration in the chord left, make new notes and durations before moving onto next iteration.
+            while duration_left > 0:
+                duration = random.choice(note_duration_values)
+                # If the duration is longer than the duration left, get a new duration
+                while duration > duration_left:
+                    duration = random.choice(note_duration_values)
+                # Duration
+                durations.append(self.make_note_or_rest(duration, 0.5))
+                # Note
+                chord_tone = self.get_random_chord_tone(chord_and_dur_block[0])
+                scale_tone = self.get_random_scale_tone(self.scale)
+                note = random.choice([chord_tone, scale_tone])
+                notes.append(note)
+                # Update duration left
+                duration_left -= duration
+        return [notes, durations]
+
 
 class PolyrhythmicMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
