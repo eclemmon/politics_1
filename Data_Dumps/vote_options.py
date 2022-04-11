@@ -7,5 +7,5 @@ vote_options = {
 }
 
 # DONE: Rhythm, Progression, Middle Voices
-# Bass done: Alberti, Sustained, Random, polyrhythmic, On Beats, walking
+# melody: sustained
 # TODO: Fix Rhythm in SC side of things....

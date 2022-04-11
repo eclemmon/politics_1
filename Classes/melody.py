@@ -53,6 +53,9 @@ class Melody:
     def build_notes_and_durations(self):
         pass
 
+    def get_next_note_and_dur(self):
+        pass
+
     def appoggiatura(self, chord_and_duration_block):
         """
         Makes an appoggiatura based on the entire duration of the chord and duration block. Can be an accented
@@ -280,7 +283,7 @@ class Melody:
         :param duration: int or float
         :return: boolean
         """
-        if duration % 1/3 == 0:
+        if duration % 1 / 3 == 0:
             return True
         else:
             return False
@@ -411,6 +414,31 @@ class SustainedMelody(Melody):
                 print("Somehow you didn't return a tuple at all?", e)
 
 
+class RandomMelody(Melody):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        super().__init__(harmonic_rhythm, scale)
+
+    def get_next_note_and_dur(self):
+        return self.get_random_scale_tone(self.scale), self.get_random_duration()
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+        total_duration = self.harmonic_rhythm.meter.num_beats * self.harmonic_rhythm.num_bars
+        while total_duration > 0:
+            note_and_dur = self.get_next_note_and_dur()
+            if note_and_dur[1] >= total_duration:
+                notes.append(note_and_dur[0])
+                durations.append(total_duration)
+                break
+            else:
+                notes.append(note_and_dur[0])
+                durations.append(note_and_dur[1])
+                total_duration -= note_and_dur[1]
+        return [notes, durations]
+
+
+
 if __name__ == "__main__":
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     duple = SimpleDuple(4)
@@ -426,10 +454,12 @@ if __name__ == "__main__":
     hr = HarmonicRhythm(meter, harmony)
     melody = Melody(hr, scale)
     sm = SustainedMelody(hr, scale)
+    rm = RandomMelody(hr, scale)
     # print(melody.get_closest_scale_tone_to_chord_tone(Note(8)))
     # print(sm.sustain_across_chord_and_dur_block((a, 2), (b, 2)))
     # print(sm.get_next_note_and_dur((a, 2), current_note_and_dur_block=(Note(4), 7)))
-    print(sm.notes_and_durations)
+    # print(sm.notes_and_durations)
+    print(rm.notes_and_durations)
     # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
     # for i in range(100):
     #     print(melody.appoggiatura((b, 2)))
