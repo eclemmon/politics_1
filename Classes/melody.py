@@ -177,6 +177,39 @@ class Melody:
         remaining_duration = current_duration_left - total_duration
         return notes, durations, remaining_duration
 
+    def trill(self, chord_and_duration_block, current_duration_left,
+              lower_trill: bool = False, chromatic_trill: bool = False):
+        notes = []
+        # get random indicated note
+        indicated_note = random.choice(chord_and_duration_block[0].notes)
+        # get upper or lower neighbor
+        if lower_trill:
+            if chromatic_trill:
+                n = self.chromatic_lower_neighbor(indicated_note)
+            else:
+                n = self.scalar_lower_neightbor(indicated_note)
+        else:
+            if chromatic_trill:
+                n = self.chromatic_upper_neighbor(indicated_note)
+            else:
+                n = self.scalar_upper_neighbor(indicated_note)
+        # get durations
+        total_duration = self.get_random_duration(tuples_allowed=False)
+        while total_duration > current_duration_left:
+            total_duration = self.get_random_duration(tuples_allowed=False)
+        durations = [0.125 for _ in range(int(total_duration / 0.125))]
+        # get remaining duration
+        remaining_duration = current_duration_left - total_duration
+        # Start trill from the top
+        trill = 0
+        for _ in durations:
+            if trill % 2 == 0:
+                notes.append(n)
+            else:
+                notes.append(indicated_note)
+            trill += 1
+        return notes, durations, remaining_duration
+
     def set_scale(self, scale: Scale):
         """
         Setter function to change the scale as needed.
@@ -245,12 +278,16 @@ class Melody:
             self.chromatic_lower_neighbor
         ])(note)
 
-    def get_random_duration(self):
+    def get_random_duration(self, tuples_allowed=True):
         """
-        Get a random duration between 0.25 and 2 beats.
-        :return: float || int
+        Gets a random duration. If tuples allowed, can return values 1/3 and 2/3
+        :param tuples_allowed: boolean
+        :return: int || float
         """
-        return random.choice([0.25, 1 / 3, 0.5, 2 / 3, 0.75, 1, 1.25, 1.5, 1.75, 2])
+        if tuples_allowed:
+            return random.choice([0.25, 1 / 3, 0.5, 2 / 3, 0.75, 1, 1.25, 1.5, 1.75, 2])
+        else:
+            return random.choice([0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2])
 
     def get_random_chord_tone(self, chord: Chord):
         """
@@ -505,7 +542,6 @@ class PolyrhythmicMelody(Melody):
             notes += [self.get_random_chord_or_scale_tone(self.scale, chord_and_dur_block[0]) for _ in
                       range(len(polyrhythm))]
 
-
         durations = [self.make_note_or_rest(duration) for duration in durations]
 
         return [notes, durations]
@@ -531,6 +567,7 @@ class SuspensionsMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
+
 if __name__ == "__main__":
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     duple = SimpleDuple(4)
@@ -553,7 +590,8 @@ if __name__ == "__main__":
     # print(sm.sustain_across_chord_and_dur_block((a, 2), (b, 2)))
     # print(sm.get_next_note_and_dur((a, 2), current_note_and_dur_block=(Note(4), 7)))
     # print(sm.notes_and_durations)
-    print(prm.notes_and_durations)
+    print(prm.trill((a, 2), 2))
+    # print(prm.notes_and_durations)
     # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
     # for i in range(100):
     #     print(melody.appoggiatura((b, 2)))
