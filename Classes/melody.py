@@ -328,7 +328,7 @@ class Melody:
         Gets a random scale tone and duration
         :return: tuple (Note, int || float)
         """
-        note = self.get_random_scale_tone(Scale(self.scale.note))
+        note = self.get_random_scale_tone(self.scale)
         duration = self.get_random_duration()
         return note, duration
 
@@ -424,24 +424,32 @@ class SustainedMelody(Melody):
         durations = []
         chords_and_durations = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
         i = 0
-        while i < len(chords_and_durations) - 1:
+        while i < len(chords_and_durations):
+            # Get the first chord and compare it to the next chord.
             if i == 0:
-                note_and_duration = self.get_next_note_and_dur(next_chord_and_dur_block=chords_and_durations[i + 1],
-                                                               current_chord_and_dur_block=chords_and_durations[i])
-                notes.append(note_and_duration[0])
-                durations.append(note_and_duration[1])
-            else:
-                current_note_and_dur_block = notes[-1], durations[-1]
-                if self.is_sustainable(next_chord_and_dur_block=chords_and_durations[i + 1],
-                                       current_note_and_dur_block=current_note_and_dur_block):
-                    note_and_duration = self.get_next_note_and_dur(chords_and_durations[i + 1],
-                                                                   current_note_and_dur_block=current_note_and_dur_block)
-                    notes[-1], durations[-1] = note_and_duration[0], note_and_duration[1]
-                else:
-                    note_and_duration = self.get_next_note_and_dur(chords_and_durations[i + 1],
+                # if it is sustainable
+                sustainable_note_and_duration = self.get_next_note_and_dur(next_chord_and_dur_block=chords_and_durations[i + 1],
                                                                    current_chord_and_dur_block=chords_and_durations[i])
-                    notes.append(note_and_duration[0])
-                    durations.append(note_and_duration[1])
+                notes.append(sustainable_note_and_duration[0])
+                durations.append(chords_and_durations[i][1])
+            else:
+                # The note and duration is the previously appended note and duration
+                # The previously appended note and duration is the note and duration to check whether it is sustainable
+                # the current chord in the loop, starting from 1..n is the chord to be compared to
+                check_note_and_dur_block = notes[-1], durations[-1]
+                # check to see if the current note and duration is sustainable
+                if self.is_sustainable(next_chord_and_dur_block=chords_and_durations[i],
+                                       current_note_and_dur_block=check_note_and_dur_block):
+                    # if it is sustainable sustain it
+                    note_and_duration = self.get_next_note_and_dur(chords_and_durations[i],
+                                                                   current_note_and_dur_block=check_note_and_dur_block)
+                    # replace the previous values in the durations array so that the extended duration is given
+                    durations[-1] = note_and_duration[1]
+                else:
+                    # if the note and duration is not sustainable, the function will get a random chord note
+                    # from the current block add it to the notes and durations
+                    notes.append(self.get_random_chord_tone(chords_and_durations[i][0]))
+                    durations.append(chords_and_durations[i][1])
             i += 1
         return [notes, durations]
 
@@ -450,7 +458,7 @@ class SustainedMelody(Melody):
                               current_note_and_dur_block=None):
         """
         Gets the next note and duration, either by generating a summed durational value of the existing, sustained note,
-        or by getting a new, random chord note.
+        or by getting a new, random chord note. WARNING: GOBBLETIGOOK AND REDUNDANCIES BELOW
         :param next_chord_and_dur_block: tuple (Chord, int || float)
         :param current_chord_and_dur_block: tuple (Chord, int || float)
         :param current_note_and_dur_block: tuple (Note, int || float)
@@ -461,8 +469,10 @@ class SustainedMelody(Melody):
                                                                                                   "a chord. Try " \
                                                                                                   "declaring only " \
                                                                                                   "one explicitly "
+        # If the note is sustainable to the next chord
         if self.is_sustainable(next_chord_and_dur_block, current_chord_and_dur_block=current_chord_and_dur_block,
                                current_note_and_dur_block=current_note_and_dur_block):
+            # Sustain the chord or note across to the next chord and duration
             try:
                 if current_chord_and_dur_block is not None:
                     return self.sustain_across_chord_and_dur_block(current_chord_and_dur_block,
