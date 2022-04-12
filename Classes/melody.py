@@ -64,7 +64,7 @@ class Melody:
         notes = []
         durations = []
         # get a chord tone
-        chord_tone = random.choice(chord_and_duration_block[0].notes)
+        chord_tone = random.choice(chord_and_duration_block[0].notes[:])
         # appoggiatura is an accented neighbor
         appoggiatura_note = self.get_closest_scale_tone_to_note(chord_tone)
         while appoggiatura_note == chord_tone:
@@ -98,7 +98,7 @@ class Melody:
         # suspension holds note over a harmonic change
         # it usually resolves to a chord tone (eventually)
         # get next chord tone to resolve into
-        next_chord_tone = random.choice(next_chord_and_duration_block[0].notes)
+        next_chord_tone = random.choice(next_chord_and_duration_block[0].notes[:])
         # if the chords are the same, suspension note is a random neighbor to next chord tone
         # (more like a neighbor note). Else suspension is closest scale tone to the selected next chord tone
         if current_chord_and_duration_block[0] == next_chord_and_duration_block[0]:
@@ -108,7 +108,7 @@ class Melody:
         # while suspension is same as the next chord tone, make a new next chord tone and get another suspension.
         # solve edge cases where suspension is same as next chord
         while suspension_note == next_chord_tone:
-            next_chord_tone = random.choice(next_chord_and_duration_block[0].notes)
+            next_chord_tone = random.choice(next_chord_and_duration_block[0].notes[:])
             suspension_note = self.get_random_neighbor(next_chord_tone)
         # add suspension, resolution to notes
         notes += [suspension_note, next_chord_tone]
@@ -137,7 +137,7 @@ class Melody:
         notes = []
         durations = []
         # get random indicated note
-        indicated_note = random.choice(chord_and_duration_block[0].notes)
+        indicated_note = random.choice(chord_and_duration_block[0].notes[:])
         # upper_mordent input determines whether its a lower mordent or upper mordent
         if upper_mordent:
             neighbor = self.scalar_upper_neighbor(indicated_note)
@@ -159,7 +159,7 @@ class Melody:
     def turn(self, chord_and_duration_block, current_duration_left, chromatic: bool = False):
         notes = []
         # get random indicated note
-        indicated_note = random.choice(chord_and_duration_block[0].notes)
+        indicated_note = random.choice(chord_and_duration_block[0].notes[:])
         # get upper and lower neighbor
         if chromatic:
             ln = self.chromatic_lower_neighbor(indicated_note)
@@ -181,7 +181,7 @@ class Melody:
               lower_trill: bool = False, chromatic_trill: bool = False):
         notes = []
         # get random indicated note
-        indicated_note = random.choice(chord_and_duration_block[0].notes)
+        indicated_note = random.choice(chord_and_duration_block[0].notes[:])
         # get upper or lower neighbor
         if lower_trill:
             if chromatic_trill:
@@ -196,8 +196,15 @@ class Melody:
         # get durations
         total_duration = self.get_random_duration(tuples_allowed=False)
         while total_duration > current_duration_left:
-            total_duration = self.get_random_duration(tuples_allowed=False)
-        durations = [0.125 for _ in range(int(total_duration / 0.125))]
+            if total_duration < 0.25:
+                total_duration = current_duration_left
+                break
+            else:
+                total_duration = self.get_random_duration(tuples_allowed=False)
+        if total_duration == current_duration_left:
+            durations = [total_duration]
+        else:
+            durations = [0.125 for _ in range(int(total_duration / 0.125))]
         # get remaining duration
         remaining_duration = current_duration_left - total_duration
         # Start trill from the top
@@ -237,7 +244,11 @@ class Melody:
         :param note: Note
         :return: Note
         """
+        # get closest scale tone to note for safety
+        note = self.get_closest_scale_tone_to_note(note)
+        # get index
         note_index = self.scale.notes.index(note)
+        # get upper neighbor
         return self.scale.notes[(note_index + 1) % len(self.scale.notes)]
 
     def scalar_lower_neightbor(self, note: Note):
@@ -246,7 +257,11 @@ class Melody:
         :param note: Note
         :return: Note
         """
+        # get closest scale tone to note for safety
+        note = self.get_closest_scale_tone_to_note(note)
+        # get index
         note_index = self.scale.notes.index(note)
+        # get upper neighbor
         return self.scale.notes[(note_index - 1) % len(self.scale.notes)]
 
     def chromatic_upper_neighbor(self, note: Note):
@@ -310,7 +325,7 @@ class Melody:
         Gets a random scale tone and duration
         :return: tuple (Note, int || float)
         """
-        note = self.get_random_scale_tone(self.scale)
+        note = self.get_random_scale_tone(Scale(self.scale.note))
         duration = self.get_random_duration()
         return note, duration
 
@@ -413,7 +428,6 @@ class SustainedMelody(Melody):
                 notes.append(note_and_duration[0])
                 durations.append(note_and_duration[1])
             else:
-                print(i, notes, durations)
                 current_note_and_dur_block = notes[-1], durations[-1]
                 if self.is_sustainable(next_chord_and_dur_block=chords_and_durations[i + 1],
                                        current_note_and_dur_block=current_note_and_dur_block):
@@ -494,6 +508,44 @@ class LeapyMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
+    def get_next_note_and_dur(self, current_duration_left, current_chord_and_dur, next_chord_and_dur):
+        r = random.randint(0, 1)
+        if r == 0:
+            appoggiatura = self.appoggiatura(current_chord_and_dur)
+            return appoggiatura
+        elif r == 1:
+            note = self.get_random_scale_tone(self.scale)
+            if current_duration_left <= 0.25:
+                duration = self.make_note_or_rest(0.25)
+                duration_left = 0
+            else:
+                duration = self.get_random_duration(tuples_allowed=True)
+                while duration > current_duration_left:
+                    duration = self.get_random_duration(tuples_allowed=True)
+                duration_left = current_duration_left - duration
+                duration = self.make_note_or_rest(duration)
+            return [note], [duration], duration_left
+
+    def build_notes_and_durations(self):
+        notes = []
+        durations = []
+
+        chord_and_dur_blocks = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
+        for i in range(len(chord_and_dur_blocks) - 1):
+            current_duration_left = chord_and_dur_blocks[i][1]
+            while current_duration_left > 0:
+                notes_and_durs = self.get_next_note_and_dur(current_duration_left, chord_and_dur_blocks[i],
+                                                            chord_and_dur_blocks[i+1])
+                notes += notes_and_durs[0]
+                durations += notes_and_durs[1]
+                current_duration_left -= notes_and_durs[2]
+        for i in range(len(notes)):
+            # tuples are immutable — so please don't transpose the same note over and over!
+            transposition = random.choice([5, 6, 7])
+            notes[i] = Note(notes[i].midi_note_number)
+            notes[i].transpose(transposition)
+        return notes, durations
+
 
 class ChoppyMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
@@ -555,22 +607,40 @@ class MaxOrnamentationMelody(Melody):
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
-        pass
+        notes = []
+        durations = []
 
-    def get_next_ornamentation(self, chord_and_duration, current_duration_left):
-        self.appoggiatura(chord_and_duration_block=chord_and_duration)
-        self.mordent(chord_and_duration, random.choice([True, False]))
-        self.turn(chord_and_duration, current_duration_left, random.choice([True, False]))
+        for chord_and_duration in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
+            current_duration_left = chord_and_duration[1]
+            while current_duration_left > 0:
+                if current_duration_left < 0.25:
+                    notes.append(self.get_random_scale_tone(self.scale))
+                    durations.append(current_duration_left)
+                    break
+                else:
+                    notes_durations_remainder = self.get_random_ornamentation(chord_and_duration, current_duration_left)
+                    notes += notes_durations_remainder[0]
+                    durations += notes_durations_remainder[1]
+                    current_duration_left = notes_durations_remainder[2]
+        return notes, durations
 
-
-class SuspensionsMelody(Melody):
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
-        super().__init__(harmonic_rhythm, scale)
+    def get_random_ornamentation(self, chord_and_duration, current_duration_left):
+        r = random.randint(0, 3)
+        if r == 0:
+            return self.appoggiatura(chord_and_duration_block=chord_and_duration)
+        elif r == 1:
+            return self.mordent(chord_and_duration, random.choice([True, False]))
+        elif r == 2:
+            return self.turn(chord_and_duration, current_duration_left, random.choice([True, False]))
+        else:
+            return self.trill(chord_and_duration, current_duration_left,
+                   random.choice([True, False]), random.choice([True, False]))
 
 
 if __name__ == "__main__":
-    meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
-    duple = SimpleDuple(4)
+    meter1 = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
+    meter2 = CompoundMeter(9, [3, 1, 1, 2, 1, 1, 2, 1, 1], [3, 3, 3])
+    meter3 = SimpleDuple(4)
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
     c_major = Chord(Note(0), Note(4), Note(7))
     CM7 = Chord(Note(0), Note(4), Note(7), Note(11))
@@ -579,21 +649,23 @@ if __name__ == "__main__":
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
     e = Chord(Note(4), Note(7), Note(11))
     b = Chord(Note(11), Note(2), Note(5))
-    harmony = ChordProgression([c_major, G7, a, c_major, a, G7, e])
-    hr = HarmonicRhythm(meter, harmony)
-    melody = Melody(hr, scale)
-    sm = SustainedMelody(hr, scale)
-    rm = RandomMelody(hr, scale)
-    cm = ChoppyMelody(hr, scale)
-    prm = PolyrhythmicMelody(hr, scale)
-    # print(melody.get_closest_scale_tone_to_chord_tone(Note(8)))
-    # print(sm.sustain_across_chord_and_dur_block((a, 2), (b, 2)))
-    # print(sm.get_next_note_and_dur((a, 2), current_note_and_dur_block=(Note(4), 7)))
-    # print(sm.notes_and_durations)
-    print(prm.trill((a, 2), 2))
-    # print(prm.notes_and_durations)
-    # print(sm.get_next_note_and_dur((a, 2), (CM7, 2), (Cmm7, 4)))
-    # for i in range(100):
-    #     print(melody.appoggiatura((b, 2)))
-    #     print(melody.suspension(1, (b, 2), (a, 2)))
-    #     print(melody.turn((b, 2), 2))
+    B = Chord(Note(11), Note(3), Note(6))
+    chords = [c_major, CM7, a, G7, e, b, B]
+    for i in range(100):
+        random.shuffle(chords)
+        prog = ChordProgression(chords)
+        hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+        melody = Melody(hr, scale)
+        sm = SustainedMelody(hr, scale)
+        rm = RandomMelody(hr, scale)
+        cm = ChoppyMelody(hr, scale)
+        prm = PolyrhythmicMelody(hr, scale)
+        ornm = MaxOrnamentationMelody(hr, scale)
+        lm = LeapyMelody(hr, scale)
+        print(sm.notes_and_durations)
+        print(rm.notes_and_durations)
+        print(cm.notes_and_durations)
+        print(prm.notes_and_durations)
+        print(ornm.notes_and_durations)
+        print(lm.notes_and_durations)
+
