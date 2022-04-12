@@ -84,15 +84,6 @@ class Melody:
         # if remaining duration is less than minimum duration amount, resolution_duration is remainder. Otherwise
         # get a random duration smaller than the remainder
         remaining_duration = remaining_duration - total_appoggiatura_duration
-        # if remaining_duration <= 0.25:
-        #     resolution_duration = remaining_duration
-        # else:
-        #     resolution_duration = self.get_random_duration()
-        #     while resolution_duration > remaining_duration:
-        #         resolution_duration = self.get_random_duration()
-        # durations.append(resolution_duration)
-        # # get remaining duration in chord and dur block
-        # remaining_duration = remaining_duration - resolution_duration
         return notes, durations, remaining_duration
 
     def suspension(self, current_duration_left, current_chord_and_duration_block, next_chord_and_duration_block):
@@ -130,7 +121,7 @@ class Melody:
         remaining_duration = (current_chord_and_duration_block[1] + next_chord_and_duration_block[1]) - sum(durations)
         return notes, durations, remaining_duration
 
-    def mordent(self, chord_and_duration_block, upper_mordent: bool = False):
+    def mordent(self, chord_and_duration_block, current_duration_left, upper_mordent: bool = False):
         """
         Makes a mordent based on the chord_and_duration block given.
         :param chord_and_duration_block: tuple of (Chord, int || float)
@@ -151,12 +142,16 @@ class Melody:
         # add ornamental notes to durations
         durations += [0.125, 0.125]
         # build resolution duration and append to durations
-        resolution_duration = self.get_random_duration()
-        while resolution_duration > chord_and_duration_block[1] - 0.25:
-            resolution_duration = self.get_random_duration()
-        durations.append(resolution_duration)
+        if current_duration_left-0.25 <= 0.25:
+            resolution_duration = current_duration_left-0.25
+            durations.append(resolution_duration)
+        else:
+            resolution_duration = self.get_random_duration(tuples_allowed=False)
+            while resolution_duration > current_duration_left - 0.25:
+                resolution_duration = self.get_random_duration(tuples_allowed=False)
+            durations.append(resolution_duration)
         # Get the remaining duration in the harmonic rhythm subunit
-        remaining_duration = chord_and_duration_block[1] - sum(durations)
+        remaining_duration = current_duration_left - sum(durations)
         return notes, durations, remaining_duration
 
     def turn(self, chord_and_duration_block, current_duration_left, chromatic: bool = False):
@@ -625,10 +620,10 @@ class MaxOrnamentationMelody(Melody):
         for chord_and_duration in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
             current_duration_left = chord_and_duration[1]
             while current_duration_left > 0:
-                if current_duration_left < 0.25:
+                if current_duration_left <= 0.25:
                     notes.append(self.get_random_scale_tone(self.scale))
                     durations.append(current_duration_left)
-                    break
+                    current_duration_left = 0
                 else:
                     notes_durations_remainder = self.get_random_ornamentation(chord_and_duration, current_duration_left)
                     notes += notes_durations_remainder[0]
@@ -641,7 +636,7 @@ class MaxOrnamentationMelody(Melody):
         if r == 0:
             return self.appoggiatura(chord_and_duration, current_duration_left)
         elif r == 1:
-            return self.mordent(chord_and_duration, random.choice([True, False]))
+            return self.mordent(chord_and_duration, current_duration_left, random.choice([True, False]))
         elif r == 2:
             return self.turn(chord_and_duration, current_duration_left, random.choice([True, False]))
         else:
