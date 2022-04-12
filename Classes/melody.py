@@ -54,7 +54,7 @@ class Melody:
     def get_next_note_and_dur(self):
         pass
 
-    def appoggiatura(self, chord_and_duration_block):
+    def appoggiatura(self, chord_and_duration_block, remaining_duration):
         """
         Makes an appoggiatura based on the entire duration of the chord and duration block. Can be an accented
         upper or lower neighbor.
@@ -64,7 +64,7 @@ class Melody:
         notes = []
         durations = []
         # get a chord tone
-        chord_tone = random.choice(chord_and_duration_block[0].notes[:])
+        chord_tone = random.choice(chord_and_duration_block[0].notes)
         # appoggiatura is an accented neighbor
         appoggiatura_note = self.get_closest_scale_tone_to_note(chord_tone)
         while appoggiatura_note == chord_tone:
@@ -72,24 +72,27 @@ class Melody:
         notes.append(appoggiatura_note)
         # it must resolve to a chord tone
         notes.append(chord_tone)
-        # duration of the appoggiatura is usually less than the length of the harmonic rhythm unit
-        appoggiatura_duration = self.get_random_duration()
-        while appoggiatura_duration > chord_and_duration_block[1]:
-            appoggiatura_duration = self.get_random_duration()
-        durations.append(appoggiatura_duration)
+        # duration of the appoggiatura and resolution must be less than or equal to remaining duration
+        if remaining_duration <= 0.25:
+            total_appoggiatura_duration = remaining_duration
+        else:
+            total_appoggiatura_duration = self.get_random_duration()
+            while total_appoggiatura_duration > remaining_duration:
+                total_appoggiatura_duration = self.get_random_duration()
+        durations += [total_appoggiatura_duration / 2, total_appoggiatura_duration / 2]
         # make duration of resolution note
         # if remaining duration is less than minimum duration amount, resolution_duration is remainder. Otherwise
         # get a random duration smaller than the remainder
-        remaining_duration = chord_and_duration_block[1] - appoggiatura_duration
-        if remaining_duration <= 0.25:
-            resolution_duration = remaining_duration
-        else:
-            resolution_duration = self.get_random_duration()
-            while resolution_duration > remaining_duration:
-                resolution_duration = self.get_random_duration()
-        durations.append(resolution_duration)
-        # get remaining duration in chord and dur block
-        remaining_duration = remaining_duration - resolution_duration
+        remaining_duration = remaining_duration - total_appoggiatura_duration
+        # if remaining_duration <= 0.25:
+        #     resolution_duration = remaining_duration
+        # else:
+        #     resolution_duration = self.get_random_duration()
+        #     while resolution_duration > remaining_duration:
+        #         resolution_duration = self.get_random_duration()
+        # durations.append(resolution_duration)
+        # # get remaining duration in chord and dur block
+        # remaining_duration = remaining_duration - resolution_duration
         return notes, durations, remaining_duration
 
     def suspension(self, current_duration_left, current_chord_and_duration_block, next_chord_and_duration_block):
@@ -508,15 +511,15 @@ class LeapyMelody(Melody):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
-    def get_next_note_and_dur(self, current_duration_left, current_chord_and_dur, next_chord_and_dur):
+    def get_next_note_and_dur(self, current_duration_left, current_chord_and_dur):
         r = random.randint(0, 1)
         if r == 0:
-            appoggiatura = self.appoggiatura(current_chord_and_dur)
+            appoggiatura = self.appoggiatura(current_chord_and_dur, current_duration_left)
             return appoggiatura
         elif r == 1:
             note = self.get_random_scale_tone(self.scale)
             if current_duration_left <= 0.25:
-                duration = self.make_note_or_rest(0.25)
+                duration = self.make_note_or_rest(current_duration_left)
                 duration_left = 0
             else:
                 duration = self.get_random_duration(tuples_allowed=True)
@@ -531,14 +534,13 @@ class LeapyMelody(Melody):
         durations = []
 
         chord_and_dur_blocks = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
-        for i in range(len(chord_and_dur_blocks) - 1):
+        for i in range(len(chord_and_dur_blocks)):
             current_duration_left = chord_and_dur_blocks[i][1]
             while current_duration_left > 0:
-                notes_and_durs = self.get_next_note_and_dur(current_duration_left, chord_and_dur_blocks[i],
-                                                            chord_and_dur_blocks[i+1])
+                notes_and_durs = self.get_next_note_and_dur(current_duration_left, chord_and_dur_blocks[i])
                 notes += notes_and_durs[0]
                 durations += notes_and_durs[1]
-                current_duration_left -= notes_and_durs[2]
+                current_duration_left = notes_and_durs[2]
         for i in range(len(notes)):
             # tuples are immutable — so please don't transpose the same note over and over!
             transposition = random.choice([5, 6, 7])
@@ -627,7 +629,7 @@ class MaxOrnamentationMelody(Melody):
     def get_random_ornamentation(self, chord_and_duration, current_duration_left):
         r = random.randint(0, 3)
         if r == 0:
-            return self.appoggiatura(chord_and_duration_block=chord_and_duration)
+            return self.appoggiatura(chord_and_duration, current_duration_left)
         elif r == 1:
             return self.mordent(chord_and_duration, random.choice([True, False]))
         elif r == 2:
@@ -638,6 +640,14 @@ class MaxOrnamentationMelody(Melody):
 
 
 if __name__ == "__main__":
+    def sum_with_rests(durations):
+        res = []
+        for dur in durations:
+            if type(dur) == str:
+                res.append(float(dur[2:]))
+            else:
+                res.append(dur)
+        return sum(res)
     meter1 = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     meter2 = CompoundMeter(9, [3, 1, 1, 2, 1, 1, 2, 1, 1], [3, 3, 3])
     meter3 = SimpleDuple(4)
@@ -662,10 +672,16 @@ if __name__ == "__main__":
         prm = PolyrhythmicMelody(hr, scale)
         ornm = MaxOrnamentationMelody(hr, scale)
         lm = LeapyMelody(hr, scale)
-        print(sm.notes_and_durations)
-        print(rm.notes_and_durations)
-        print(cm.notes_and_durations)
-        print(prm.notes_and_durations)
-        print(ornm.notes_and_durations)
-        print(lm.notes_and_durations)
+        for i in [sm, rm, cm, prm, ornm, lm]:
+            print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
+                                                                        sum_with_rests(i.notes_and_durations[1]),
+                                                                        i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
+                                                                                         i.harmonic_rhythm.meter.num_beats)
+                  )
+        # print(sum(sm.notes_and_durations[1]), )
+        # print(sum(rm.notes_and_durations[1]))
+        # print(sum(cm.notes_and_durations[1]))
+        # print(sum(prm.notes_and_durations[1]))
+        # print(sum(ornm.notes_and_durations[1]))
+        # print(sum(lm.notes_and_durations[1]))
 
