@@ -108,7 +108,10 @@ class RandomBass(Bass):
         for chord_and_dur_block in self.harmonic_rhythm.get_zipped_hr_chords_and_durations():
             duration_left = chord_and_dur_block[1]
             while duration_left > 0:
-                duration = random.uniform(0.05, duration_left)
+                if duration_left <= 0.05:
+                    duration = duration_left
+                else:
+                    duration = random.uniform(0.05, duration_left)
                 durations.append(self.make_note_or_rest(duration, 0.25))
                 duration_left -= duration
                 notes.append(chord_and_dur_block[0].get_bass_note())
@@ -350,6 +353,14 @@ class WalkingBass(Bass):
 
 
 if __name__ == "__main__":
+    def sum_with_rests(durations):
+        res = []
+        for dur in durations:
+            if type(dur) == str:
+                res.append(float(dur[2:]))
+            else:
+                res.append(dur)
+        return sum(res)
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     duple = SimpleDuple(4)
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
@@ -361,21 +372,25 @@ if __name__ == "__main__":
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
     e = Chord(Note(4), Note(7), Note(11))
     b = Chord(Note(11), Note(2), Note(5))
-    harmony = ChordProgression([c_major, G7, a, c_major, a, G7, e])
-    hr = HarmonicRhythm(duple, harmony)
-    ab = SustainedBass(hr, scale)
-    rb = RandomBass(hr, scale)
-    pr = PolyrhythmicBass(hr, scale)
-    obb = OnBeatBass(hr, scale)
-    wb = WalkingBass(hr, scale)
-    # fb = FunkBass(hr, scale)
-    chrom = wb.get_shortest_distance_data_chromatic(c_major.get_bass_note(), a.get_bass_note())
-    scalar = wb.get_shortest_distance_data_scalar(c_major.get_bass_note(), a.get_bass_note())
-    # steps_chrom = wb.step_between_notes_chromatic(c_major.get_bass_note(), chrom)
-    # steps_scalar = wb.step_between_notes_scalar(c_major.get_bass_note(), scalar)
+    chords = [c_major, CM7, Cmm7, a, G7, e, b]
+    meter1 = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
+    meter2 = CompoundMeter(9, [3, 1, 1, 2, 1, 1, 2, 1, 1], [3, 3, 3])
+    meter3 = SimpleDuple(4)
 
-    # ab.build_notes_and_durations()
 
-    wb.build_notes_for_current_subdivision((c_major, 2), (CM7, 2))
-    # print(wb.notes_and_durations)
-    # print(fb.M3_to_5_chromatic())
+    for i in range(100):
+        random.shuffle(chords)
+        prog = ChordProgression(chords)
+        hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+        ab = SustainedBass(hr, scale)
+        rb = RandomBass(hr, scale)
+        pr = PolyrhythmicBass(hr, scale)
+        obb = OnBeatBass(hr, scale)
+        wb = WalkingBass(hr, scale)
+        for i in [ab, rb, pr, obb, wb]:
+            print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
+                                                                        sum_with_rests(i.notes_and_durations[1]),
+                                                                        i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
+                                                                                         i.harmonic_rhythm.meter.num_beats)
+                  )
+

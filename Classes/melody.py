@@ -48,11 +48,26 @@ class Melody:
         except AssertionError as msg:
             print(msg)
 
+    def sum_with_rests(self, durations):
+        res = []
+        for dur in durations:
+            if type(dur) == str:
+                res.append(float(dur[2:]))
+            else:
+                res.append(dur)
+        return sum(res)
+
     def build_notes_and_durations(self):
         pass
 
     def get_next_note_and_dur(self):
         pass
+
+    def get_durations(self):
+        return self.notes_and_durations[1]
+
+    def get_notes(self):
+        return self.notes_and_durations[0]
 
     def appoggiatura(self, chord_and_duration_block, remaining_duration):
         """
@@ -670,7 +685,7 @@ if __name__ == "__main__":
         random.shuffle(chords)
         prog = ChordProgression(chords)
         hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
-        melody = Melody(hr, scale)
+        # melody = Melody(hr, scale)
         sm = SustainedMelody(hr, scale)
         rm = RandomMelody(hr, scale)
         cm = ChoppyMelody(hr, scale)
