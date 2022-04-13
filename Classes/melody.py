@@ -9,10 +9,11 @@ import random
 
 
 class Melody:
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale, transposition=5):
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
         self.notes_and_durations = self.build_notes_and_durations()
+        self.transpose_self_to_range(transposition)
 
     @staticmethod
     def build_rest(duration=1):
@@ -62,6 +63,12 @@ class Melody:
 
     def get_next_note_and_dur(self):
         pass
+
+    def transpose_self_to_range(self, transposition):
+        for i in range(len(self.notes_and_durations[0])):
+            # tuples are immutable — so please don't transpose the same note over and over!
+            self.notes_and_durations[0][i] = Note(self.notes_and_durations[0][i].midi_note_number)
+            self.notes_and_durations[0][i].transpose(transposition)
 
     def get_durations(self):
         return self.notes_and_durations[1]
@@ -563,7 +570,7 @@ class LeapyMelody(Melody):
                 current_duration_left = notes_and_durs[2]
         for i in range(len(notes)):
             # tuples are immutable — so please don't transpose the same note over and over!
-            transposition = random.choice([5, 6, 7])
+            transposition = random.choice([0, 1, 2])
             notes[i] = Note(notes[i].midi_note_number)
             notes[i].transpose(transposition)
         return notes, durations
@@ -660,6 +667,12 @@ class MaxOrnamentationMelody(Melody):
 
 
 if __name__ == "__main__":
+
+    from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
+    from pythonosc import udp_client
+
+    sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+
     def sum_with_rests(durations):
         res = []
         for dur in durations:
@@ -681,27 +694,34 @@ if __name__ == "__main__":
     b = Chord(Note(11), Note(2), Note(5))
     B = Chord(Note(11), Note(3), Note(6))
     chords = [c_major, CM7, a, G7, e, b, B]
-    for i in range(100):
-        random.shuffle(chords)
-        prog = ChordProgression(chords)
-        hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
-        # melody = Melody(hr, scale)
-        sm = SustainedMelody(hr, scale)
-        rm = RandomMelody(hr, scale)
-        cm = ChoppyMelody(hr, scale)
-        prm = PolyrhythmicMelody(hr, scale)
-        ornm = MaxOrnamentationMelody(hr, scale)
-        lm = LeapyMelody(hr, scale)
-        for i in [sm, rm, cm, prm, ornm, lm]:
-            print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
-                                                                        sum_with_rests(i.notes_and_durations[1]),
-                                                                        i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
-                                                                                         i.harmonic_rhythm.meter.num_beats)
-                  )
+    random.shuffle(chords)
+    prog = ChordProgression(chords)
+    hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+    m = SustainedMelody(hr, scale)
+    send_bass_or_melody_notes_to_sc(m, sc_client, "/melody_notes")
+    send_bass_or_melody_durations_to_sc(m, sc_client, '/melody_durations')
+    send_bass_or_melody_initialization_to_sc(0, sc_client, '/melody_init')
+    # for i in range(100):
+    #     random.shuffle(chords)
+    #     prog = ChordProgression(chords)
+    #     hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+    #     # melody = Melody(hr, scale)
+    #     sm = SustainedMelody(hr, scale)
+    #     rm = RandomMelody(hr, scale)
+    #     cm = ChoppyMelody(hr, scale)
+    #     prm = PolyrhythmicMelody(hr, scale)
+    #     ornm = MaxOrnamentationMelody(hr, scale)
+    #     lm = LeapyMelody(hr, scale)
+    #     for i in [sm, rm, cm, prm, ornm, lm]:
+    #         print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
+    #                                                                     sum_with_rests(i.notes_and_durations[1]),
+    #                                                                     i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
+    #                                                                                      i.harmonic_rhythm.meter.num_beats)
+    #               )
         # print(sum(sm.notes_and_durations[1]), )
         # print(sum(rm.notes_and_durations[1]))
         # print(sum(cm.notes_and_durations[1]))
         # print(sum(prm.notes_and_durations[1]))
         # print(sum(ornm.notes_and_durations[1]))
         # print(sum(lm.notes_and_durations[1]))
-
+    # print(lm.notes_and_durations[0])

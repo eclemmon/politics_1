@@ -8,11 +8,13 @@ import random
 
 from Classes.chord import Chord
 
+
 class Bass:
-    def __init__(self, harmonic_rhythm, scale):
+    def __init__(self, harmonic_rhythm, scale, transposition=2):
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
         self.notes_and_durations = self.build_notes_and_durations()
+        self.transpose_self_to_range(transposition)
 
     def get_next_note(self):
         pass
@@ -36,6 +38,12 @@ class Bass:
 
     def build_notes_and_durations(self):
         pass
+
+    def transpose_self_to_range(self, transposition):
+        for i in range(len(self.notes_and_durations[0])):
+            # tuples are immutable — so please don't transpose the same note over and over!
+            self.notes_and_durations[0][i] = Note(self.notes_and_durations[0][i].midi_note_number)
+            self.notes_and_durations[0][i].transpose(transposition)
 
 
 class AlbertiBass(Bass):
@@ -370,6 +378,7 @@ if __name__ == "__main__":
     duple = SimpleDuple(4)
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
     blues_scale = Scale(Note(0), Note(2), Note(3), Note(4), Note(5), Note(7), Note(9), Note(10), Note(11))
+    whole_tone_scale = Scale(Note(0), Note(2), Note(4), Note(6), Note(8), Note(10))
     c_major = Chord(Note(0), Note(4), Note(7))
     CM7 = Chord(Note(0), Note(4), Note(7), Note(11))
     Cmm7 = Chord(Note(0), Note(3), Note(7), Note(10))
@@ -385,9 +394,10 @@ if __name__ == "__main__":
     random.shuffle(chords)
     prog = ChordProgression(chords)
     hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
-    sb = SustainedBass(hr, scale)
+    sb = WalkingBass(hr, blues_scale)
     send_bass_or_melody_notes_to_sc(sb, sc_client, "/bass_notes")
     send_bass_or_melody_durations_to_sc(sb, sc_client, '/bass_durations')
+    send_bass_or_melody_initialization_to_sc(0, sc_client, '/bass_init')
 
     # for i in range(100):
     #     random.shuffle(chords)
