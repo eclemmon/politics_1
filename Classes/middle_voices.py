@@ -3,7 +3,7 @@ import random
 from Classes import harmonic_rhythm
 from Classes import meter
 from Classes import chord_progression
-from Data_Dumps.harmonic_progession_data import cybernetic_republic_harmonic_progressions
+from Data_Dumps.harmonic_progession_data import cybernetic_republic_progressions
 
 
 class MiddleVoices:
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
 
     meter = meter.ComplexMeter(5, [3,1,2,1,1], [2, 3])
-    hr = harmonic_rhythm.HarmonicRhythm(meter, cybernetic_republic_harmonic_progressions['giant-steps'])
+    hr = harmonic_rhythm.HarmonicRhythm(meter, cybernetic_republic_progressions['giant-steps'])
     # pads = Pads(hr)
 
     # rand = RandomMiddleVoices(hr)

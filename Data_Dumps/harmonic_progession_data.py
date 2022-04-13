@@ -2,7 +2,7 @@ from Classes.chord_progression import ChordProgression
 from Classes.chord import Chord
 from Classes.note import Note
 
-cybernetic_republic_harmonic_progressions = {
+cybernetic_republic_progressions = {
     'doo-wop': ChordProgression([
         Chord(Note(0), Note(4), Note(7), Note(0)),
         Chord(Note(9), Note(0), Note(4), Note(9)),
