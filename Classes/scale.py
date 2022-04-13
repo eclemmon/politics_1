@@ -22,3 +22,9 @@ class Scale:
 
     def modal_transpose(self, scale_degree):
         self.notes = tuple(self.notes[scale_degree:] + self.note[:scale_degree])
+
+    def modal_transpose_return_new(self, scale_degree):
+        return Scale(self.notes[scale_degree:] + self.note[:scale_degree])
+
+    def transpose_return_new(self, num):
+        return Scale([Note(note.midi_note_number + num) for note in self.notes])
