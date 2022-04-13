@@ -27,7 +27,7 @@ def send_middle_voice_initialization_to_sc(channel, sc_client, address='/middle_
 
 
 def send_bass_or_melody_notes_to_sc(b_or_m, sc_client, address):
-    for note in b_or_m.chords_and_durations[0]:
+    for note in b_or_m.notes_and_durations[0]:
         msg = osc_message_builder.OscMessageBuilder(address=address)
         msg.add_arg(note.midi_note_number, 'i')
         msg = msg.build()
@@ -36,7 +36,7 @@ def send_bass_or_melody_notes_to_sc(b_or_m, sc_client, address):
 
 def send_bass_or_melody_durations_to_sc(b_or_m, sc_client, address):
     msg = osc_message_builder.OscMessageBuilder(address=address)
-    for duration in b_or_m.chords_and_durations[1]:
+    for duration in b_or_m.notes_and_durations[1]:
         msg.add_arg(duration)
     msg = msg.build()
     sc_client.send(msg)
