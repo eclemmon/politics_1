@@ -85,7 +85,7 @@ OSCFunc({ |args|
 	~gm.put(\middle_voice_pattern, ~build_pattern.value(~gm, \middle_voice, \middle_voice, channel));
 	"MIDDLE VOICES INITIALIZED!".postln;
 	~gm.at(\middle_voice_pattern).play;
-	~clear_middle_voices.value(~gm);
+	~clear_voice.value(~gm, \middle_voice);
 }, 'middle_voice_init');
 
 OSCFunc({ |args|
@@ -102,6 +102,64 @@ OSCFunc({ |args|
 		~gm.put(\arpeggiator_on, true);
 	});
 }, '/arpeggiator');
+
+// #######################
+// MELODY OSC FUNCS
+// #######################
+
+OSCFunc({ |args|
+	args.postcs;
+	// Add chords as they come in to build a 2d array
+	~gm.at(\melody).at(\midinotes).add(args[1]);
+}, '/melody_notes');
+
+OSCFunc({ |args|
+	// Add durations to ~gm.at(\middle_voice_durations). Needs to be a 1d array
+	var durations;
+	args.postcs;
+	durations = ~parse_rests_and_notes.value(args[1]);
+	~gm.at(\melody).put(\durations, durations);
+}, '/melody_durations');
+
+OSCFunc({ |args|
+	var durations, chords, channel;
+	// Get middle voice channel (random instrument selected)
+	channel = args[1];
+	// build and run the pattern
+	~gm.put(\melody_pattern, ~build_pattern.value(~gm, \melody, \melody, channel));
+	"MELODY INITIALIZED!".postln;
+	~gm.at(\melody_pattern).play;
+	~clear_voice.value(~gm, \melody);
+}, 'melody_init');
+
+// #######################
+// BASS OSC FUNCS
+// #######################
+
+OSCFunc({ |args|
+	args.postcs;
+	// Add chords as they come in to build a 2d array
+	~gm.at(\bass).at(\midinotes).add(args[1]);
+}, '/bass_notes');
+
+OSCFunc({ |args|
+	// Add durations to ~gm.at(\middle_voice_durations). Needs to be a 1d array
+	var durations;
+	args.postcs;
+	durations = ~parse_rests_and_notes.value(args[1]);
+	~gm.at(\bass).put(\durations, durations);
+}, '/bass_durations');
+
+OSCFunc({ |args|
+	var durations, chords, channel;
+	// Get middle voice channel (random instrument selected)
+	channel = args[1];
+	// build and run the pattern
+	~gm.put(\bass_pattern, ~build_pattern.value(~gm, \bass, \bass, channel));
+	"MELODY INITIALIZED!".postln;
+	~gm.at(\bass_pattern).play;
+	~clear_voice.value(~gm, \bass);
+}, 'bass_init');
 
 )
 
