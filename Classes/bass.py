@@ -353,14 +353,19 @@ class WalkingBass(Bass):
 
 
 if __name__ == "__main__":
-    def sum_with_rests(durations):
-        res = []
-        for dur in durations:
-            if type(dur) == str:
-                res.append(float(dur[2:]))
-            else:
-                res.append(dur)
-        return sum(res)
+    from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
+    from pythonosc import udp_client
+
+    sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+
+    # def sum_with_rests(durations):
+    #     res = []
+    #     for dur in durations:
+    #         if type(dur) == str:
+    #             res.append(float(dur[2:]))
+    #         else:
+    #             res.append(dur)
+    #     return sum(res)
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     duple = SimpleDuple(4)
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
@@ -377,20 +382,26 @@ if __name__ == "__main__":
     meter2 = CompoundMeter(9, [3, 1, 1, 2, 1, 1, 2, 1, 1], [3, 3, 3])
     meter3 = SimpleDuple(4)
 
+    random.shuffle(chords)
+    prog = ChordProgression(chords)
+    hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+    sb = SustainedBass(hr, scale)
+    send_bass_or_melody_notes_to_sc(sb, sc_client, "/bass_notes")
+    send_bass_or_melody_durations_to_sc(sb, sc_client, '/bass_durations')
 
-    for i in range(100):
-        random.shuffle(chords)
-        prog = ChordProgression(chords)
-        hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
-        ab = SustainedBass(hr, scale)
-        rb = RandomBass(hr, scale)
-        pr = PolyrhythmicBass(hr, scale)
-        obb = OnBeatBass(hr, scale)
-        wb = WalkingBass(hr, scale)
-        for i in [ab, rb, pr, obb, wb]:
-            print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
-                                                                        sum_with_rests(i.notes_and_durations[1]),
-                                                                        i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
-                                                                                         i.harmonic_rhythm.meter.num_beats)
-                  )
+    # for i in range(100):
+    #     random.shuffle(chords)
+    #     prog = ChordProgression(chords)
+    #     hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+    #     ab = SustainedBass(hr, scale)
+    #     rb = RandomBass(hr, scale)
+    #     pr = PolyrhythmicBass(hr, scale)
+    #     obb = OnBeatBass(hr, scale)
+    #     wb = WalkingBass(hr, scale)
+    #     for i in [ab, rb, pr, obb, wb]:
+    #         print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
+    #                                                                     sum_with_rests(i.notes_and_durations[1]),
+    #                                                                     i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
+    #                                                                                      i.harmonic_rhythm.meter.num_beats)
+    #              )
 

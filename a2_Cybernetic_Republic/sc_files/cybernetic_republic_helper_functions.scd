@@ -35,9 +35,9 @@
 	});
 };
 
-~clear_middle_voices = {
-	arg mem;
-	mem.put(\middle_voice, Dictionary.newFrom([\durations, List.new(), \midinotes, List.new()]));
+~clear_voice = {
+	arg mem, key;
+	mem.put(key, Dictionary.newFrom([\durations, List.new(), \midinotes, List.new()]));
 };
 
 ~clear_midinotes_durations_at_key = {
