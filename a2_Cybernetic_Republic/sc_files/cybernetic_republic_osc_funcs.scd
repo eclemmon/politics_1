@@ -117,7 +117,7 @@ OSCFunc({ |args|
 	// Add durations to ~gm.at(\middle_voice_durations). Needs to be a 1d array
 	var durations;
 	args.postcs;
-	durations = ~parse_rests_and_notes.value(args[1]);
+	durations = ~parse_rests_and_notes.value(args[1..]);
 	~gm.at(\melody).put(\durations, durations);
 }, '/melody_durations');
 
@@ -146,7 +146,7 @@ OSCFunc({ |args|
 	// Add durations to ~gm.at(\middle_voice_durations). Needs to be a 1d array
 	var durations;
 	args.postcs;
-	durations = ~parse_rests_and_notes.value(args[1]);
+	durations = ~parse_rests_and_notes.value(args[1..]);
 	~gm.at(\bass).put(\durations, durations);
 }, '/bass_durations');
 
@@ -156,7 +156,7 @@ OSCFunc({ |args|
 	channel = args[1];
 	// build and run the pattern
 	~gm.put(\bass_pattern, ~build_pattern.value(~gm, \bass, \bass, channel));
-	"MELODY INITIALIZED!".postln;
+	"BASS INITIALIZED!".postln;
 	~gm.at(\bass_pattern).play;
 	~clear_voice.value(~gm, \bass);
 }, 'bass_init');
@@ -164,7 +164,7 @@ OSCFunc({ |args|
 )
 
 ~gm.at(\mOuts).at(\middle_voice).control(15, 0, 0)
-~gm.at(\middle_voice);
+~gm.at(\melody);
 ~gm.at(\middle_voice_pattern).postcs
 ~gm.at('rhythm').stop;
 ~gm.at('arpeggiator_on');

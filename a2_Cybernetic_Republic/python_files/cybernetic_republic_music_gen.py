@@ -14,6 +14,8 @@ from Utility_Tools.politics_logger import logger_launcher
 from Data_Dumps.vote_options import vote_options
 
 
+
+
 class CyberneticRepublicMusicGen:
     def __init__(self, logger_object: logging.Logger, vote_processor_dat,
                  num_cycles=2, voting_period=30, resting_period=15):
