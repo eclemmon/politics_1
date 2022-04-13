@@ -1,7 +1,0 @@
-from Data_Dumps.harmonic_progession_data import cybernetic_republic_progressions
-from Data_Dumps.meter_data import cybernetic_republic_meter_data
-from Classes.harmonic_rhythm import HarmonicRhythm
-
-
-def build_cybernetic_harmonic_rhythm(meter_key, progression_key):
-    return HarmonicRhythm(cybernetic_republic_meter_data[meter_key], cybernetic_republic_progressions[progression_key])
