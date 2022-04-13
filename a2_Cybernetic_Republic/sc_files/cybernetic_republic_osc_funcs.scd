@@ -28,14 +28,14 @@ OSCFunc({ |args|
 	// Empty the pattern list
 	~clear_midinotes_durations_at_key.value(~gm, args[1].asSymbol);
 	"######################################".postln;
-}, '/init');
+}, '/rhythm_init');
 
 
 OSCFunc({ |args|
 	"######################################".postln;
 	"OSCFUNC received the following values:".postln;
 	// args.postcs;
-	~add_midinotes_durations_to_dict.value(~gm, \break_beat_1, Array.fill(args[2..].size, {arg i; args[1]}), Array.fill(args[2..].size, {
+	~add_midinotes_durations_to_dict.value(~gm, \rhythm_section, Array.fill(args[2..].size, {arg i; args[1]}), Array.fill(args[2..].size, {
 		arg i;
 		if((args[i+2].asString.beginsWith("/r")), {
 			if(args[i+2] == '/r', {
@@ -52,7 +52,7 @@ OSCFunc({ |args|
 	);
 
 	"######################################".postln;
-}, '/break_beat_1');
+}, '/rhythm_section');
 
 // #######################
 // MIDDLE VOICES OSC FUNCS

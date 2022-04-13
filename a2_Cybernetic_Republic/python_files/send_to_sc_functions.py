@@ -55,7 +55,7 @@ def send_arpeggiator_on_off_to_sc(sc_client, address='/arpeggiator'):
     sc_client.send(msg)
 
 
-def send_rhythm_to_sc(rhythm_section, sc_client, address="/break_beat_1"):
+def send_rhythm_to_sc(rhythm_section, sc_client, address="/rhythm_section"):
     for i in range(len(rhythm_section.midi_notes)):
         msg = osc_message_builder.OscMessageBuilder(address=address)
         msg.add_arg(rhythm_section.midi_notes[i], 'i')
@@ -64,8 +64,8 @@ def send_rhythm_to_sc(rhythm_section, sc_client, address="/break_beat_1"):
         msg = msg.build()
         sc_client.send(msg)
 
-    msg = osc_message_builder.OscMessageBuilder(address="/init")
-    msg.add_arg("break_beat_1")
+    msg = osc_message_builder.OscMessageBuilder(address="/rhythm_init")
+    msg.add_arg("rhythm_section")
     msg.add_arg("rhythm_pattern")
     msg = msg.build()
     sc_client.send(msg)

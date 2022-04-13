@@ -2,7 +2,6 @@ import random
 
 from Classes import harmonic_rhythm
 from Classes import meter
-from Classes import chord_progression
 from Data_Dumps.progession_data import cybernetic_republic_progressions
 
 
