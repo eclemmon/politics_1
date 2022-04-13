@@ -1,5 +1,5 @@
 vote_options = {
-    'bass': ['funk', 'alberti', 'sustained', 'walking', 'random', 'polyrhythmic', 'on-beats'],
+    'bass': ['alberti', 'sustained', 'walking', 'random', 'polyrhythmic', 'on-beats'],
     'melody': ['sustained', 'random', 'leapy', 'choppy', 'polyrhythmic', 'maximum-ornamentation'],
     'middle-voices': ['pads', 'random', 'choppy', 'off-beats', 'arpeggiated'],
     'progression': ['doo-wop', 'weaponized', 'pachelbel', 'chromatic-lament', 'changes', 'giant-steps', 'norm-core'],
