@@ -4,10 +4,11 @@ from Data_Dumps.melody_data import cybernetic_republic_melodies
 from Data_Dumps.bass_data import cybernetic_republic_basses
 from Data_Dumps.middle_voices_data import cybernetic_republic_middle_voices
 from Data_Dumps.rhythm_section_data import cybernetic_republic_rhythm_section
+from Data_Dumps.meter_data import cybernetic_republic_meter_data
 from Classes.harmonic_rhythm import HarmonicRhythm
 
 
-def build_cybernetic_harmonic_rhythm(meter_key, progression_key):
+def build_harmonic_rhythm(meter_key, progression_key):
     return HarmonicRhythm(cybernetic_republic_meter_data[meter_key], cybernetic_republic_progressions[progression_key])
 
 
@@ -25,3 +26,11 @@ def build_middle_voices(middle_voices_key, harmonic_rhythm):
 
 def build_rhythm_section(rhythm_section_key, meter):
     return cybernetic_republic_rhythm_section[rhythm_section_key](meter)
+
+
+def build_meter(meter_key):
+    return cybernetic_republic_meter_data[meter_key]
+
+
+def build_progression(progression_key):
+    return cybernetic_republic_progressions[progression_key]
