@@ -24,8 +24,8 @@ def build_middle_voices(middle_voices_key, harmonic_rhythm):
     return cybernetic_republic_middle_voices[middle_voices_key](harmonic_rhythm)
 
 
-def build_rhythm_section(rhythm_section_key, meter):
-    return cybernetic_republic_rhythm_section[rhythm_section_key](meter)
+def build_rhythm_section(rhythm_section_key, meter_key):
+    return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
 
 
 def build_meter(meter_key):
