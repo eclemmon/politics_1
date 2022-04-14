@@ -4,8 +4,8 @@
 	arg mem, key, midinotes, durations;
 	// mem.at(key) should be of List class
 	// Adds an incoming array to the end of the list.
-	mem.at(key).put(\midinotes, midinotes);
-	mem.at(key).put(\durations, durations);
+	mem.at(key).add(\midinotes, midinotes);
+	mem.at(key).add(\durations, durations);
 };
 
 ~add_midinotes_to_dict = {
@@ -49,14 +49,15 @@
 	arg mem, key, mOutAddress, chan=0;
 	var ppar_array, ppar;
 	ppar_array = List.new();
-	mem.at(key).do({
+	// mem.at(key).at(\midinotes).postcs;
+	mem.at(key).at(\midinotes).do({
 		arg item, i;
 		ppar_array.add(
 			Pbind(
 				\type, \midi,
 				\midiout, mem.at(\mOuts).at(mOutAddress),
-				\midinote, Pseq(item.at(\midinotes), inf),
-				\dur, Pseq(item.at(\durations), inf),
+				\midinote, Pseq(mem.at(key).at(\midinotes).at(i), inf),
+				\dur, Pseq(mem.at(key).at(\durations).at(i), inf),
 				\amp, 1,
 				\chan, chan
 			);
