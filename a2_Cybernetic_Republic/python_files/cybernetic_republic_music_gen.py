@@ -8,12 +8,15 @@ import Classes.countdown
 import Classes.vote_processor
 
 from Classes.worker_thread import WorkerThread
+from Classes.chord_progression import ChordProgression
+from build_musical_data import *
+from send_to_sc_functions import *
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 from Utility_Tools.politics_logger import logger_launcher
 from Data_Dumps.vote_options import vote_options
-
-
+from Data_Dumps.scale_data import cybernetic_republic_scales
+from Data_Dumps.progession_data import cybernetic_republic_intro_progression
 
 
 class CyberneticRepublicMusicGen:
@@ -40,6 +43,14 @@ class CyberneticRepublicMusicGen:
         self.count_address = "/count"
         self.flash_address = "/flash"
         self.end_address = "/end"
+
+        self.meter_key = None
+        self.progression_key = None
+        self.bass_key = None
+        self.rhythm_key = None
+        self.middle_voices_key = None
+        self.melody_key = None
+        self.arpeggiator = False
 
     def on_data(self, data):
         """
@@ -159,6 +170,78 @@ class CyberneticRepublicMusicGen:
         msg.add_arg(text, arg_type='s')
         msg = msg.build()
         self.gui_client.send(msg)
+
+    @staticmethod
+    def build_music_generators(meter_key=None, melody_key=None, bass_key=None,
+                               middle_voices_key=None, rhythm_key=None, progression_key=None):
+        if meter_key is None:
+            meter_key = 'four'
+        else:
+            meter_key = meter_key
+
+        if progression_key is None:
+            progression_key = 'introduction'
+        else:
+            progression_key = progression_key
+
+        hr = build_harmonic_rhythm(meter_key, progression_key)
+
+        if bass_key is None:
+            bass_key = 'introduction'
+        else:
+            bass_key = bass_key
+
+        bass = build_bass(bass_key, hr, cybernetic_republic_scales['major'])
+
+        if melody_key is None:
+            melody = None
+        else:
+            melody = build_melody(melody_key, hr, cybernetic_republic_scales['major'])
+
+        if middle_voices_key is None:
+            middle_voices = None
+        else:
+            middle_voices = build_middle_voices(middle_voices_key, hr)
+
+        if rhythm_key is None:
+            rhythm_key = 'introduction'
+        else:
+            rhythm_key = rhythm_key
+
+        rhythm = build_rhythm_section(rhythm_key, meter_key)
+
+        return {'bass': bass, 'melody': melody, 'middle_voices': middle_voices, 'rhythm': rhythm}
+
+    def send_musical_data_to_sc(self, data):
+        # send rhythm data
+        send_rhythm_to_sc(data['rhythm'], self.sc_client)
+        # send middle voices data
+        if data['middle_voices'] is not None:
+            send_middle_voice_chords_to_sc(data['middle_voices'], self.sc_client)
+            send_middle_voice_durations_to_sc(data['middle_voices'], self.sc_client)
+        # send melody data
+        if data['melody'] is not None:
+            send_bass_or_melody_notes_to_sc(data['melody'], self.sc_client, '/melody_notes')
+            send_bass_or_melody_durations_to_sc(data['melody'], self.sc_client, '/melody_durations')
+        # send bass data
+        send_bass_or_melody_notes_to_sc(data['bass'], self.sc_client, '/bass_notes')
+        send_bass_or_melody_durations_to_sc(data['bass'], self.sc_client, '/bass_durations')
+
+    def initialize_musical_data(self, arppeggiator=False):
+        # Initialize everythin
+        send_rhythm_initialization_to_sc(self.sc_client)
+        send_bass_or_melody_initialization_to_sc(0, self.sc_client, '/bass_init')
+        send_bass_or_melody_initialization_to_sc(0, self.sc_client, '/melody_init')
+        send_middle_voice_initialization_to_sc(0, self.sc_client)
+        # turn on or off arpeggiator
+        if arppeggiator:
+            send_arpeggiator_on_off_to_sc(self.sc_client, address='/arpeggiator')
+
+    def run_music(self):
+        data = self.build_music_generators(self.meter_key, self.melody_key, self.bass_key, self.middle_voices_key,
+                                           self.rhythm_key, self.progression_key)
+        self.send_musical_data_to_sc(data)
+        self.initialize_musical_data(self.arpeggiator)
 
 
 if __name__ == "__main__":
