@@ -48,6 +48,8 @@ class VoteProcessor:
         for candidate in self.candidates:
             self.vote_tallies[candidate] = 0
 
+    def get_winning_key(self):
+        return max(self.vote_tallies, key=self.vote_tallies.get)
 
 if __name__ == '__main__':
     new_vote = VoteProcessor('a)', 'b)', 'c)', 'd)', 'e)')
@@ -67,9 +69,11 @@ if __name__ == '__main__':
     # for i in range(3):
     #     new_vote.on_message('d)')
     #     # time.sleep(1)
-
+    print(new_vote.tally_votes())
+    print(new_vote.get_winning_key())
     new_vote.reset_vote_tallies()
     new_vote.display_current_results()
+
 
 
 
