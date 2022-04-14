@@ -75,5 +75,12 @@ cybernetic_republic_progressions = {
     ])
 }
 
-
+cybernetic_republic_intro_progression = {
+    'introduction': ChordProgression([
+        Chord(Note(0), Note(4), Note(7)),
+        Chord(Note(0), Note(4), Note(7)),
+        Chord(Note(0), Note(4), Note(7)),
+        Chord(Note(0), Note(5), Note(9))
+    ])
+}
 

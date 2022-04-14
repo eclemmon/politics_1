@@ -8,3 +8,7 @@ cybernetic_republic_basses = {
     'polyrhythmic': PolyrhythmicBass,
     'on-beats': OnBeatBass
 }
+
+cybernetic_republic_intro_bass = {
+    'introduction': OnBeatBass
+}
