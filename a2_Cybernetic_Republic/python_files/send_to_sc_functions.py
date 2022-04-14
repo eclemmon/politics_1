@@ -64,8 +64,15 @@ def send_rhythm_to_sc(rhythm_section, sc_client, address="/rhythm_section"):
         msg = msg.build()
         sc_client.send(msg)
 
-    msg = osc_message_builder.OscMessageBuilder(address="/rhythm_init")
-    msg.add_arg("rhythm_section")
-    msg.add_arg("rhythm_pattern")
+
+def send_rhythm_initialization_to_sc(sc_client, address="/rhythm_init"):
+    msg = osc_message_builder.OscMessageBuilder(address=address)
+    msg = msg.build()
+    sc_client.send(msg)
+
+
+def send_quantization_update_to_sc(value, sc_client, address='/quantization'):
+    msg = osc_message_builder.OscMessageBuilder(address=address)
+    msg.add_arg(value, arg_value='i')
     msg = msg.build()
     sc_client.send(msg)
