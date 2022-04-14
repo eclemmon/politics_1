@@ -435,6 +435,36 @@ class PolyRhythms(RhythmSection):
         self.midi_note_duration_arrays = [subdivide_meter_into_polyrhythm(meter.num_beats, random.randint(1, 13))
                                           for _ in range(len(self.midi_notes))]
 
+class IntroductionRhythms(RhythmSection):
+    def __init__(self, meter):
+        super().__init__(meter)
+        self.midi_notes = [88]
+        self.midi_note_duration_arrays = [1, 1, 1, 1]
+
+    def rhythm_to_duple(self):
+        self.midi_note_duration_arrays = nr(2)
+
+    def rhythm_to_triple(self):
+        self.midi_note_duration_arrays = nr(3)
+
+    def rhythm_to_four(self):
+        self.midi_note_duration_arrays = nr(4)
+
+    def rhythm_to_five(self):
+        self.midi_note_duration_arrays = nr(5)
+
+    def rhythm_to_six(self):
+        self.midi_note_duration_arrays = nr(6)
+
+    def rhythm_to_seven(self):
+        self.midi_note_duration_arrays = nr(7)
+
+    def rhythm_to_nine(self):
+        self.midi_note_duration_arrays = nr(9)
+
+    def rhythm_to_twelve(self):
+        self.midi_note_duration_arrays = nr(12)
+
 
 if __name__ == "__main__":
     from pythonosc import udp_client
