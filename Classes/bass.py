@@ -172,6 +172,8 @@ class WalkingBass(Bass):
             return {'ascending': False, 'steps': -(bn1.midi_note_number + 12 - bn2.midi_note_number)}
 
     def get_shortest_distance_data_scalar(self, bn1: Note, bn2: Note):
+        if bn1 not in self.scale.notes or bn2 not in self.scale.notes:
+            return self.get_shortest_distance_data_chromatic(bn1, bn2)
         if bn1 <= bn2:
             index_1 = self.scale.notes.index(bn1)
             index_2 = self.scale.notes.index(bn2)
@@ -187,6 +189,8 @@ class WalkingBass(Bass):
             return {'ascending': False, 'steps': -(index_1 + len(self.scale.notes) - index_2)}
 
     def step_between_notes_scalar(self, bn1, distance_data):
+        if bn1 not in self.scale.notes:
+            return self.step_between_notes_chromatic(bn1, distance_data)
         current_index = self.scale.notes.index(bn1)
         if distance_data['ascending']:
             return [self.scale.notes[(current_index + i) % len(self.scale.notes)] for i in
