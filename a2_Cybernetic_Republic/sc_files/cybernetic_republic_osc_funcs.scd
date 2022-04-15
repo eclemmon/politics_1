@@ -6,13 +6,13 @@
 
 OSCFunc({ |args|
 	// Stop previous pattern
-	~gm.at(\rhythm_pattern).stop;
+	// ~gm.at(\rhythm_pattern).stop;
 	// Run the pattern
 	~gm.put(\rhythm_pattern, ~build_ppar.value(~gm, \rhythm_section, \rhythm_section));
 	~gm.at(\rhythm_pattern).play(quant: ~gm.at(\quantization));
 	"RHYTHM INITIALIZED!".postln;
 	// Empty the pattern list
-	~clear_voice.value(~gm, \rhythm_pattern);
+	~clear_voice.value(~gm, \rhythm_section);
 }, '/rhythm_init');
 
 
@@ -46,6 +46,7 @@ OSCFunc({ |args|
 	var durations, chords, channel;
 	// Get middle voice channel (random instrument selected)
 	channel = args[1];
+	// ~gm.at(\middle_voice_pattern).stop;
 	// build and run the pattern
 	~gm.put(\middle_voice_pattern, ~build_pattern.value(~gm, \middle_voice, \middle_voice, channel));
 	"MIDDLE VOICES INITIALIZED!".postln;
@@ -88,6 +89,8 @@ OSCFunc({ |args|
 	var durations, chords, channel;
 	// Get middle voice channel (random instrument selected)
 	channel = args[1];
+	// Stop the pattern
+	// ~gm.at(\melody_pattern).stop;
 	// build and run the pattern
 	~gm.put(\melody_pattern, ~build_pattern.value(~gm, \melody, \melody, channel));
 	"MELODY INITIALIZED!".postln;
@@ -115,6 +118,7 @@ OSCFunc({ |args|
 	var durations, chords, channel;
 	// Get middle voice channel (random instrument selected)
 	channel = args[1];
+	// ~gm.at(\bass_pattern).stop;
 	// build and run the pattern
 	~gm.put(\bass_pattern, ~build_pattern.value(~gm, \bass, \bass, channel));
 	"BASS INITIALIZED!".postln;
@@ -131,5 +135,6 @@ OSCFunc({ |args|
 	// Put new quantization in the dictionary.
 	// Should always be the last call in the OSC sends since the "next bar" should be a downbeat, and not the middle of preceding meter.
 	~gm.put(\quantization, args[1]);
+	"########## ALL TASKS INITIALIZED #########".postln;
 }, '/quantization');
 )
