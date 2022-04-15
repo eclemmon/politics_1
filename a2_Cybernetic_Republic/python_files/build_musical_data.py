@@ -5,6 +5,7 @@ from Data_Dumps.bass_data import cybernetic_republic_basses
 from Data_Dumps.bass_data import cybernetic_republic_intro_bass
 from Data_Dumps.middle_voices_data import cybernetic_republic_middle_voices
 from Data_Dumps.rhythm_section_data import cybernetic_republic_rhythm_section
+from Data_Dumps.rhythm_section_data import cybernetic_republic_intro_rhythm_section
 from Data_Dumps.meter_data import cybernetic_republic_meter_data
 from Classes.harmonic_rhythm import HarmonicRhythm
 
@@ -27,15 +28,15 @@ def build_bass(bass_key, harmonic_rhythm, scale):
     else:
         return cybernetic_republic_basses[bass_key](harmonic_rhythm, scale)
 
-
 def build_middle_voices(middle_voices_key, harmonic_rhythm):
     return cybernetic_republic_middle_voices[middle_voices_key](harmonic_rhythm)
 
 
 def build_rhythm_section(rhythm_section_key, meter_key):
     if rhythm_section_key == 'introduction':
-        return
-    return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
+        return cybernetic_republic_intro_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
+    else:
+        return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
 
 
 def build_meter(meter_key):
