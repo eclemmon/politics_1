@@ -8,3 +8,7 @@ cybernetic_republic_rhythm_section = {
     'breakbeat': BreakBeat,
     'random': RandomRhythms
 }
+
+cybernetic_republic_intro_rhythm_section = {
+    'introduction': IntroductionRhythms
+}
