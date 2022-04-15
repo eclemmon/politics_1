@@ -439,7 +439,9 @@ class IntroductionRhythms(RhythmSection):
     def __init__(self, meter):
         super().__init__(meter)
         self.midi_notes = [88]
-        self.midi_note_duration_arrays = [1, 1, 1, 1]
+        self.midi_note_duration_arrays = [
+            [1, 1, 1, 1]
+        ]
 
     def rhythm_to_duple(self):
         self.midi_note_duration_arrays = nr(2)
@@ -534,3 +536,4 @@ if __name__ == "__main__":
     pr9 = PolyRhythms(nine)
     pr12 = PolyRhythms(twelve)
 
+    print(pr12.meter.num_beats)
