@@ -21,7 +21,7 @@ from Data_Dumps.progession_data import cybernetic_republic_intro_progression
 
 class CyberneticRepublicMusicGen:
     def __init__(self, logger_object: logging.Logger, vote_processor_dat,
-                 num_cycles=2, voting_period=30, resting_period=15):
+                 num_cycles=2, voting_period=10, resting_period=5):
         self.logger = logger_object
         self.countdown = Classes.countdown.Countdown(voting_period, resting_period)
         self.section = 0
@@ -44,13 +44,18 @@ class CyberneticRepublicMusicGen:
         self.flash_address = "/flash"
         self.end_address = "/end"
 
-        self.meter_key = None
-        self.progression_key = None
-        self.bass_key = None
-        self.rhythm_key = None
-        self.middle_voices_key = None
-        self.melody_key = None
         self.arpeggiator = False
+
+        self.variable_keys = {
+            'bass': None,
+            'progression': None,
+            'middle-voices': None,
+            'melody': None,
+            'rhythm': None,
+            'meter': None
+        }
+
+        self.run_music()
 
     def on_data(self, data):
         """
@@ -137,10 +142,24 @@ class CyberneticRepublicMusicGen:
             if total_count % (self.countdown.init_rest_period + self.countdown.init_vote_period) == 0:
                 self.lock.acquire()
                 try:
+                    # Flash the GUI
                     flash_msg = osc_message_builder.OscMessageBuilder(address=self.flash_address)
                     flash_msg = flash_msg.build()
                     self.gui_client.send(flash_msg)
-                    self.section += 1
+                    # Send the music data to SC
+                    section = self.vote_option_keys[self.section]
+                    winning_key = self.vote_processor.get_winning_key()
+                    self.variable_keys[section] = winning_key
+                    print(self.variable_keys)
+                    # Turn on or off arpeggiator
+                    if self.variable_keys['middle-voices'] == 'arpeggiated':
+                        self.turn_arppeggiator_on_off(True)
+                    else:
+                        self.turn_arppeggiator_on_off(False)
+                    # Send all data to SC
+                    self.run_music()
+                    # Update section
+                    self.section = (self.section + 1) % len(self.vote_option_keys)
                     self.vote_processor = self.build_vote_processor_options(self.section, self.vote_processor_dat)
                     vote = self.vote_processor.display_current_results()
                     self.send_vote_message_to_gui(vote)
@@ -227,32 +246,43 @@ class CyberneticRepublicMusicGen:
         send_bass_or_melody_notes_to_sc(data['bass'], self.sc_client, '/bass_notes')
         send_bass_or_melody_durations_to_sc(data['bass'], self.sc_client, '/bass_durations')
 
-    def initialize_musical_data(self, arppeggiator=False):
-        # Initialize everythin
+    def initialize_musical_data(self, data, arppeggiator=False):
+        # Initialize everything
         send_rhythm_initialization_to_sc(self.sc_client)
-        send_bass_or_melody_initialization_to_sc(0, self.sc_client, '/bass_init')
-        send_bass_or_melody_initialization_to_sc(0, self.sc_client, '/melody_init')
-        send_middle_voice_initialization_to_sc(0, self.sc_client)
+        send_bass_or_melody_initialization_to_sc(random.randint(0, 16), self.sc_client, '/bass_init')
+        if data['melody'] is not None:
+            send_bass_or_melody_initialization_to_sc(random.randint(0, 16), self.sc_client, '/melody_init')
+        if data['middle_voices'] is not None:
+            send_middle_voice_initialization_to_sc(random.randint(0, 16), self.sc_client)
         # turn on or off arpeggiator
         if arppeggiator:
             send_arpeggiator_on_off_to_sc(self.sc_client, address='/arpeggiator')
+        # Set Quantization after initialization
+        send_quantization_update_to_sc(data['rhythm'].meter.num_beats, self.sc_client, address='/quantization')
 
     def run_music(self):
-        data = self.build_music_generators(self.meter_key, self.melody_key, self.bass_key, self.middle_voices_key,
-                                           self.rhythm_key, self.progression_key)
+        data = self.build_music_generators(self.variable_keys['meter'], self.variable_keys['melody'],
+                                           self.variable_keys['bass'], self.variable_keys['middle-voices'],
+                                           self.variable_keys['rhythm'], self.variable_keys['progression'])
         self.send_musical_data_to_sc(data)
-        self.initialize_musical_data(self.arpeggiator)
+        self.initialize_musical_data(data, self.arpeggiator)
+
+    def turn_arppeggiator_on_off(self, arpeggiator_on_off: bool):
+        self.arpeggiator = arpeggiator_on_off
 
 
 if __name__ == "__main__":
     a = {'username': 'boop', 'text': '808'}
     b = {'username': 'lop', 'text': 'I want funk!'}
     logger = logger_launcher()
-    music_gen = CyberneticRepublicMusicGen(logger, vote_options)
+    music_gen = CyberneticRepublicMusicGen(logger, vote_options, num_cycles=20)
     music_gen.run()
     for i in range(9):
         music_gen.on_data(a)
         time.sleep(random.random() * 5)
     for i in range(5):
+        music_gen.on_data(b)
+        time.sleep(random.random() * 5)
+    for i in range(7):
         music_gen.on_data(b)
         time.sleep(random.random() * 5)
