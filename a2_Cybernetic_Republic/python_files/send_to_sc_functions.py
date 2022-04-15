@@ -73,6 +73,6 @@ def send_rhythm_initialization_to_sc(sc_client, address="/rhythm_init"):
 
 def send_quantization_update_to_sc(value, sc_client, address='/quantization'):
     msg = osc_message_builder.OscMessageBuilder(address=address)
-    msg.add_arg(value, arg_value='i')
+    msg.add_arg(value)
     msg = msg.build()
     sc_client.send(msg)
