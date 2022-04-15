@@ -7,10 +7,8 @@ from Data_Dumps.progession_data import cybernetic_republic_progressions
 
 class MiddleVoices:
     def __init__(self, harmonic_rhythm_object: harmonic_rhythm.HarmonicRhythm, octave=4):
-        self.harmonic_rhythm = harmonic_rhythm_object
+        self.harmonic_rhythm = harmonic_rhythm_object.transpose_return_new(octave)
         self.instrument_channels = [channel for channel in range(16)]
-        self.harmonic_rhythm.progression.transpose(octave)
-        # print(self.harmonic_rhythm.progression.chords)
         self.chords_and_durations = self.build_chords_and_durations()
 
     def build_chords_and_durations(self):

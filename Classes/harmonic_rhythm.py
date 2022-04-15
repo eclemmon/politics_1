@@ -77,7 +77,7 @@ class HarmonicRhythm:
         self.flattened_hr_durations = [item for sublist in self.hr_durations for item in sublist]
 
     def get_hr_durations(self):
-        # split progression accross num_bars number of bars
+        # split progression across num_bars number of bars
         chords = np.array_split(self.progression.chords, self.num_bars)
         # split the remaining progression amongst by strong metrical subdivisions within the bar
         res = []
@@ -92,6 +92,9 @@ class HarmonicRhythm:
 
     def get_chords_and_durations(self):
         return [self.progression.chords, self.flattened_hr_durations]
+
+    def transpose_return_new(self, num):
+        return HarmonicRhythm(self.meter, self.progression.transpose_return_new(num), self.num_bars, self.hr_durations)
 
 
 def build_harmonic_rhythm(meter, chords):

@@ -33,6 +33,9 @@ class Chord:
         for note in self.notes:
             note.transpose(num)
 
+    def transpose_return_new(self, num):
+        return Chord(*[Note(note.midi_note_number + (num * 12)) for note in self.notes])
+
     def get_bass_note(self):
         return self.notes[0]
 

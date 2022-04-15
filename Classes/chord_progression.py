@@ -15,6 +15,13 @@ class ChordProgression:
         for chord in self.chords:
             chord.transpose(num)
 
+    def transpose(self, num):
+        for note in self.notes:
+            note.transpose(num)
+
+    def transpose_return_new(self, num):
+        return ChordProgression([chord.transpose_return_new(num) for chord in self.chords])
+
 
 if __name__ == "__main__":
     c_major = Chord(Note(0), Note(4), Note(7))

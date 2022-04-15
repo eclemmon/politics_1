@@ -82,6 +82,9 @@ class Note:
     def transpose(self, num):
         self.midi_note_number = self.midi_note_number + (num * 12)
 
+    def transpose_return_new(self, num):
+        return Note(self.midi_note_number + (num * 12))
+
 
 if __name__ == '__main__':
     c = Note(72)
