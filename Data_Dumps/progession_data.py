@@ -43,12 +43,6 @@ cybernetic_republic_progressions = {
         Chord(Note(9), Note(1), Note(4), Note(7)),  # A7
         Chord(Note(2), Note(6), Note(9), Note(1)),  # DMM7
         Chord(Note(2), Note(5), Note(9), Note(0)),  # Dmm7
-        Chord(Note(3), Note(7), Note(10), Note(1)),  # Eb7
-        Chord(Note(8), Note(0), Note(3), Note(7)),  # AbMM7
-        Chord(Note(11), Note(3), Note(6), Note(9)),  # B7
-        Chord(Note(4), Note(8), Note(11), Note(3)),  # EMM7
-        Chord(Note(7), Note(11), Note(2), Note(5)),  # G7
-        Chord(Note(0), Note(4), Note(7), Note(11)),  # CMM7
     ]),
     'giant-steps': ChordProgression([
         Chord(Note(11), Note(3), Note(6), Note(10)),  # BMM7
