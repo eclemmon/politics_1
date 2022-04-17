@@ -26,7 +26,7 @@ def recursive_split_meter(meter_subdivision, n_splits, n_recusions=0):
                 greatest_index = count
         meter_subdivision_copy = meter_subdivision[:]
         new_meter_subdivision = split_off_duration(meter_subdivision_copy, greatest_index)
-        print(new_meter_subdivision)
+        # print(new_meter_subdivision)
         return recursive_split_meter(new_meter_subdivision, n_splits, n_recusions + 1)
 
 
