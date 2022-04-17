@@ -59,7 +59,8 @@
 				\midinote, Pseq(mem.at(key).at(\midinotes).at(i), inf),
 				\dur, Pseq(mem.at(key).at(\durations).at(i), inf),
 				\amp, 1,
-				\chan, chan
+				\chan, chan,
+				\visualcontrol, Pfunc({~send_osc_message.value(mem, key, 0)})
 			);
 		);
 	});
@@ -77,7 +78,8 @@
 		\midinote, Pseq(mem.at(key).at(\midinotes), inf),
 		\dur, Pseq(mem.at(key).at(\durations), inf),
 		\amp, 1,
-		\chan, chan
+		\chan, chan,
+		\visualcontrol, Pfunc({~send_osc_message.value(mem, key, 0)})
 	);
 	pattern = Pdef(key, pattern);
 	pattern;
