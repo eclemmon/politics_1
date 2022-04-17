@@ -60,9 +60,6 @@ def sms():
     full_number = request.form['From']
     message_body = request.form['Body']
     message_data = {"username": full_number, "text": message_body, "sms": True}
-    # resp = MessagingResponse()
-    # resp.message('Thanks for your message {}, I am processing your message. You said: {}'.format(full_number,
-    #                                                                                              message_body))
     sio.emit('handle_message', message_data)
     store_message(message_data)
     return ""
