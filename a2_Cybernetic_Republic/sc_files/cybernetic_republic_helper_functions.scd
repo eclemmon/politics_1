@@ -90,4 +90,3 @@
 	mem.at(\visuals_netaddress).sendMsg(address, msg);
 };
 )
-~myarr = ~parse_rests_and_notes.value(['/r0.33', '/r', 0.25]);
