@@ -51,6 +51,10 @@ class VoteProcessor:
     def get_winning_key(self):
         return max(self.vote_tallies, key=self.vote_tallies.get)
 
+    def get_winning_key_index(self):
+        winning_key = self.get_winning_key()
+        return self.candidates.index(winning_key)
+
 if __name__ == '__main__':
     new_vote = VoteProcessor('a)', 'b)', 'c)', 'd)', 'e)')
     print(new_vote.vote_tallies, new_vote.candidates)
