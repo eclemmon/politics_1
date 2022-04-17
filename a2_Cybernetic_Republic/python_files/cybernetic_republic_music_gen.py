@@ -23,7 +23,7 @@ from Utility_Tools.message_response import generate_cybernetic_republic_message_
 
 class CyberneticRepublicMusicGen:
     def __init__(self, logger_object: logging.Logger, vote_processor_dat,
-                 num_cycles=2, voting_period=20, resting_period=2):
+                 num_cycles=2, voting_period=10, resting_period=2):
         self.logger = logger_object
         self.countdown = Classes.countdown.Countdown(voting_period, resting_period)
         self.section = 0
@@ -44,6 +44,7 @@ class CyberneticRepublicMusicGen:
         self.vote_tally_address = "/vote_tally"
         self.update_vote_tally_address = "/update_vote_tally"
         self.count_address = "/count"
+        self.selected_vote_address = "/selected_vote"
         self.end_section = "/end_section"
         self.end_address = "/end"
 
@@ -107,7 +108,6 @@ class CyberneticRepublicMusicGen:
                     # If the voter submitted a message with a vote option
                     # the voter successfully voted
                     # Add voter to voters
-                    print('sucessfully voted?')
                     self.voters[data['username']] = True
                     self.send_vote_message_to_gui(vote.splitlines(), update=True)
                     # Respond with sucessful vote
@@ -196,7 +196,7 @@ class CyberneticRepublicMusicGen:
                     # Send all data to SC
                     self.run_music()
                     # Send the winning key to the GUI
-
+                    self.send_selected_vote_to_gui(self.vote_processor.get_winning_key_index())
                     # Update section
                     self.send_logic_to_gui(self.end_section)
                     self.section = (self.section + 1) % len(self.vote_option_keys)
@@ -235,6 +235,12 @@ class CyberneticRepublicMusicGen:
         print(text_list)
         for text in text_list:
             msg.add_arg(text, arg_type='s')
+        msg = msg.build()
+        self.gui_client.send(msg)
+
+    def send_selected_vote_to_gui(self, selected_vote_index):
+        msg = osc_message_builder.OscMessageBuilder(address=self.selected_vote_address)
+        msg.add_arg(selected_vote_index, arg_type='i')
         msg = msg.build()
         self.gui_client.send(msg)
 
