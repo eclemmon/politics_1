@@ -1,27 +1,29 @@
 import logging
-import random
 import time
 import threading
 import random
+import json
+import tweepy
 
 import Classes.countdown
 import Classes.vote_processor
 
+from dotenv import dotenv_values
 from Classes.worker_thread import WorkerThread
-from Classes.chord_progression import ChordProgression
-from build_musical_data import *
-from send_to_sc_functions import *
+from a2_Cybernetic_Republic.python_files.build_musical_data import *
+from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
 from pythonosc import udp_client
 from pythonosc import osc_message_builder
 from Utility_Tools.politics_logger import logger_launcher
 from Data_Dumps.vote_options import vote_options
 from Data_Dumps.scale_data import cybernetic_republic_scales
-from Data_Dumps.progession_data import cybernetic_republic_intro_progression
+from Utility_Tools.message_response import PoliticsMessageResponder
+from Utility_Tools.message_response import generate_cybernetic_republic_message_response
 
 
 class CyberneticRepublicMusicGen:
     def __init__(self, logger_object: logging.Logger, vote_processor_dat,
-                 num_cycles=2, voting_period=10, resting_period=5):
+                 num_cycles=2, voting_period=20, resting_period=2):
         self.logger = logger_object
         self.countdown = Classes.countdown.Countdown(voting_period, resting_period)
         self.section = 0
@@ -39,9 +41,10 @@ class CyberneticRepublicMusicGen:
         self.layer = 0
         self.total_time = (voting_period + resting_period) * num_cycles
 
-        self.msg_address = "/message"
+        self.vote_tally_address = "/vote_tally"
+        self.update_vote_tally_address = "/update_vote_tally"
         self.count_address = "/count"
-        self.flash_address = "/flash"
+        self.end_section = "/end_section"
         self.end_address = "/end"
 
         self.arpeggiator = False
@@ -86,12 +89,12 @@ class CyberneticRepublicMusicGen:
         }
         print(data)
         if self.is_voting_period:
-            # skip voter if they have already voted
+            # If voting is open
             if self.voters.get(data['username']):
-                pass
+                # skip voter if they have already voted
+                # Respond
+                kwargs['already-voted'] = True
             else:
-                # Add voter to voters
-                self.voters[data['username']] = True
                 # Update vote processor and get updated GUI string
                 vote = self.vote_processor.on_message(data['text'])
                 print(vote)
@@ -125,7 +128,7 @@ class CyberneticRepublicMusicGen:
         """
         # Set initial GUI string
         vote = self.vote_processor.display_current_results()
-        self.send_vote_message_to_gui(vote)
+        self.send_vote_message_to_gui(vote.splitlines())
         # Start worker thread that counts through the sections
         if self.worker_thread is None:
             self.worker_thread = WorkerThread(target=self.run_counter, args=[self.total_time])
@@ -166,7 +169,6 @@ class CyberneticRepublicMusicGen:
             self.is_voting_period = self.countdown.is_voting_period
             # Get message of count down as string
             count_msg = self.countdown.count()
-            # print(count_msg)
             # Create osc message object
             msg = osc_message_builder.OscMessageBuilder(address=self.count_address)
             # Add count string to osc message
@@ -181,10 +183,6 @@ class CyberneticRepublicMusicGen:
             if total_count % (self.countdown.init_rest_period + self.countdown.init_vote_period) == 0:
                 self.lock.acquire()
                 try:
-                    # Flash the GUI
-                    flash_msg = osc_message_builder.OscMessageBuilder(address=self.flash_address)
-                    flash_msg = flash_msg.build()
-                    self.gui_client.send(flash_msg)
                     # Send the music data to SC
                     section = self.vote_option_keys[self.section]
                     winning_key = self.vote_processor.get_winning_key()
@@ -197,11 +195,17 @@ class CyberneticRepublicMusicGen:
                         self.turn_arppeggiator_on_off(False)
                     # Send all data to SC
                     self.run_music()
+                    # Send the winning key to the GUI
+
                     # Update section
+                    self.send_logic_to_gui(self.end_section)
                     self.section = (self.section + 1) % len(self.vote_option_keys)
                     self.vote_processor = self.build_vote_processor_options(self.section, self.vote_processor_dat)
                     vote = self.vote_processor.display_current_results()
-                    self.send_vote_message_to_gui(vote)
+                    self.send_vote_message_to_gui(vote.splitlines())
+                    # reset voters
+                    self.voters = {}
+                    print(vote)
                 finally:
                     self.lock.release()
         self.end()
@@ -218,14 +222,24 @@ class CyberneticRepublicMusicGen:
         section_vals = random.sample(section_vals, 4)
         return Classes.vote_processor.VoteProcessor(*section_vals)
 
-    def send_vote_message_to_gui(self, text):
+    def send_vote_message_to_gui(self, text_list, update=False):
         """
         Helper function that updates the vote string on the GUI side.
-        :param text: String from VoteProcessor object returned by a vote.
+        :param text_list: List of Strings from VoteProcessor object returned by a vote.
         :return: None
         """
-        msg = osc_message_builder.OscMessageBuilder(address=self.msg_address)
-        msg.add_arg(text, arg_type='s')
+        if update:
+            msg = osc_message_builder.OscMessageBuilder(address=self.update_vote_tally_address)
+        else:
+            msg = osc_message_builder.OscMessageBuilder(address=self.vote_tally_address)
+        print(text_list)
+        for text in text_list:
+            msg.add_arg(text, arg_type='s')
+        msg = msg.build()
+        self.gui_client.send(msg)
+
+    def send_logic_to_gui(self, address):
+        msg = osc_message_builder.OscMessageBuilder(address=address)
         msg = msg.build()
         self.gui_client.send(msg)
 
@@ -312,16 +326,16 @@ class CyberneticRepublicMusicGen:
 
 if __name__ == "__main__":
     a = {'username': 'boop', 'text': '808'}
-    b = {'username': 'lop', 'text': 'I want funk!'}
+    b = {'username': 'lop', 'text': 'random'}
     logger = logger_launcher()
     music_gen = CyberneticRepublicMusicGen(logger, vote_options, num_cycles=20)
     music_gen.run()
     for i in range(9):
-        music_gen.on_data(a)
+        music_gen.on_data(b)
         time.sleep(random.random() * 5)
     for i in range(5):
         music_gen.on_data(b)
         time.sleep(random.random() * 5)
-    for i in range(7):
+    for i in range(40):
         music_gen.on_data(b)
         time.sleep(random.random() * 5)
