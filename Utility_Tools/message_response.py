@@ -35,7 +35,7 @@ class PoliticsMessageResponder:
         finally:
             return True
 
-    def send_twitter_direct_message(self, message, tweet_id):
+    def send_twitter_reply_message(self, message, tweet_id):
         """
         Sents a tweet message as a reply to the tweet_id
         :param message: String message to be tweeted.
@@ -58,8 +58,8 @@ def generate_discourse_message_response(message_responder: PoliticsMessageRespon
     if data.get('sms'):
         message_responder.send_sms(generate_sms_discourse_message(data, kwargs), data['username'])
     elif data.get('tweet'):
-        message_responder.send_twitter_direct_message(generate_tweet_discourse_message(data, kwargs),
-                                                      data['tweet_id'])
+        message_responder.send_twitter_reply_message(generate_tweet_discourse_message(data, kwargs),
+                                                     data['tweet_id'])
     else:
         return None
 
@@ -84,6 +84,47 @@ def generate_sms_discourse_message(data, kwargs):
         construct_spatialization_response_message(kwargs['spat']),
         construct_emojis_response_message(kwargs['pmod'])
     )
+
+
+def generate_cybernetic_republic_message_response(message_responder: PoliticsMessageResponder, data, kwargs):
+    if data.get('sms'):
+        message_responder.send_sms(generate_cybernetic_republic_message(data, kwargs), data['username'])
+    elif data.get('tweet'):
+        message_responder.send_twitter_reply_message(generate_cybernetic_republic_message(data, kwargs),
+                                                     data['tweet_id'])
+    else:
+        return None
+
+
+def generate_cybernetic_republic_message(data, kwargs):
+    if not kwargs['voting-period']:
+        return "Hi {}, voting is currently closed. Please wait until voting opens!".format(data['username'])
+    if kwargs['no-option-selected']:
+        return "Hi {}, you said: {}... I tried finding one of the vote options, but couldn't. Try again?".format(
+            data['username'], data['text'][:20]
+        )
+    if kwargs['already-voted']:
+        return "Hi {}, it seems like you already voted in this section. You may only vote once!".format(data['username'])
+    else:
+        return "Hi {}, I parsed your message, and added the first vote option I found to the " \
+               "tally! These are the updated results: \n{}".format(data['username'], kwargs['vote'])
+
+
+# def generate_sms_cybernetic_republic_message(data, kwargs):
+#     if not kwargs['voting-period']:
+#         return "Hi {}, voting is currently closed. Please wait until voting opens!".format(data['username'])
+#
+#     if kwargs['no-option']:
+#         return "Hi {}, you said: {}... I tried finding one of the vote options, but couldn't. Try again?".format(
+#             data['username'], data['text'][:20]
+#         )
+#
+#     if kwargs['already-voted']:
+#         return "Hi {}, it seems like you already voted in this section. You may only vote once!".format(
+#             data['username'])
+#     else:
+#         return "Hi {}, I parsed your message, and the first vote option I found was {}. I have added your vote to the " \
+#                "tally! ".format(data['username'], kwargs['vote'])
 
 
 def construct_time_interval_response_message(time_interval):
@@ -191,4 +232,4 @@ if __name__ == "__main__":
     message = generate_sms_discourse_message(data, kwargs)
     message = generate_tweet_discourse_message(tweet_data, kwargs)
     # responder.send_sms(message, "+13058041575")
-    responder.send_twitter_direct_message(message, 1498422393735458816)
+    responder.send_twitter_reply_message(message, 1498422393735458816)

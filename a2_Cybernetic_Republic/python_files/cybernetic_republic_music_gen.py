@@ -55,6 +55,19 @@ class CyberneticRepublicMusicGen:
             'meter': None
         }
 
+        # Make Message Responder
+        config = dotenv_values()
+
+        twitter_path = '/Users/ericlemmon/Documents/PhD/PhD_Project_v2/twitter_credentials.json'
+        with open(twitter_path, "r") as file:
+            credentials = json.load(file)
+
+        self.twitter_auth = tweepy.OAuth1UserHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
+                                                     credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
+        self.responder = PoliticsMessageResponder(config['TWILIO_ACCOUNT_SID'], config['TWILIO_AUTH_TOKEN'],
+                                                  config['TWILIO_PHONE_NUMBER'], self.twitter_auth)
+
+        # run the
         self.run_music()
 
     def on_data(self, data):
@@ -65,6 +78,13 @@ class CyberneticRepublicMusicGen:
         :param data: Dictionary of data e.g. {'username': "voter", 'text': "I want a)"}
         :return: None
         """
+        kwargs = {
+            'vote': None,
+            'already-voted': False,
+            'no-option-selected': False,
+            'voting-period': self.is_voting_period
+        }
+        print(data)
         if self.is_voting_period:
             # skip voter if they have already voted
             if self.voters.get(data['username']):
@@ -74,9 +94,28 @@ class CyberneticRepublicMusicGen:
                 self.voters[data['username']] = True
                 # Update vote processor and get updated GUI string
                 vote = self.vote_processor.on_message(data['text'])
-                self.send_vote_message_to_gui(vote)
+                print(vote)
+                if vote is None:
+                    # If the voter submitted a message without a vote option.
+                    # if the vote processor returns None, set voter to not having voted
+                    self.voters[data['username']] = False
+                    kwargs['no-option-selected'] = True
+                else:
+                    # If the voter submitted a message with a vote option
+                    # the voter successfully voted
+                    # Add voter to voters
+                    print('sucessfully voted?')
+                    self.voters[data['username']] = True
+                    self.send_vote_message_to_gui(vote.splitlines(), update=True)
+                    # Respond with sucessful vote
+                    kwargs['vote'] = vote
+
         else:
-            pass
+            # If voting is not open
+            # Respond and do nothing
+            kwargs['voting-period'] = self.is_voting_period
+        # Generate a response based on conditional logic
+        generate_cybernetic_republic_message_response(self.responder, data=data, kwargs=kwargs)
 
     def run(self):
         """
