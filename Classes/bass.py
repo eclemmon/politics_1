@@ -10,7 +10,7 @@ from Classes.chord import Chord
 
 
 class Bass:
-    def __init__(self, harmonic_rhythm, scale, transposition=2):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale, transposition=2):
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
         self.notes_and_durations = self.build_notes_and_durations()
@@ -36,6 +36,16 @@ class Bass:
         else:
             return duration
 
+    @staticmethod
+    def sum_with_rests(durations):
+        res = []
+        for dur in durations:
+            if type(dur) == str:
+                res.append(float(dur[2:]))
+            else:
+                res.append(dur)
+        return sum(res)
+
     def build_notes_and_durations(self):
         pass
 
@@ -47,23 +57,24 @@ class Bass:
 
 
 class AlbertiBass(Bass):
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale, note_duration=0.25):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale, note_duration=1):
         self.note_duration = note_duration
         super().__init__(harmonic_rhythm, scale)
 
-    # TODO: Nasty bug fix here....
+    # TODO: The logic here is sort of incorrect, but good enough. Also should defer choice of note duration length to
+    # how fast the harmonic rhythm actually is...
     def build_notes_and_durations(self):
         notes = []
         durations = []
-        beat_in_meter_count = 0
-        for count, duration in enumerate(self.harmonic_rhythm.flattened_hr_durations):
-            for num_beats in range(duration):
-                beat_in_meter = beat_in_meter_count % self.harmonic_rhythm.meter.num_beats
-                chord = self.harmonic_rhythm.progression.chords[count]
+        chord_and_dur_blocks = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
+        beat_in_meter = 0
+        for chord_and_dur_block_index in range(len(chord_and_dur_blocks)):
+            for num_beats in range(chord_and_dur_blocks[chord_and_dur_block_index][1]):
+                chord = chord_and_dur_blocks[chord_and_dur_block_index][0]
                 accent_weight = self.harmonic_rhythm.meter.accent_weights[beat_in_meter]
                 notes.append(self.get_next_note(chord, accent_weight, beat_in_meter))
                 durations.append(self.note_duration)
-                beat_in_meter_count += 1
+                beat_in_meter = (beat_in_meter + 1) % self.harmonic_rhythm.meter.num_beats
         return [notes, durations]
 
     def get_next_note(self, chord: Chord, accent_weight, beat_in_meter):
@@ -75,7 +86,8 @@ class AlbertiBass(Bass):
         else:
             return self.get_next_upper_alberti_note(chord, beat_in_meter=beat_in_meter)
 
-    def get_next_upper_alberti_note(self, chord: Chord, beat_in_meter):
+    @staticmethod
+    def get_next_upper_alberti_note(chord: Chord, beat_in_meter):
         if len(chord.notes) == 1:
             return chord.notes[0]
         elif len(chord.notes) == 2:
@@ -164,7 +176,8 @@ class WalkingBass(Bass):
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
         super().__init__(harmonic_rhythm, scale)
 
-    def get_shortest_distance_data_chromatic(self, bn1: Note, bn2: Note):
+    @staticmethod
+    def get_shortest_distance_data_chromatic(bn1: Note, bn2: Note):
         untransposed = bn2.midi_note_number - bn1.midi_note_number
         transposed = bn1.midi_note_number + 12 - bn2.midi_note_number
         if untransposed <= transposed:
@@ -200,7 +213,8 @@ class WalkingBass(Bass):
             return [self.scale.notes[(current_index + i) % len(self.scale.notes)] for i in
                     range(0, distance_data['steps'], -1)]
 
-    def step_between_notes_chromatic(self, bn1, distance_data):
+    @staticmethod
+    def step_between_notes_chromatic(bn1, distance_data):
         if distance_data['ascending']:
             return [Note(bn1.midi_note_number + i) for i in range(0, distance_data['steps'])]
         else:
@@ -236,16 +250,20 @@ class WalkingBass(Bass):
             else:
                 return self.step_between_notes_scalar(bn1, scalar_step), 'scalar'
 
-    def next_beat_fourth_down_tonicization(self, duration, next_note):
+    @staticmethod
+    def next_beat_fourth_down_tonicization(duration, next_note):
         return next_note - 5, duration
 
-    def next_beat_leading_tone_tonicization(self, duration, next_note):
+    @staticmethod
+    def next_beat_leading_tone_tonicization(duration, next_note):
         return next_note - 1, duration
 
-    def next_beat_chromatic_upper_neighbor_tonicization(self, duration, next_note):
+    @staticmethod
+    def next_beat_chromatic_upper_neighbor_tonicization(duration, next_note):
         return next_note + 1, duration
 
-    def next_beat_pass(self, duration, next_note):
+    @staticmethod
+    def next_beat_pass(duration, next_note):
         return None
 
     def build_notes_for_current_subdivision(self, current_chord_and_dur_block, next_chord_and_dur_block):
@@ -270,7 +288,8 @@ class WalkingBass(Bass):
                 durations.append(last_step_anacruxis[1])
             return notes, durations
 
-    def split_note_durations_by_duple_subdivisions(self, steps, harmonic_rhythm_length):
+    @staticmethod
+    def split_note_durations_by_duple_subdivisions(steps, harmonic_rhythm_length):
         basic_subdivision = [1 for _ in range(len(steps))]
         if sum(basic_subdivision) == harmonic_rhythm_length:
             return basic_subdivision
@@ -287,7 +306,8 @@ class WalkingBass(Bass):
                 i = (i + 1) % len(basic_subdivision)
             return basic_subdivision
 
-    def same_chords(self, bass_note, harmonic_rhythm_length):
+    @staticmethod
+    def same_chords(bass_note, harmonic_rhythm_length):
         return [bass_note for _ in range(harmonic_rhythm_length)], [1 for _ in range(harmonic_rhythm_length)]
 
     def get_tonicization_function(self, last_step, next_step):
@@ -368,17 +388,9 @@ class WalkingBass(Bass):
 if __name__ == "__main__":
     from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
     from pythonosc import udp_client
+    from Data_Dumps.progession_data import cybernetic_republic_progressions
 
     sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
-
-    # def sum_with_rests(durations):
-    #     res = []
-    #     for dur in durations:
-    #         if type(dur) == str:
-    #             res.append(float(dur[2:]))
-    #         else:
-    #             res.append(dur)
-    #     return sum(res)
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     duple = SimpleDuple(4)
     scale = Scale(Note(0), Note(2), Note(4), Note(5), Note(7), Note(9), Note(11))
@@ -395,28 +407,34 @@ if __name__ == "__main__":
     meter1 = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     meter2 = CompoundMeter(9, [3, 1, 1, 2, 1, 1, 2, 1, 1], [3, 3, 3])
     meter3 = SimpleDuple(4)
+    meter4 = SimpleDuple(2)
+    meter5 = SimpleTriple()
 
     random.shuffle(chords)
     prog = ChordProgression(chords)
-    hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
+    hr = HarmonicRhythm(meter5, prog)
     sb = WalkingBass(hr, blues_scale)
-    send_bass_or_melody_notes_to_sc(sb, sc_client, "/bass_notes")
-    send_bass_or_melody_durations_to_sc(sb, sc_client, '/bass_durations')
-    send_bass_or_melody_initialization_to_sc(0, sc_client, '/bass_init')
-
+    ab = AlbertiBass(hr, scale)
+    print(ab.notes_and_durations)
+    print(ab.harmonic_rhythm.get_zipped_hr_chords_and_durations())
+    # send_bass_or_melody_notes_to_sc(sb, sc_client, "/bass_notes")
+    # send_bass_or_melody_durations_to_sc(sb, sc_client, '/bass_durations')
+    # send_bass_or_melody_initialization_to_sc(0, sc_client, '/bass_init')
+    #
     # for i in range(100):
     #     random.shuffle(chords)
-    #     prog = ChordProgression(chords)
-    #     hr = HarmonicRhythm(random.choice([meter1, meter2, meter3]), prog)
-    #     ab = SustainedBass(hr, scale)
-    #     rb = RandomBass(hr, scale)
-    #     pr = PolyrhythmicBass(hr, scale)
-    #     obb = OnBeatBass(hr, scale)
+    #     prog = random.choice([ChordProgression(chords), cybernetic_republic_progressions['changes']])
+    #     hr = HarmonicRhythm(random.choice([meter1, meter2, meter3, meter4, meter5]), prog)
+    #     ab = AlbertiBass(hr, scale)
+    #     # rb = RandomBass(hr, scale)
+    #     # pr = PolyrhythmicBass(hr, scale)
+    #     # obb = OnBeatBass(hr, scale)
     #     wb = WalkingBass(hr, scale)
-    #     for i in [ab, rb, pr, obb, wb]:
-    #         print("name: {}, sum durations: {}, total beats: {}, meter beats: {}".format(i.__class__.__name__,
-    #                                                                     sum_with_rests(i.notes_and_durations[1]),
+    #     for i in [ab]:
+    #         print("name: {}, sum durations: {}, total beats: {}, meter beats: {}, notes and durations: {}".format(i.__class__.__name__,
+    #                                                                     i.sum_with_rests(i.notes_and_durations[1]),
     #                                                                     i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
-    #                                                                                      i.harmonic_rhythm.meter.num_beats)
+    #                                                                                      i.harmonic_rhythm.meter.num_beats,
+    #                                                                                                               i.notes_and_durations)
     #              )
 
