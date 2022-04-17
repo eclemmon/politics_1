@@ -51,6 +51,7 @@ class AlbertiBass(Bass):
         self.note_duration = note_duration
         super().__init__(harmonic_rhythm, scale)
 
+    # TODO: Nasty bug fix here....
     def build_notes_and_durations(self):
         notes = []
         durations = []
