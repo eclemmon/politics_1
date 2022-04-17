@@ -12,13 +12,13 @@ class VoteProcessor:
         for candidate in self.candidates:
             try:
                 if candidate.lower() in message.lower():
+                    print(candidate, message)
                     self.vote_tallies[candidate] += 1
-                else:
-                    pass
+                    return self.display_current_results()
             except TypeError:
                 print("Not a string, something went wrong")
                 continue
-        return self.display_current_results()
+        return None
 
     # @clock
     def tally_votes(self):
@@ -56,13 +56,13 @@ if __name__ == '__main__':
     print(new_vote.vote_tallies, new_vote.candidates)
     for i in range(9):
         print(new_vote.on_message('a)'))
-        time.sleep(1)
+        time.sleep(0.1)
     for i in range(5):
         print(new_vote.on_message('I want b)!'))
-        time.sleep(1)
-    # for i in range(3):
-    #     new_vote.on_message('give me an e)!')
-    #     # time.sleep(1)
+        time.sleep(0.1)
+    for i in range(3):
+        new_vote.on_message('give me an!')
+        time.sleep(0.1)
     # for i in range(7):
     #     new_vote.on_message('c) sounds pretty cool')
     #     # time.sleep(1)
