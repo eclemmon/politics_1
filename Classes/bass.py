@@ -10,27 +10,69 @@ from Rhythm_Generators.subdivision_generator import subdivide_meter_into_polyrhy
 
 
 class Bass:
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale, transposition=2):
+    """
+    Bass superclass for musical generation.
+    """
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale, transposition: int = 2):
+        """
+        Intializes Bass class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        :param transposition: int
+        """
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
         self.notes_and_durations = self.build_notes_and_durations()
         self.transpose_self_to_range(transposition)
 
     def get_next_note(self):
+        """
+        Template method for getting the next note.
+        :return: None
+        """
         pass
 
     def build_bass_line(self):
+        """
+        Template method for building the bass line
+        :return: None
+        """
+        pass
+
+    def build_notes_and_durations(self):
+        """
+        Template method for building the bass line
+        :return: None
+        """
         pass
 
     @staticmethod
     def build_rest(duration=1):
+        """
+        Static method for building rests by prepending a float || int durations with the key '/r'
+        :param duration: float || int
+        :return: String
+        """
         return '/r' + str(duration)
 
     @staticmethod
     def is_rest(probability=0.50):
+        """
+        Static method for determining whether a duration is a note or a rest via probability and random number
+        generation.
+        :param probability: float || int
+        :return: Boolean
+        """
         return random.random() < probability
 
     def make_note_or_rest(self, duration=1, probability=0.50):
+        """
+        Builds on self.build_rest and self.is_rest to return either a float || int duration or a str '/r' prepended
+        duration.
+        :param duration: float || int
+        :param probability: float || int
+        :return: str || float || int
+        """
         if self.is_rest(probability):
             return self.build_rest(duration)
         else:
@@ -38,6 +80,11 @@ class Bass:
 
     @staticmethod
     def sum_with_rests(durations):
+        """
+        A function to help with testing. To be deprecated and moved into a testing suite.
+        :param durations: List of durations
+        :return: float || int total of durations
+        """
         res = []
         for dur in durations:
             if type(dur) == str:
@@ -46,10 +93,13 @@ class Bass:
                 res.append(dur)
         return sum(res)
 
-    def build_notes_and_durations(self):
-        pass
-
     def transpose_self_to_range(self, transposition):
+        """
+        Transposes the notes in self.notes_and_durations into a new range. Since the Note class implements
+        some stronger object identity functionality, it builds new Note objects to transpose.
+        :param transposition: int, number of octaves to transpose
+        :return: None
+        """
         for i in range(len(self.notes_and_durations[0])):
             # tuples are immutable — so please don't transpose the same note over and over!
             self.notes_and_durations[0][i] = Note(self.notes_and_durations[0][i].midi_note_number)
