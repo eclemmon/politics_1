@@ -2,12 +2,25 @@ import time
 
 
 class VoteProcessor:
+    """
+    A class to represent a VoteProcessor, which takes in votes, and tallies them.
+    """
     def __init__(self, *selectable_options):
+        """
+        Initializes the VoteProcessor Class
+        :param selectable_options: Tuple of selectable options.
+        """
         self.candidates = list(selectable_options)
         self.vote_tallies = {option: 0 for option in selectable_options}
 
     # @clock
     def on_message(self, message):
+        """
+        Searches through each candidate in self.candidates and tests to see if they are in message. When true
+        adds a vote to the vote tallies, and returns a formatted string of the current results. Else returns None
+        :param message: String
+        :return: String || None
+        """
         message = str(message)
         for candidate in self.candidates:
             try:
@@ -22,6 +35,10 @@ class VoteProcessor:
 
     # @clock
     def tally_votes(self):
+        """
+        Tallys the votes and returns the result as a dictionary with the results as a percentage.
+        :return: {String of candidate: Float of resulting percentage of votes}
+        """
         total_votes = sum(self.vote_tallies.values())
         final_results_as_percent = {}
         if total_votes == 0:
@@ -35,6 +52,10 @@ class VoteProcessor:
 
     # @clock
     def display_current_results(self):
+        """
+        Formats the tallied votes into a legible string.
+        :return: String of votes.
+        """
         totals = self.tally_votes()
         text = ''
         for key, value in totals.items():
@@ -44,14 +65,26 @@ class VoteProcessor:
 
     # @clock
     def reset_vote_tallies(self):
+        """
+        Resets the vote tallies to 0
+        :return: None
+        """
         print('Resetting vote tallies...')
         for candidate in self.candidates:
             self.vote_tallies[candidate] = 0
 
     def get_winning_key(self):
+        """
+        Gets the candidate with the highest vote share as a string.
+        :return: String
+        """
         return max(self.vote_tallies, key=self.vote_tallies.get)
 
     def get_winning_key_index(self):
+        """
+        Gets the index of the candidate with the highest vote share.
+        :return: int
+        """
         winning_key = self.get_winning_key()
         return self.candidates.index(winning_key)
 
