@@ -200,9 +200,9 @@ class CyberneticRepublicMusicGen:
                     self.variable_keys[section] = winning_key
                     # Turn on or off arpeggiator
                     if self.variable_keys['middle-voices'] == 'arpeggiated':
-                        self.turn_arppeggiator_on_off(True)
+                        self.turn_arpeggiator_on_off(True)
                     else:
-                        self.turn_arppeggiator_on_off(False)
+                        self.turn_arpeggiator_on_off(False)
                     # Send all data to SC
                     self.run_music()
                     # Send the winning key to the GUI
@@ -342,6 +342,12 @@ class CyberneticRepublicMusicGen:
         send_bass_or_melody_durations_to_sc(data['bass'], self.sc_client, '/bass_durations')
 
     def initialize_musical_data(self, data, arppeggiator=False):
+        """
+        Sends initialization command to SuperCollider via OSC.
+        :param data: Dictionary of {String: Musical Generator Object}
+        :param arppeggiator: Boolean of whether the arpeggiator is to be turned on or off
+        :return: None
+        """
         # Initialize everything
         send_rhythm_initialization_to_sc(self.sc_client)
         send_bass_or_melody_initialization_to_sc(random.randint(0, 16), self.sc_client, '/bass_init')
@@ -356,13 +362,22 @@ class CyberneticRepublicMusicGen:
         send_quantization_update_to_sc(data['rhythm'].meter.num_beats, self.sc_client, address='/quantization')
 
     def run_music(self):
+        """
+        Runs the music generators based on the keys called.
+        :return: None.
+        """
         data = self.build_music_generators(self.variable_keys['meter'], self.variable_keys['melody'],
                                            self.variable_keys['bass'], self.variable_keys['middle-voices'],
                                            self.variable_keys['rhythm'], self.variable_keys['progression'])
         self.send_musical_data_to_sc(data)
         self.initialize_musical_data(data, self.arpeggiator)
 
-    def turn_arppeggiator_on_off(self, arpeggiator_on_off: bool):
+    def turn_arpeggiator_on_off(self, arpeggiator_on_off: bool):
+        """
+        Helper function that sets class variable self.arpeggiator.
+        :param arpeggiator_on_off: Boolean. True = On, False = Off
+        :return: None
+        """
         self.arpeggiator = arpeggiator_on_off
 
 
