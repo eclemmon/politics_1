@@ -20,8 +20,20 @@ from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
 
 
 class CyberneticRepublicMusicGen:
-    def __init__(self, logger_object: logging.Logger, vote_processor_dat,
-                 num_cycles=2, voting_period=10, resting_period=2):
+    def __init__(self, logger_object: logging.Logger, vote_processor_dat: dict,
+                 num_cycles: int = 2, voting_period: int = 10, resting_period: int = 2) -> object:
+        """
+        Initializes Cybernetic Republic's music generator.
+        :param logger_object: Logger to log as needed.
+        :param vote_processor_dat: Dictionary of {String (Section): List (Keys to Music Generators)}
+        :param num_cycles: Integer of number of sections to run through. (not an entire cycle through the sections).
+        Currently, there are six sections, so num_cycles would need to be set to 6 to go through each different
+        musical layer once.
+        :param voting_period: Integer in seconds. The amount of time votes can be cast.
+        :param resting_period: Integer in seconds. The amount of time that voting is closed and audience members
+        can see the next vote options and listen.
+        """
+        # Data initialization
         self.logger = logger_object
         self.countdown = Classes.countdown.Countdown(voting_period, resting_period)
         self.section = 0
@@ -30,15 +42,17 @@ class CyberneticRepublicMusicGen:
         self.vote_processor = self.build_vote_processor_options(0, self.vote_processor_dat)
         self.voters = {}
 
-        self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
-        self.gui_client = udp_client.SimpleUDPClient("127.0.0.1", 12000)
-
+        # For thread safe handling of data
         self.worker_thread = None
         self.lock = threading.Lock()
         self.is_voting_period = False
-        self.layer = 0
         self.total_time = (voting_period + resting_period) * num_cycles
 
+        # OSC UDP Clients
+        self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+        self.gui_client = udp_client.SimpleUDPClient("127.0.0.1", 12000)
+
+        # OSC Addresses
         self.vote_tally_address = "/vote_tally"
         self.update_vote_tally_address = "/update_vote_tally"
         self.count_address = "/count"
@@ -46,6 +60,7 @@ class CyberneticRepublicMusicGen:
         self.end_section = "/end_section"
         self.end_address = "/end"
 
+        # Musical Data
         self.arpeggiator = False
 
         self.variable_keys = {
@@ -57,7 +72,7 @@ class CyberneticRepublicMusicGen:
             'meter': None
         }
 
-        # Make Message Responder
+        # Message Responder
         config = dotenv_values()
 
         twitter_path = '/Users/ericlemmon/Documents/PhD/PhD_Project_v2/twitter_credentials.json'
@@ -69,7 +84,7 @@ class CyberneticRepublicMusicGen:
         self.responder = PoliticsMessageResponder(config['TWILIO_ACCOUNT_SID'], config['TWILIO_AUTH_TOKEN'],
                                                   config['TWILIO_PHONE_NUMBER'], self.twitter_auth)
 
-        # run the
+        # run the countdown
         self.run_music()
 
     def on_data(self, data):
@@ -115,6 +130,7 @@ class CyberneticRepublicMusicGen:
             # If voting is not open
             # Respond and do nothing
             kwargs['voting-period'] = self.is_voting_period
+
         # Generate a response based on conditional logic
         generate_cybernetic_republic_message_response(self.responder, data=data, kwargs=kwargs)
 
@@ -151,7 +167,6 @@ class CyberneticRepublicMusicGen:
         """
         print("shutting down")
 
-    # TODO: Send section title over to GUI
     def run_counter(self, total_time):
         """
         This function runs the main logic of the cybernetic republic music generator. The counter handles the timing
@@ -161,8 +176,6 @@ class CyberneticRepublicMusicGen:
         """
         total_count = 0
         while total_count <= total_time:
-            # print(total_count)
-            # reset vote processor after
             # Set is voting period to match countdown
             self.is_voting_period = self.countdown.is_voting_period
             # Get message of count down as string
@@ -185,7 +198,6 @@ class CyberneticRepublicMusicGen:
                     section = self.vote_option_keys[self.section]
                     winning_key = self.vote_processor.get_winning_key()
                     self.variable_keys[section] = winning_key
-                    print(self.variable_keys)
                     # Turn on or off arpeggiator
                     if self.variable_keys['middle-voices'] == 'arpeggiated':
                         self.turn_arppeggiator_on_off(True)
@@ -203,7 +215,6 @@ class CyberneticRepublicMusicGen:
                     self.send_vote_message_to_gui(vote.splitlines())
                     # reset voters
                     self.voters = {}
-                    print(vote)
                 finally:
                     self.lock.release()
         self.end()
@@ -237,12 +248,23 @@ class CyberneticRepublicMusicGen:
         self.gui_client.send(msg)
 
     def send_selected_vote_to_gui(self, selected_vote_index):
+        """
+        Sends the selected vote to the GUI.
+        :param selected_vote_index: Integer of selected vote.
+        :return: None
+        """
         msg = osc_message_builder.OscMessageBuilder(address=self.selected_vote_address)
         msg.add_arg(selected_vote_index, arg_type='i')
         msg = msg.build()
         self.gui_client.send(msg)
 
     def send_logic_to_gui(self, address):
+        """
+        Sends logic to the GUI that requires no data (kind of like a bang, trigger, or gate) that simply flips a
+        'switch' on receipt.
+        :param address: String as OSC address.
+        :return: None
+        """
         msg = osc_message_builder.OscMessageBuilder(address=address)
         msg = msg.build()
         self.gui_client.send(msg)
@@ -250,6 +272,17 @@ class CyberneticRepublicMusicGen:
     @staticmethod
     def build_music_generators(meter_key=None, melody_key=None, bass_key=None,
                                middle_voices_key=None, rhythm_key=None, progression_key=None):
+        """
+        Builds various music generator objects by key. Some additional logic is added so that music starts from the
+        beginning with some default options running.
+        :param meter_key: String || None
+        :param melody_key: String || None
+        :param bass_key: String || None
+        :param middle_voices_key: String || None
+        :param rhythm_key: String || None
+        :param progression_key: String || None
+        :return: Dictionary of {String: Musical Generator Object}
+        """
         if meter_key is None:
             meter_key = 'four'
         else:
@@ -289,6 +322,11 @@ class CyberneticRepublicMusicGen:
         return {'bass': bass, 'melody': melody, 'middle_voices': middle_voices, 'rhythm': rhythm}
 
     def send_musical_data_to_sc(self, data):
+        """
+        Sends musical data to SuperCollider via OSC.
+        :param data: Dictionary of {String: Musical Generator Object}
+        :return:
+        """
         # send rhythm data
         send_rhythm_to_sc(data['rhythm'], self.sc_client)
         # send middle voices data
