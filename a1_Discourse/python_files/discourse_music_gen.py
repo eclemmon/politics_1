@@ -7,6 +7,7 @@ from dotenv import dotenv_values
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Classes.worker_thread import WorkerThread
+from Harmonic_Graph_Constructors.harmonic_web import HarmonicWeb
 from Utility_Tools.mapping_functions import linear_to_linear
 from Utility_Tools.message_response import PoliticsMessageResponder
 from Utility_Tools.message_response import generate_discourse_message_response
@@ -37,11 +38,14 @@ from Synthesis_Generators.phase_mod_values_generator import phase_mod_values_gen
 
 class DiscourseMusicGen:
     def __init__(self, logger_object: logging.Logger, instrument_key_and_name_gen: InstrumentKeyAndNameGenerator,
-                 formal_section_length=30, harmonic_rhythm=30, message_comparison=TF_IDF(),
-                 web=NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(), ncw_multiplier=1,
-                 profanity_word_list_path=None, max_time_interval=20, daw=True):
+                 formal_section_length: int = 30, harmonic_rhythm: int = 30, message_comparison=TF_IDF(),
+                 web: HarmonicWeb = NeoriemannianWeb(), sentiment_analyzer=SentimentIntensityAnalyzer(),
+                 ncw_multiplier: float = 1, profanity_word_list_path: str = None, max_time_interval: float = 20,
+                 daw: bool = True):
         """
         Initializes DiscourseMusicGen
+        :param max_time_interval: float of maximum duration that each resultant musical gesture lasts
+        :param daw: Boolean for daw or SC based sound synthesis.
         :param logger_object: Logger, built from Utility_Tools.politics_logger.py
         :param instrument_key_and_name_gen: InstrumentKeyAndNameGenerator object that uses stored memory values
         to generate instrument keys and names agnostically.
@@ -50,7 +54,7 @@ class DiscourseMusicGen:
         :param message_comparison: Message comparison object. Defaults to term-frequency inverse-document-frequency,
         but will accept any model to compare two texts.
         :param web: HarmonicWeb object. Defaults to Neo-riemannian web. A graph of chords that represent motion
-        between vertical pitch structures.
+        between Chords.
         :param sentiment_analyzer: SentimentIntensityAnalyzer object. Defaults to my own SentimentIntensityAnalyzer
         but can be any sentiment intensity model that returns {'neg': val, 'neu': val, 'pos': val, 'compound': val}
         :param ncw_multiplier: Integer or float. Multiplier of the number of chords walked to accelerate or decelerate
@@ -223,7 +227,6 @@ class DiscourseMusicGen:
         # Send the message to SuperCollider
         self.sc_client.send(msg)
 
-
         # CLEAN UP AND UPDATE ANY VALUES
         # Update average sentiment value
         self.average_sent.add_value_average(sent_dict)
@@ -260,12 +263,15 @@ class DiscourseMusicGen:
     def harmonic_walk(self, multiplier, lev_mean, lev_standard_of_deviation, harmonic_graph):
         """
         This will determine the distance that the chord should walk based on the mean and
-        standard of deviation
-        :param multiplier:
-        :param lev_mean:
-        :param lev_standard_of_deviation:
-        :param harmonic_graph:
-        :return:
+        standard of deviation of Leventshtein distance between all the texts submitted to the corpus.
+        In the future, will be deprecated in favor of an LSA space model based on a large enough corpus of submitted
+        texts to the system.
+        :param multiplier: A multiplier to increase of decrease the number of chords walked.
+        :param lev_mean: The mean value of Leventshtein distance among all the texts in the corpus.
+        :param lev_standard_of_deviation: The standard of deviation from the mean of the Levenshtein distance among
+        all the texts in the corpus.
+        :param harmonic_graph: A HarmonicGraph object.
+        :return: None
         """
         num_walked = num_chords_walked(lev_mean, lev_standard_of_deviation) * multiplier
         # print("num_chords_walked: ", num_walked)
@@ -279,9 +285,11 @@ class DiscourseMusicGen:
 
     def compare_text(self, data):
         """
-
-        :param data:
-        :return: Tuple with closest related text and the similarity score.
+        Using the message comparison object steps through all input tweets and gets the closest tweet by comparison
+        via the message comparison object's algorithm. Currently, unused in favor of a deterministic algorithm based on
+        textual features rather than relationships.
+        :param data: Dict of data, i.e. {'text': "lorum ipsum", 'username': "Confucius"}
+        :return: Tuple with the closest related text and the similarity score.
         """
         return self.message_comparison_obj.new_incoming_tweet(data['text'])
 
@@ -306,12 +314,27 @@ class DiscourseMusicGen:
         return data
 
     def send_first_chord_walk(self):
+        """
+        Sends the first chord walk of the piece. Sets the "original" Corpus Mean and Standard of deviation to 0.
+        Compares the new corpus to this "original" corpus. Calls self.harmonic_walk function with this data
+        and resets the starting time of the section.
+        :return: None
+        """
         diff = CorpusMeanAndStd(0.0, 0.0)
         self.prior_partial_corpus = CorpusMeanAndStd(corpus=self.current_partial_corpus)
         self.harmonic_walk(self.num_chords_walked_multiplier, diff.mean, diff.std, harmonic_graph=self.web)
         self.starting_time = time.time()
 
     def send_chord_walk(self):
+        """
+        Compares the mean and standard of deviation of the prior section's corpus segment to the current sections
+        corpus segment. These "partial" corpuses are all the texts that came in during the previous and current
+        formal_section_length in seconds. Calls self.harmonic_walk function with this data
+        and resets the starting time of the section and the prior and current partial corpus variables.
+        If the prior section got 0 incoming texts, the software can throw an error, so in this case, logs the error
+        safely and sets the calculated difference to an initial corpus value.
+        :return: None
+        """
         current_corpus_mean_std = CorpusMeanAndStd(corpus=self.current_partial_corpus)
         diff = self.prior_corpus_mean_std - current_corpus_mean_std
         self.prior_partial_corpus = self.current_partial_corpus
@@ -330,12 +353,17 @@ class DiscourseMusicGen:
         self.starting_time = time.time()
 
     def if_first_chord_walk(self):
+        """
+        Helper function to determine whether the program is running the first formal section of the piece.
+        :return: None
+        """
         if self.prior_partial_corpus is None:
             self.send_first_chord_walk()
         else:
             self.send_chord_walk()
 
-    def schedule_random_walk_only_new(self, num_chords_walked, harmonic_web, time_interval=None):
+    def schedule_random_walk_only_new(self, num_chords_walked: int, harmonic_web: HarmonicWeb,
+                                      time_interval: float = None):
         """
         Spins off a thread that schedules a random walk through the harmonic web
         :param num_chords_walked: Integer of number of chords walked
@@ -348,7 +376,6 @@ class DiscourseMusicGen:
             time_interval = 5
 
         chords = harmonic_web.random_walk_only_new(num_chords_walked)
-        # print(chords)
         if self.worker_thread is None:
             self.worker_thread = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
             self.worker_thread.start()
@@ -358,12 +385,13 @@ class DiscourseMusicGen:
             self.worker_thread = WorkerThread(target=self.set_output_chord, args=[time_interval, chords])
             self.worker_thread.start()
 
-    def set_output_chord(self, time_interval, chords):
+    def set_output_chord(self, time_interval: float, chords: list):
         """
-
-        :param time_interval:
-        :param chords:
-        :return:
+        Operator function that modifies the HarmonicWeb object and sets the output chord on the object for getting
+        at a later point.
+        :param time_interval: float || int
+        :param chords: List of Chords
+        :return: None
         """
         for chord in chords:
             if self.worker_thread.stopped():
@@ -374,6 +402,13 @@ class DiscourseMusicGen:
 
     # TODO: Make this a sliding scale
     def get_time_interval_data(self, data):
+        """
+        Generates the total duration of a musical gesture based on the length of input text. In the future will be
+        modified or refactored at the naming level so that the clumped nature of texts and their average shifts the
+        range (the duration) of the function.
+        :param data: String
+        :return: float || int
+        """
         text_length = len(data)
         if text_length > 280:
             return self.max_time_interval
@@ -381,6 +416,13 @@ class DiscourseMusicGen:
             return text_length / 280 * self.max_time_interval
 
     def get_chord_and_weights(self, sent):
+        """
+        Gets the chord and all neighboring chords. Based on sentiment analysis data this function generates weights to
+        select the proportions of notes to select from 'home' chord and neighboring chords. Structured as such
+        for easy bundling and sending to SuperCollider.
+        :param sent: Dict of sentiment data
+        :return: List of data structured [float of weight, int of num_notes in chord, notes, ...]
+        """
         neighbor_chords = self.web.get_neighbor_chords()
         current_chord_notes = [note.midi_note_number for note in self.web.output_chord.notes]
         neighbor_notes = [[note.midi_note_number for note in neighbor_chord.notes]
