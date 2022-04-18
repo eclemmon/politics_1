@@ -1,4 +1,10 @@
 (
+// #####################################################################################################################
+// discourse_build_sig_path.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This function parses incoming data from python and sends it out to Live.
+// #####################################################################################################################
+
 ~buildSignalPath = {
     // Function that builds the signal path to pass over to Live.
 	arg vals, mem;
@@ -78,8 +84,6 @@
 
 	// Update MidiOut index
 	mem.put(\mOutIndex, ((mem.at(\mOutIndex) + 1) % mem.at(\mOut).size));
-
-
 };
 )
 
