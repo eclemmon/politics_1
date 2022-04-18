@@ -1,9 +1,16 @@
 (
+// #####################################################################################################################
+// cybernetic_republic_helper_functions.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This file holds a series of functions that help build sequencing patterns coming over from Python. The functions
+// functions are descriptive through their names. If you have any questions, feel free to email me at
+// ec.lemmon@gmail.com
+// #####################################################################################################################
 
 ~add_midinotes_durations_to_dict = {
-	arg mem, key, midinotes, durations;
 	// mem.at(key) should be of List class
 	// Adds an incoming array to the end of the list.
+	arg mem, key, midinotes, durations;
 	mem.at(key).add(\midinotes, midinotes);
 	mem.at(key).add(\durations, durations);
 };
