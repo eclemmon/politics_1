@@ -182,10 +182,23 @@ class AlbertiBass(Bass):
 
 
 class SustainedBass(Bass):
+    """
+    SustainedBass class. Generates a bass line whose notes start at the beginning of each durational block associated
+    with a chord in the input HarmonicRhythm object. Holds the note until a change in the harmonic rhythm.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initializes SustainedBass class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for SustainedBass class.
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         notes = []
         durations = []
 
@@ -196,10 +209,24 @@ class SustainedBass(Bass):
 
 
 class RandomBass(Bass):
+    """
+    RandomBass class. Generates a bass line whose durations are randomly selected (between 0.25 and 2 beats) for each
+    chord and duration block in the HarmonicRhythm. The notes are always the bass note of the chord in the chord
+    and duration block.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initializes RandomBass music generator.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for RandomBass class.
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         notes = []
         durations = []
 
