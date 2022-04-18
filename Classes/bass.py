@@ -260,7 +260,7 @@ class PolyrhythmicBass(Bass):
 
     def build_notes_and_durations(self):
         """
-        Builds notes and durations for PolyRhythmicBass class.
+        Builds notes and durations for PolyrhythmicBass class.
         :return: List of Lists: [List of Notes, List of durations]
         """
         notes = []
@@ -276,10 +276,23 @@ class PolyrhythmicBass(Bass):
 
 
 class OnBeatBass(Bass):
+    """
+    OnBeatBass class. Builds a bass line where each note lasts one beat, and attacks each time there is a change in the
+    HarmonicRhythm chord and duration block.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for OnBeatBass class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for OnBeatBass class.
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         notes = []
         durations = []
 
