@@ -305,11 +305,28 @@ class OnBeatBass(Bass):
 
 
 class WalkingBass(Bass):
+    """
+    WalkingBass class. Builds a bass line by walking between the bass notes of each chord and duration block from
+    the HarmonicRhythm. Walks either by chromatic step or scalar. On the anacrusis, will add in various tonicizations
+    and extra rhythmic values to imitate improvisational playing.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for WalkingBass class
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     @staticmethod
     def get_shortest_distance_data_chromatic(bn1: Note, bn2: Note):
+        """
+        Gets the shortest distance between two bass notes via chromatic step. Returns a dictionary with information
+        that relates whether the bass line is ascending or descending.
+        :param bn1: Note
+        :param bn2: Note
+        :return: Dict {str: boolean, str: int}
+        """
         untransposed = bn2.midi_note_number - bn1.midi_note_number
         transposed = bn1.midi_note_number + 12 - bn2.midi_note_number
         if untransposed <= transposed:
@@ -318,6 +335,12 @@ class WalkingBass(Bass):
             return {'ascending': False, 'steps': -(bn1.midi_note_number + 12 - bn2.midi_note_number)}
 
     def get_shortest_distance_data_scalar(self, bn1: Note, bn2: Note):
+        """
+
+        :param bn1:
+        :param bn2:
+        :return:
+        """
         if bn1 not in self.scale.notes or bn2 not in self.scale.notes:
             return self.get_shortest_distance_data_chromatic(bn1, bn2)
         if bn1 <= bn2:
