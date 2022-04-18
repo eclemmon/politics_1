@@ -1,24 +1,22 @@
-import logging
-import time
-import threading
-import random
 import json
+import logging
+import random
+import threading
+import time
+
 import tweepy
+from dotenv import dotenv_values
 
 import Classes.countdown
 import Classes.vote_processor
-
-from dotenv import dotenv_values
 from Classes.worker_thread import WorkerThread
-from a2_Cybernetic_Republic.python_files.build_musical_data import *
-from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
-from pythonosc import udp_client
-from pythonosc import osc_message_builder
-from Utility_Tools.politics_logger import logger_launcher
-from Data_Dumps.vote_options import vote_options
 from Data_Dumps.scale_data import cybernetic_republic_scales
+from Data_Dumps.vote_options import vote_options
 from Utility_Tools.message_response import PoliticsMessageResponder
 from Utility_Tools.message_response import generate_cybernetic_republic_message_response
+from Utility_Tools.politics_logger import logger_launcher
+from a2_Cybernetic_Republic.python_files.build_musical_data import *
+from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
 
 
 class CyberneticRepublicMusicGen:
