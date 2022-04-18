@@ -1,4 +1,4 @@
-from a2_Cybernetic_Republic.python_files.build_musical_data import *
+from a2_Cybernetic_Republic.python_files.build_music_generator_objects import *
 from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
 from Data_Dumps.scale_data import cybernetic_republic_scales
 from pythonosc import udp_client
