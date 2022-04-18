@@ -1,10 +1,12 @@
 (
 ~buildSignalPath = {
+    // Function that builds the signal path to pass over to Live.
 	arg vals, mem;
 	var total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, octave, rhythm, sus_vals, mod_vals, modAmp, modFreq, mOut, panRoutine, panRoutines, panChannel;
 	// Get MidiOut
 	mOut = mem.at(\mOut).at(mem.at(\mOutIndex));
 
+    // Functions to parse incoming arguments.
 	total_dur = ~get_total_dur_value.value(vals);
 	dvals = ~get_delay_values.value(vals);
 	rvals = ~get_reverb_values.value(vals);
@@ -40,6 +42,7 @@
 	"MOutIndex:".postln;
 	mem.at(\mOutIndex).postln;
 	mem.at(\panRoutines).at(mem.at(\mOutIndex)).stop;
+
 	// Set control values
 	instruments.do({
 		arg item;
@@ -59,16 +62,20 @@
 	panChannel = mem.at(\panChannels).at(mem.at(\mOutIndex));
 	"panChannel".postln;
 	panChannel.postln;
+
 	// Create panRoutine
 	panRoutine = ~controlPan.value(mem.at(\mOut).at(0), panChannel, start_point, target, time_interval);
+
 	// Play pan routine
 	panRoutine.play;
+
 	// Add Pan Routine to storage
 	mem.at(\panRoutines).put(mem.at(\mOutIndex), panRoutine);
 
 	// Create midi pattern
 	patterns = Array.fill(instruments.size, {arg i; ~createMidiPattern.value(vals, mOut, instruments[i])} );
 	Ppar(patterns).play;
+
 	// Update MidiOut index
 	mem.put(\mOutIndex, ((mem.at(\mOutIndex) + 1) % mem.at(\mOut).size));
 
