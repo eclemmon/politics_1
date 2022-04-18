@@ -107,13 +107,26 @@ class Bass:
 
 
 class AlbertiBass(Bass):
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale, note_duration=1):
+    """
+    AlbertiBass class. Generates an imitation of the common, classically-styled alberti bass.
+    """
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale, note_duration=0.5):
+        """
+        Initializes the AlbertiBass class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        :param note_duration: int || float
+        """
         self.note_duration = note_duration
         super().__init__(harmonic_rhythm, scale)
 
     # TODO: The logic here is sort of incorrect, but good enough. Also should defer choice of note duration length to
     # how fast the harmonic rhythm actually is...
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for the Alberti Bass Class
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         notes = []
         durations = []
         chord_and_dur_blocks = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
@@ -127,7 +140,15 @@ class AlbertiBass(Bass):
                 beat_in_meter = (beat_in_meter + 1) % self.harmonic_rhythm.meter.num_beats
         return [notes, durations]
 
-    def get_next_note(self, chord: Chord, accent_weight, beat_in_meter):
+    def get_next_note(self, chord: Chord, accent_weight: int, beat_in_meter: int) -> Note:
+        """
+        Gets the next note in the alberti bass sequence based on the chord and the accent weight of the beat the
+        note is falling on.
+        :param chord: Chord
+        :param accent_weight: int
+        :param beat_in_meter: int
+        :return: Note
+        """
         if accent_weight == 3:
             try:
                 return chord.get_bass_note()
@@ -138,6 +159,12 @@ class AlbertiBass(Bass):
 
     @staticmethod
     def get_next_upper_alberti_note(chord: Chord, beat_in_meter):
+        """
+        Helper function that slices for notes at specific indexes of chords based on the beat in the meter.
+        :param chord: Chord
+        :param beat_in_meter: int
+        :return: Note
+        """
         if len(chord.notes) == 1:
             return chord.notes[0]
         elif len(chord.notes) == 2:
