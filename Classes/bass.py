@@ -244,10 +244,25 @@ class RandomBass(Bass):
 
 
 class PolyrhythmicBass(Bass):
+    """
+    PolyrhythmicBass class. Builds a bassline by subdividing each chord and duration block into a random subdivision of
+    durations as notes or rests. If the total duration of the chord and duration block is 2 and the subdivision is 5,
+    each of the notes or rests will last 2/5 of a beat. Bass notes are selected as the bass note of the given chord
+    from the chord and duration block.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for PolyrhythmicBass class
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for PolyRhythmicBass class.
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         notes = []
         durations = []
 
