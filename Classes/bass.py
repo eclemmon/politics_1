@@ -503,7 +503,7 @@ class WalkingBass(Bass):
             scalar = self.get_shortest_distance_data_scalar(bn1, bn2)
             steps = self.choose_between_chromatic_and_scalar(chrom, scalar, bn1, harmonic_rhythm_length, 0.2)
             notes = steps[0]
-            durations = self.split_note_durations_by_duple_subdivisions(notes, harmonic_rhythm_length)
+            durations = self.split_or_add_note_durations_by_duple_subdivisions(notes, harmonic_rhythm_length)
             # get last step in subdivision
             last_step = notes[-1]
             last_step_anacrusis = self.get_tonicization_function(last_step, bn2)(0.25, bn2)
@@ -514,28 +514,51 @@ class WalkingBass(Bass):
             return notes, durations
 
     @staticmethod
-    def split_note_durations_by_duple_subdivisions(steps, harmonic_rhythm_length):
-        basic_subdivision = [1 for _ in range(len(steps))]
-        if sum(basic_subdivision) == harmonic_rhythm_length:
-            return basic_subdivision
-        elif sum(basic_subdivision) < harmonic_rhythm_length:
+    def split_or_add_note_durations_by_duple_subdivisions(steps, harmonic_rhythm_length):
+        """
+        Splits note durations or adds to them. When splitting a subdivisions, halves notes values until the value
+        of sum(n_note_durations) == harmonic_rhythm_length. When adding value to the duration of each step,
+        adds one quarter note in value to each duration until sum(n_note_durations) == harmonic_rhythm_length
+        :param steps: int number of steps
+        :param harmonic_rhythm_length: int duration of a chord and duration block
+        :return: List of durations
+        """
+        n_note_durations = [1 for _ in range(len(steps))]
+        if sum(n_note_durations) == harmonic_rhythm_length:
+            return n_note_durations
+        elif sum(n_note_durations) < harmonic_rhythm_length:
             i = 0
-            while sum(basic_subdivision) < harmonic_rhythm_length:
-                basic_subdivision[i] = basic_subdivision[i] + 1
-                i = (i + 1) % len(basic_subdivision)
-            return basic_subdivision
+            while sum(n_note_durations) < harmonic_rhythm_length:
+                n_note_durations[i] = n_note_durations[i] + 1
+                i = (i + 1) % len(n_note_durations)
+            return n_note_durations
         else:
             i = 0
-            while sum(basic_subdivision) > harmonic_rhythm_length:
-                basic_subdivision[i] = basic_subdivision[i] / 2
-                i = (i + 1) % len(basic_subdivision)
-            return basic_subdivision
+            while sum(n_note_durations) > harmonic_rhythm_length:
+                n_note_durations[i] = n_note_durations[i] / 2
+                i = (i + 1) % len(n_note_durations)
+            return n_note_durations
 
     @staticmethod
     def same_chords(bass_note, harmonic_rhythm_length):
+        """
+        Returns n notes and durations of the same note when called.
+        :param bass_note: Note
+        :param harmonic_rhythm_length: int duration
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         return [bass_note for _ in range(harmonic_rhythm_length)], [1 for _ in range(harmonic_rhythm_length)]
 
     def get_tonicization_function(self, last_step, next_step):
+        """
+        Gets a tonicization function based on a distributed weight. Weights are determined by some common gestures
+        depending on the motion of the bass line. For steps l and n, if l > n, there is a possibility that the
+        bass line will chromatically step down into n. This anacrusis, chromatic upper neighbor doesn't happen
+        very often if the bass line is walking up.
+        :param last_step: Note
+        :param next_step: Note
+        :return: function
+        """
         if last_step > next_step:
             return random.choices(
                 population=[
@@ -544,7 +567,7 @@ class WalkingBass(Bass):
                     self.next_beat_chromatic_upper_neighbor_tonicization,
                     self.next_beat_pass
                 ],
-                weights=[10, 10, 5, 75],
+                weights=[20, 10, 15, 55],
                 k=100
             )[0]
         else:
