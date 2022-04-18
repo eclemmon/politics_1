@@ -7,7 +7,3 @@ vote_options = {
     'meter': ['two', 'three', 'four', 'five-2+3', 'five-2+3', 'six', 'seven-2+2+3', 'seven-2+3+2', 'seven-3+2+2', 'nine',
               'twelve']
 }
-
-# DONE: Rhythm, Progression, Middle Voices
-# melody: sustained, random
-# TODO: Fix Rhythm in SC side of things....
