@@ -1,8 +1,18 @@
 (
+// #####################################################################################################################
+// cybernetic_republic_init.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This file initializes some bass logic and containers in memory for storing data coming in from python for later,
+// concurrent initialization.
+// #####################################################################################################################
+
+// Initialize MIDIClient
 MIDIClient.init;
+
+// Set TempoClock to 120 BPM for some pop.
 TempoClock.tempo = 2;
 
-
+// Initialize global memory
 ~gm = Dictionary.newFrom(
 	[
 		\recv_netaddress, NetAddr.new("127.0.0.1", 57120),
