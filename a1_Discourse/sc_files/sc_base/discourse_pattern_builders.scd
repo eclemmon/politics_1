@@ -1,5 +1,10 @@
-// Pattern Builders
 (
+// #####################################################################################################################
+// discourse_pattern_builders.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// A set of functions that build SC Patterns based on input data.
+// #####################################################################################################################
+
 ~build_saw_pattern = {
 	arg array, group, outbus;
 	var pattern, modvals, octave, total_dur, chords_data, rhythm_data, sus_vals;
@@ -235,5 +240,3 @@
 	pattern;
 };
 )
-
-/*	arg amp=1, out=0, buf=0, attack=1, sustain=1, release=1, gate=1, sync=0, density=40, baseDur=0.05, durRand=1, rate=1, rateRand=1, pan=0, panRand=1, grainEnv=(-1), ptrBus=0, ptrSampleDelay=20000, ptrRandSamples=5000, minPtrDelay=1000;*/

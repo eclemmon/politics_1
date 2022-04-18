@@ -1,4 +1,10 @@
 (
+// #####################################################################################################################
+// discourse_build_sig_path.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This function parses incoming data from python and synthesizes sound in SuperCollider.
+// #####################################################################################################################
+
 ~buildSignalPath = {
 	arg vals, memory;
 	var reverb, spat, delay, synths, group, pattern, total_dur, dvals, rvals, spatvals, dt, dd, predelay, reverbtime, lpf, mix, start_point, target, time_interval, instruments, patterns, splitter, sbus, rbus, dbus, fbus, spatbus, octave, filter, rhythm, sus_vals;

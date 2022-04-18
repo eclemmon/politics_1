@@ -1,4 +1,10 @@
 (
+// #####################################################################################################################
+// discourse_helper_functions.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// A set of helper functions for parsing and building variables for the big function in discourse_build_sig_path.scd
+// #####################################################################################################################
+
 ~buildWaveTables = {
 	arg numTables=4, tableSize=1024;
 	var array;
@@ -71,7 +77,6 @@
 };
 
 ~get_total_dur_value = {
-	// old name is time interval
 	arg array;
 	array[13];
 };
@@ -83,6 +88,9 @@
 };
 
 ~get_chords_data = {
+    // A little bit trickier converting incoming OSC data into usable arrays.
+    // For future — learn how to build this data in Int8Arrays, as SC can accept them. Current implementation
+    // of OSCFunc in SuperCollider doesn't like arrays from python-osc very much.
 	arg array;
 	var names_len, c1_len, c2_len, c3_len, c1, c2, c3, cw1, cw2, cw3;
 	names_len = array[14];
@@ -99,6 +107,9 @@
 };
 
 ~get_rhythm_data = {
+    // A little bit trickier converting incoming OSC data into usable arrays.
+    // For future — learn how to build this data in Int8Arrays, as SC can accept them. Current implementation
+    // of OSCFunc in SuperCollider doesn't like arrays from python-osc very much.
 	arg array;
 	var names_len, c1_len, c2_len, c3_len, rdata;
 	names_len = array[14];
@@ -109,6 +120,7 @@
 };
 
 ~build_dur_Pseq = {
+    // Builds a Pseq of durations. Parses durations for '/r' key to identify rests.
 	arg array, total_dur;
 	var pseq;
 	pseq = Pseq(
@@ -124,6 +136,7 @@
 };
 
 ~build_notes_Pwrand = {
+    // Uses weighted chord data to randomly select next notes.
 	arg chords_data;
 	var pwrand;
 	pwrand = Pwrand(
@@ -135,6 +148,7 @@
 };
 
 ~build_sus_data = {
+    // Builds an array of values that indicates the length that each note sustains after attacks.
 	arg array, total_dur;
 	var pseq, sus_vals;
 	sus_vals = array.separate({arg a, b; (a != b) && (b > 0)});
@@ -146,6 +160,7 @@
 };
 
 ~print_vals = {
+    // Builds a string, helpful for debugging and checking on sound synthesis data.
 	arg vals;
 	var string;
 	string = "

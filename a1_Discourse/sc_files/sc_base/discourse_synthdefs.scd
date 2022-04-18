@@ -1,6 +1,12 @@
 (
-// H/t Eli Fieldsteel
+// #####################################################################################################################
+// discourse_synthdefs.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// SC SynthDefs for sound synthesis.
+// #####################################################################################################################
+
 SynthDef(\reverb_with_dur, {
+    // H/t Eli Fieldsteel
 	arg in, predelay=1, revtime=10, lpf=4500, mix=0.5, amp=1, out=0, dur=1, gate=1, doneAction=2, time_interval=4, start_point=(-1), target=1;
 	var dry, wet, temp, sig, env, pan, leakDC;
 	dry = In.ar(in, 2);
@@ -161,6 +167,7 @@ SynthDef.new(\soundInRouter, {
 }).add;
 
 SynthDef.new(\pointer, {
+    // H/t Eli Fieldsteel
 	// A pointer, written to a bus that 'trails' the realtime "head" of an audio bus.
 	arg out=0, buf=0;
 	var sig;
@@ -169,6 +176,7 @@ SynthDef.new(\pointer, {
 }).add;
 
 SynthDef.new(\recordBuffer, {
+    // H/t Eli Fieldsteel
 	// Records a signal into a buffer from the pointer's position.
 	arg ptrIn=0, recIn=0, buf=0;
 	var ptr, sig;
@@ -178,6 +186,7 @@ SynthDef.new(\recordBuffer, {
 }).add;
 
 SynthDef.new(\splitter, {
+    // H/t Eli Fieldsteel
 	// A helper audio bus splitter to send one audio inout to two audio buses out.
 	arg in=10, out1=89, out2=99, dur, gate=1;
 	var input, env;
@@ -187,6 +196,7 @@ SynthDef.new(\splitter, {
 }).add;
 
 SynthDef.new(\granulator, {
+    // H/t Eli Fieldsteel
 	// Granulator.
 	arg amp=1, out=0, buf=0, attack=0.01, dur, release=0.01, gate=1, sync=0, density=40, baseDur=0.05, durRand=1, rate=1, rateRand=1, pan=0, panRand=1, grainEnv=(-1), ptrBus=0, ptrSampleDelay=20000, ptrRandSamples=5000, minPtrDelay=1000;
 	var sig, env, densCtrl, durCtrl, rateCtrl, panCtrl, ptr, ptrRand, totalDelay, maxGrainDur, grain;
