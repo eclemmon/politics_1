@@ -47,7 +47,7 @@ class Bass:
         pass
 
     @staticmethod
-    def build_rest(duration=1):
+    def build_rest(duration: float = 1):
         """
         Static method for building rests by prepending a float || int durations with the key '/r'
         :param duration: float || int
@@ -56,7 +56,7 @@ class Bass:
         return '/r' + str(duration)
 
     @staticmethod
-    def is_rest(probability=0.50):
+    def is_rest(probability: float = 0.50):
         """
         Static method for determining whether a duration is a note or a rest via probability and random number
         generation.
@@ -65,7 +65,7 @@ class Bass:
         """
         return random.random() < probability
 
-    def make_note_or_rest(self, duration=1, probability=0.50):
+    def make_note_or_rest(self, duration: float = 1, probability: float = 0.50):
         """
         Builds on self.build_rest and self.is_rest to return either a float || int duration or a str '/r' prepended
         duration.
@@ -79,7 +79,7 @@ class Bass:
             return duration
 
     @staticmethod
-    def sum_with_rests(durations):
+    def sum_with_rests(durations: list):
         """
         A function to help with testing. To be deprecated and moved into a testing suite.
         :param durations: List of durations
@@ -93,7 +93,7 @@ class Bass:
                 res.append(dur)
         return sum(res)
 
-    def transpose_self_to_range(self, transposition):
+    def transpose_self_to_range(self, transposition: int):
         """
         Transposes the notes in self.notes_and_durations into a new range. Since the Note class implements
         some stronger object identity functionality, it builds new Note objects to transpose.
@@ -110,7 +110,7 @@ class AlbertiBass(Bass):
     """
     AlbertiBass class. Generates an imitation of the common, classically-styled alberti bass.
     """
-    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale, note_duration=0.5):
+    def __init__(self, harmonic_rhythm: HarmonicRhythm, scale, note_duration: float = 0.5):
         """
         Initializes the AlbertiBass class.
         :param harmonic_rhythm: HarmonicRhythm
@@ -158,7 +158,7 @@ class AlbertiBass(Bass):
             return self.get_next_upper_alberti_note(chord, beat_in_meter=beat_in_meter)
 
     @staticmethod
-    def get_next_upper_alberti_note(chord: Chord, beat_in_meter):
+    def get_next_upper_alberti_note(chord: Chord, beat_in_meter: int):
         """
         Helper function that slices for notes at specific indexes of chords based on the beat in the meter.
         :param chord: Chord
@@ -322,7 +322,7 @@ class WalkingBass(Bass):
     def get_shortest_distance_data_chromatic(bn1: Note, bn2: Note):
         """
         Gets the shortest distance between two bass notes via chromatic step. Returns a dictionary with information
-        that relates whether the bass line is ascending or descending.
+        that relates whether the bass line is ascending or descending, as well as the number of chromatic steps
         :param bn1: Note
         :param bn2: Note
         :return: Dict {str: boolean, str: int}
@@ -336,11 +336,14 @@ class WalkingBass(Bass):
 
     def get_shortest_distance_data_scalar(self, bn1: Note, bn2: Note):
         """
-
-        :param bn1:
-        :param bn2:
-        :return:
+        Gets the shortest distance between two bass notes via scalar step. If one of the bass notes is not in the scale
+        step chromatically. Returns a dictionary with information that relates whether the bass line is ascending
+        or descending, as well as the number of scalar steps.
+        :param bn1: Note
+        :param bn2: Note
+        :return: Dict {str: boolean, str: int}
         """
+        # TODO: Instead of stepping chromatically, get closest scalar note and step from there!
         if bn1 not in self.scale.notes or bn2 not in self.scale.notes:
             return self.get_shortest_distance_data_chromatic(bn1, bn2)
         if bn1 <= bn2:
@@ -357,7 +360,14 @@ class WalkingBass(Bass):
         else:
             return {'ascending': False, 'steps': -(index_1 + len(self.scale.notes) - index_2)}
 
-    def step_between_notes_scalar(self, bn1, distance_data):
+    def step_between_notes_scalar(self, bn1: Note, distance_data: dict):
+        """
+        Steps between notes scale-wise. If there is an error and bassnote-1 is note in the scale, steps chromatically
+        as a failsafe.
+        :param bn1: Note
+        :param distance_data: Dict {str: boolean, str: int}
+        :return: List of Notes
+        """
         if bn1 not in self.scale.notes:
             return self.step_between_notes_chromatic(bn1, distance_data)
         current_index = self.scale.notes.index(bn1)
@@ -369,13 +379,25 @@ class WalkingBass(Bass):
                     range(0, distance_data['steps'], -1)]
 
     @staticmethod
-    def step_between_notes_chromatic(bn1, distance_data):
+    def step_between_notes_chromatic(bn1: Note, distance_data: dict):
+        """
+        Steps between notes chromatically.
+        :param bn1: Note
+        :param distance_data: Dict {str: boolean, str: int}
+        :return: List of notes
+        """
         if distance_data['ascending']:
             return [Note(bn1.midi_note_number + i) for i in range(0, distance_data['steps'])]
         else:
             return [Note(bn1.midi_note_number + i) for i in range(0, distance_data['steps'], -1)]
 
     def build_notes_and_durations(self):
+        """
+        Builds the notes and durations for the walking bass line. Algorithm loops through chords and durations,
+        building notes by constructing step wise motion between bass notes of each chord and duration block in the
+        harmonic rhythm.
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         chords_and_durations = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
 
         notes = []
@@ -393,8 +415,21 @@ class WalkingBass(Bass):
             durations += notes_and_durations[1]
         return [notes, durations]
 
-    def choose_between_chromatic_and_scalar(self, chromatic_step, scalar_step, bn1, hr_length, probability=0.1):
-        if abs(scalar_step['steps']) < hr_length:
+    def choose_between_chromatic_and_scalar(self, chromatic_step: int, scalar_step: int, bn1: Note,
+                                            chord_and_dur_block_duration: int, probability: float = 0.1):
+        """
+        Chooses between chromatic steps and scalar steps based on a probabilistic model. If the number of
+        scalar steps is less than the duration of the chord and dur blocks, it is likely that the algorithm will
+        then step chromatically (and vice-versa for when the scalar steps is greater than the duration of the
+        chord and dur blocks).
+        :param chromatic_step: int number of chromatic steps
+        :param scalar_step: int number of scalar steps
+        :param bn1: Note of bass note 1
+        :param chord_and_dur_block_duration: int of duration from chord_and_dur_block
+        :param probability: float
+        :return: List of Notes
+        """
+        if abs(scalar_step['steps']) < chord_and_dur_block_duration:
             if random.random() < probability:
                 return self.step_between_notes_scalar(bn1, scalar_step), 'scalar'
             else:
@@ -406,22 +441,57 @@ class WalkingBass(Bass):
                 return self.step_between_notes_scalar(bn1, scalar_step), 'scalar'
 
     @staticmethod
-    def next_beat_fourth_down_tonicization(duration, next_note):
+    def next_beat_fourth_down_tonicization(duration: float, next_note: Note):
+        """
+        By looking ahead to the next note, inserts a note beforehand of *duration* value that is a fourth below
+        the next note.
+        :param duration: float || int
+        :param next_note: Note
+        :return: Tuple (Note, float || int)
+        """
         return next_note - 5, duration
 
     @staticmethod
-    def next_beat_leading_tone_tonicization(duration, next_note):
+    def next_beat_leading_tone_tonicization(duration: float, next_note: Note):
+        """
+        By looking ahead to the next note, inserts a note beforehand of *duration* value that is a semitone below
+        the next note.
+        :param duration: float || int
+        :param next_note: Note
+        :return: Tuple (Note, float || int)
+        """
         return next_note - 1, duration
 
     @staticmethod
-    def next_beat_chromatic_upper_neighbor_tonicization(duration, next_note):
+    def next_beat_chromatic_upper_neighbor_tonicization(duration: float, next_note: Note):
+        """
+        By looking ahead to the next note, inserts a note beforehand of *duration* value that is a semitone above
+        the next note.
+        :param duration: float || int
+        :param next_note: Note
+        :return: Tuple (Note, float || int)
+        """
         return next_note + 1, duration
 
     @staticmethod
-    def next_beat_pass(duration, next_note):
+    def next_beat_pass(duration: float, next_note: Note):
+        """
+        Conforms to the template by taking in duration and next_note and does nothing. Might be a better way to do
+        this?
+        :param duration: float || int
+        :param next_note: Note
+        :return: None
+        """
         return None
 
-    def build_notes_for_current_subdivision(self, current_chord_and_dur_block, next_chord_and_dur_block):
+    def build_notes_for_current_subdivision(self, current_chord_and_dur_block: tuple, next_chord_and_dur_block: tuple):
+        """
+        Builds the notes and durations for the current chord and dur block by looking ahead to the next
+        chord and dur block.
+        :param current_chord_and_dur_block: tuple (Chord, int)
+        :param next_chord_and_dur_block: tuple (Chord, int)
+        :return: List of Lists: [List of Notes, List of durations]
+        """
         # choose between scalar and chromatic
         harmonic_rhythm_length = current_chord_and_dur_block[1]
         bn1 = current_chord_and_dur_block[0].get_bass_note()
@@ -436,11 +506,11 @@ class WalkingBass(Bass):
             durations = self.split_note_durations_by_duple_subdivisions(notes, harmonic_rhythm_length)
             # get last step in subdivision
             last_step = notes[-1]
-            last_step_anacruxis = self.get_tonicization_function(last_step, bn2)(0.25, bn2)
-            if last_step_anacruxis is not None:
-                durations[-1] = durations[-1] - last_step_anacruxis[1]
-                notes.append(last_step_anacruxis[0])
-                durations.append(last_step_anacruxis[1])
+            last_step_anacrusis = self.get_tonicization_function(last_step, bn2)(0.25, bn2)
+            if last_step_anacrusis is not None:
+                durations[-1] = durations[-1] - last_step_anacrusis[1]
+                notes.append(last_step_anacrusis[0])
+                durations.append(last_step_anacrusis[1])
             return notes, durations
 
     @staticmethod
