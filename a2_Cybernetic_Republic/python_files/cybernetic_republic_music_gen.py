@@ -87,7 +87,7 @@ class CyberneticRepublicMusicGen:
         # run the countdown
         self.run_music()
 
-    def on_data(self, data):
+    def on_data(self, data: dict):
         """
         Checks if a user has already submitted a vote. If not, via the vote processor, checks to see if an option has
         been voted for. If something has been voted for, it modifies the vote percentage tally and sends the returned
@@ -167,7 +167,7 @@ class CyberneticRepublicMusicGen:
         """
         print("shutting down")
 
-    def run_counter(self, total_time):
+    def run_counter(self, total_time: int):
         """
         This function runs the main logic of the cybernetic republic music generator. The counter handles the timing
         of section changeovers in a thread-safe manner.
@@ -219,7 +219,7 @@ class CyberneticRepublicMusicGen:
                     self.lock.release()
         self.end()
 
-    def build_vote_processor_options(self, section, dat):
+    def build_vote_processor_options(self, section: str, dat: dict):
         """
         Gets a random selection of values (that then become keys for the sound synthesis side of the program) to present
         as votes.
@@ -231,7 +231,7 @@ class CyberneticRepublicMusicGen:
         section_vals = random.sample(section_vals, 4)
         return Classes.vote_processor.VoteProcessor(*section_vals)
 
-    def send_vote_message_to_gui(self, text_list, update=False):
+    def send_vote_message_to_gui(self, text_list: list, update: bool = False):
         """
         Helper function that updates the vote string on the GUI side.
         :param text_list: List of Strings from VoteProcessor object returned by a vote.
@@ -247,7 +247,7 @@ class CyberneticRepublicMusicGen:
         msg = msg.build()
         self.gui_client.send(msg)
 
-    def send_selected_vote_to_gui(self, selected_vote_index):
+    def send_selected_vote_to_gui(self, selected_vote_index: int):
         """
         Sends the selected vote to the GUI.
         :param selected_vote_index: Integer of selected vote.
@@ -258,7 +258,7 @@ class CyberneticRepublicMusicGen:
         msg = msg.build()
         self.gui_client.send(msg)
 
-    def send_logic_to_gui(self, address):
+    def send_logic_to_gui(self, address: str):
         """
         Sends logic to the GUI that requires no data (kind of like a bang, trigger, or gate) that simply flips a
         'switch' on receipt.
@@ -321,7 +321,7 @@ class CyberneticRepublicMusicGen:
 
         return {'bass': bass, 'melody': melody, 'middle_voices': middle_voices, 'rhythm': rhythm}
 
-    def send_musical_data_to_sc(self, data):
+    def send_musical_data_to_sc(self, data: dict):
         """
         Sends musical data to SuperCollider via OSC.
         :param data: Dictionary of {String: Musical Generator Object}
@@ -341,7 +341,7 @@ class CyberneticRepublicMusicGen:
         send_bass_or_melody_notes_to_sc(data['bass'], self.sc_client, '/bass_notes')
         send_bass_or_melody_durations_to_sc(data['bass'], self.sc_client, '/bass_durations')
 
-    def initialize_musical_data(self, data, arppeggiator=False):
+    def initialize_musical_data(self, data: dict, arppeggiator: bool = False):
         """
         Sends initialization command to SuperCollider via OSC.
         :param data: Dictionary of {String: Musical Generator Object}
