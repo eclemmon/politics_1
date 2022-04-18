@@ -1,12 +1,12 @@
-from Classes.harmonic_rhythm import HarmonicRhythm
-from Classes.chord_progression import ChordProgression
-from Classes.scale import Scale
-from Classes.meter import *
-from Classes.note import Note
-from Rhythm_Generators.subdivision_generator import subdivide_meter_into_polyrhythm
 import random
 
 from Classes.chord import Chord
+from Classes.chord_progression import ChordProgression
+from Classes.harmonic_rhythm import HarmonicRhythm
+from Classes.meter import *
+from Classes.note import Note
+from Classes.scale import Scale
+from Rhythm_Generators.subdivision_generator import subdivide_meter_into_polyrhythm
 
 
 class Bass:
@@ -386,9 +386,7 @@ class WalkingBass(Bass):
 
 
 if __name__ == "__main__":
-    from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
     from pythonosc import udp_client
-    from Data_Dumps.progession_data import cybernetic_republic_progressions
 
     sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
     meter = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
