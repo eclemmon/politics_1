@@ -1,5 +1,9 @@
-
 (
+// #####################################################################################################################
+// technoautocracy_init.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This file intializes logic, sound synthesis and memory storage for the technoautocracy movement.
+// #####################################################################################################################
 ~server.waitForBoot({
 	~gm = Dictionary.newFrom(
 		[
@@ -12,7 +16,7 @@
 			\sinMax, 0.4,
 
 			// Anti human instruments
-			\antiHumanInst, ~buildAntiHumanInstrumentArray.value(\bitCrush, 0), // HERE GOES THE ANTI HUMAN inst
+			\antiHumanInst, ~buildAntiHumanInstrumentArray.value(\bitCrush, 0), // Here is the switching anti-human inst
 			\antiHumanBaseNoise, Array.fill(8, {arg i; Synth(\lowClip,
 				[\out, 0, \amp, 0, \filter_freq, i*10+40, \pos, 1.0.rand2]
 			)}),
@@ -32,7 +36,7 @@
 			\baseAtkMul, 0.05,
 			\baseSuptMul, 0.01,
 
-			// Sectional
+			// Sectional logic
 			\antiHumanHealing, true,
 			\antiHumanResponding, false,
 			\introduction, true,
@@ -44,7 +48,7 @@
 			\finalSynthsFreed, false,
 			\glissActivated, false,
 
-			// Data control
+			// Data control and storage
 			\attackQueue, PriorityQueue.new,
 			\antiHumanInstrumentKeys, [\bitCrush, \standardNNoise, \gendy, \sin],
 			\responseBuffers, ~buildResponseBuffers.value("/Users/ericlemmon/Documents/PhD/PhD_Project_v2/Resources/soundfiles/responses"),
