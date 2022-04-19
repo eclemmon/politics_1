@@ -6,43 +6,95 @@ from Classes.chord import Chord
 from Classes.note import Note
 
 
-def split_off_duration(durations, index, amount=1):
+def split_off_duration(durations: list, index: int, amount: int = 1):
+    """
+    Helper function for taking a duration at index i in a list of durations and splitting off a number of beats
+    (amount) and inserting it at index i+1. e.g. [2, 3] --> [1, 1, 3]
+    :param durations: list
+    :param index: int
+    :param amount: int
+    :return: list
+    """
     durations[index] = durations[index] - amount
     durations.insert(index+1, amount)
     return durations
 
 
-def recursive_split_meter(meter_subdivision, n_splits, n_recusions=0):
+def recursive_split_meter(meter_subdivision: list, n_splits: int, n_recursions: int = 0):
+    """
+    Helper function to recursively split a meter into a number of subdivisions. This is to generate a duration value
+    associated with a number of n chords. As a minimum, default rule in Cybernetic Republic, the harmonic rhythm
+    can only progress at one chord per quarter note value. Therefore, the base case is
+    durations = [1 for i beats in a measure].
+    > The recursive function can account for different meter subdivisions. So a complex meter of 5, with 3+2 will
+    subdivide to [2, 1, 2] then [2, 1, 1, 1], and finally, [1, 1, 1, 1, 1] after 3 recursions before returning the
+    base case.
+    > If n_recursions is equal to the n_splits, this means that the number of chords is equal to the number of
+    subdivisions in the meter passed in. This is normally the target return of this function.
+    > If the number of splits is less than the number of recursions while the number of splits is greater than 0,
+    then the chord should have a durational value that lasts at least as long as the measure. So 1 chord in a simple
+    duple meter 4 beats long will return [4]
+    :param meter_subdivision: list of primary meter subdivisions
+    :param n_splits: int of number of splits to occur in the meter
+    :param n_recursions: int to track the number of recursions executed.
+    :return: list
+    """
     if all(i == 1 for i in meter_subdivision):
         return [1 for _ in range(sum(meter_subdivision))]
-    elif n_recusions > n_splits >= 0:
+    elif n_recursions > n_splits >= 0:
         return [sum(meter_subdivision)]
-    elif n_recusions == n_splits:
+    elif n_recursions == n_splits:
         return meter_subdivision
     else:
         greatest_index = 0
         for count, value in enumerate(meter_subdivision):
             if value >= meter_subdivision[greatest_index]:
                 greatest_index = count
+        # make a copy of the meter subdivision because referenced objects being operated on again is baaaaddd
         meter_subdivision_copy = meter_subdivision[:]
         new_meter_subdivision = split_off_duration(meter_subdivision_copy, greatest_index)
-        # print(new_meter_subdivision)
-        return recursive_split_meter(new_meter_subdivision, n_splits, n_recusions + 1)
+        return recursive_split_meter(new_meter_subdivision, n_splits, n_recursions + 1)
 
 
-def chords_in_bar_equal_subdivisions(subdivisions):
+def chords_in_bar_equal_subdivisions(subdivisions: list):
+    """
+    Optimization helper function to return subdivision immediately without calling recusive_split_meter when n_chords is
+    equal to len(subdivisions).
+    :param subdivisions: list
+    :return: list
+    """
     return subdivisions
 
 
-def chords_in_bar_less_than_subdivisions(num_chords, subdivisions):
+def chords_in_bar_less_than_subdivisions(num_chords: int, subdivisions: list):
+    """
+    Logical helper function that adds n subdivisions together based on the number of chords less than len(subdivisions)
+    So 2 chords in a compound 9 measure would become [6, 3]
+    :param num_chords: int
+    :param subdivisions: list
+    :return: list
+    """
     return [sum(subdivisions[:len(subdivisions)-num_chords+1])] + subdivisions[len(subdivisions)-num_chords+1:]
 
 
-def chords_in_bar_greater_than_subdivisions(num_chords, subdivisions):
+def chords_in_bar_greater_than_subdivisions(num_chords: int, subdivisions: list):
+    """
+    Logical helper function that calls recursive split meter to get the subdivisions of the meter whne num_chords is >
+    len(subdivisions)
+    :param num_chords: int
+    :param subdivisions: list
+    :return: list
+    """
     return recursive_split_meter(subdivisions, num_chords)
 
 
-def generate_beat_subdivisions_for_chords(num_chords, subdivisions):
+def generate_beat_subdivisions_for_chords(num_chords: int, subdivisions: list):
+    """
+    Logical operator function to return the various subdivision functions contained above in this module.
+    :param num_chords: int
+    :param subdivisions: list
+    :return: list
+    """
     if num_chords == len(subdivisions):
         return chords_in_bar_equal_subdivisions(subdivisions)
     elif num_chords < len(subdivisions):
@@ -51,7 +103,19 @@ def generate_beat_subdivisions_for_chords(num_chords, subdivisions):
         return chords_in_bar_greater_than_subdivisions(num_chords, subdivisions)
 
 
-def fill_chords_to_number_of_bars(progression, num_bars):
+def fill_chords_to_number_of_bars(progression: ChordProgression, num_bars: int):
+    """
+    Helper function that distributes the chords over n_bars if the number of chords in the progression is less than
+    the number of bars. So if the HarmonicRhythm has 4 bars, and the ChordProgression has 3 Chords: CMM7, Dmm7, G7,
+    this function will fill out the HarmonicRhythm chord blocks so that the measures are:
+    [Bar 1: CMM7]
+    [Bar 2: CMM7]
+    [Bar 3: Dmm7]
+    [Bar 4: G7]
+    :param progression: ChordProgression
+    :param num_bars: int
+    :return: tuple of chords
+    """
     res = progression.chords
     while len(res) < num_bars:
         for chord in range(num_bars-len(progression.chords)):
