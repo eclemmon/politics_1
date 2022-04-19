@@ -140,7 +140,7 @@ class AlbertiBass(Bass):
                 beat_in_meter = (beat_in_meter + 1) % self.harmonic_rhythm.meter.num_beats
         return [notes, durations]
 
-    def get_next_note(self, chord: Chord, accent_weight: int, beat_in_meter: int) -> Note:
+    def get_next_note(self, chord: Chord, accent_weight: int, beat_in_meter: int):
         """
         Gets the next note in the alberti bass sequence based on the chord and the accent weight of the beat the
         note is falling on.
@@ -152,8 +152,8 @@ class AlbertiBass(Bass):
         if accent_weight == 3:
             try:
                 return chord.get_bass_note()
-            except Exception as e:
-                print("Had an issue getting the bass note of this chord: ", e)
+            except Exception as error:
+                print("Had an issue getting the bass note of this chord: ", error)
         else:
             return self.get_next_upper_alberti_note(chord, beat_in_meter=beat_in_meter)
 
@@ -415,7 +415,7 @@ class WalkingBass(Bass):
             durations += notes_and_durations[1]
         return [notes, durations]
 
-    def choose_between_chromatic_and_scalar(self, chromatic_step: int, scalar_step: int, bn1: Note,
+    def choose_between_chromatic_and_scalar(self, chromatic_step: dict, scalar_step: dict, bn1: Note,
                                             chord_and_dur_block_duration: int, probability: float = 0.1):
         """
         Chooses between chromatic steps and scalar steps based on a probabilistic model. If the number of
@@ -514,7 +514,7 @@ class WalkingBass(Bass):
             return notes, durations
 
     @staticmethod
-    def split_or_add_note_durations_by_duple_subdivisions(steps, harmonic_rhythm_length):
+    def split_or_add_note_durations_by_duple_subdivisions(steps: int, harmonic_rhythm_length: int):
         """
         Splits note durations or adds to them. When splitting a subdivisions, halves notes values until the value
         of sum(n_note_durations) == harmonic_rhythm_length. When adding value to the duration of each step,
@@ -540,7 +540,7 @@ class WalkingBass(Bass):
             return n_note_durations
 
     @staticmethod
-    def same_chords(bass_note, harmonic_rhythm_length):
+    def same_chords(bass_note: Note, harmonic_rhythm_length: int):
         """
         Returns n notes and durations of the same note when called.
         :param bass_note: Note
@@ -549,7 +549,7 @@ class WalkingBass(Bass):
         """
         return [bass_note for _ in range(harmonic_rhythm_length)], [1 for _ in range(harmonic_rhythm_length)]
 
-    def get_tonicization_function(self, last_step, next_step):
+    def get_tonicization_function(self, last_step: Note, next_step: Note):
         """
         Gets a tonicization function based on a distributed weight. Weights are determined by some common gestures
         depending on the motion of the bass line. For steps l and n, if l > n, there is a possibility that the
@@ -581,7 +581,7 @@ class WalkingBass(Bass):
                 k=100
             )[0]
 
-
+# TODO: Implement funk bass
 # class FunkBass(Bass):
 #     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
 #         super().__init__(harmonic_rhythm, scale)
