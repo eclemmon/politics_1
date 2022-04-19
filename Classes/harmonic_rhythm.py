@@ -1,5 +1,6 @@
 import numpy as np
 
+from typing import Union
 from Classes.meter import *
 from Classes.chord_progression import ChordProgression
 from Classes.chord import Chord
@@ -126,7 +127,18 @@ def fill_chords_to_number_of_bars(progression: ChordProgression, num_bars: int):
 
 
 class HarmonicRhythm:
-    def __init__(self, meter, progression, num_bars=4, hr_durations=None):
+    """
+    HarmonicRhythm class for building matched blocks of chords and durations for each chord.
+    """
+    def __init__(self, meter: Meter, progression: ChordProgression, num_bars: int = 4,
+                 hr_durations: Union[list, None] = None):
+        """
+        Initialization for HarmonicRhythm class.
+        :param meter: Meter
+        :param progression: ChordProgression
+        :param num_bars: int
+        :param hr_durations: list || None
+        """
         self.meter = meter
         self.progression = progression
         self.num_bars = num_bars
@@ -141,23 +153,44 @@ class HarmonicRhythm:
         self.flattened_hr_durations = [item for sublist in self.hr_durations for item in sublist]
 
     def get_hr_durations(self):
+        """
+        Constructor for durations in HarmonicRhythm Class. Gets a helping hand from NumPy's array_split.
+        :return: list of durations (ints)
+        """
         # split progression across num_bars number of bars
         chords = np.array_split(self.progression.chords, self.num_bars)
         # split the remaining progression amongst by strong metrical subdivisions within the bar
         res = []
         for i in chords:
             chords_subdivided_into_bar = i.tolist()
-            chords_durations = generate_beat_subdivisions_for_chords(len(chords_subdivided_into_bar), self.meter.subdivisions)
+            chords_durations = generate_beat_subdivisions_for_chords(len(chords_subdivided_into_bar),
+                                                                     self.meter.subdivisions)
             res.append(chords_durations)
         return res
 
     def get_zipped_hr_chords_and_durations(self):
+        """
+        Zips the chords and flattened harmonic rhythm durations into a set of tuples so that chords are attached to
+        their respective durations.
+        :return: list of tuples
+        """
         return [i for i in zip(self.progression.chords, self.flattened_hr_durations)]
 
     def get_chords_and_durations(self):
+        """
+        Returns a list of lists. list[0] hold the chords of the progression, list[1] holds the flattened durations
+        of the HarmonicRhythm.
+        :return: list of lists.
+        """
         return [self.progression.chords, self.flattened_hr_durations]
 
-    def transpose_return_new(self, num):
+    def transpose_return_new(self, num: int):
+        """
+        Builds a new HarmonicRhythm object from self with the ChordProgression transposed. Passes in self.hr_durations
+        so that reserved durations do not need to be computationally built again.
+        :param num: int
+        :return: HarmonicRhythm
+        """
         return HarmonicRhythm(self.meter, self.progression.transpose_return_new(num), self.num_bars, self.hr_durations)
 
 
