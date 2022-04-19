@@ -3,23 +3,49 @@ from Classes.note import Note
 
 
 class ChordProgression:
-    def __init__(self, chords):
+    """
+    Chord progression class for storing an iterable of chords.
+    """
+    def __init__(self, chords: list):
+        """
+        Initializes ChordProgression class
+        :param chords: list of Chords
+        """
         for chord in chords:
             assert isinstance(chord, Chord), "{} is expected to be a Chord class.".format(chord)
         self.chords = chords
 
-    def __repr__(self):
+    def __str__(self):
+        """
+        Prettily prints the array of chords.
+        :return: str
+        """
         return str([chord for chord in self.chords])
 
-    def transpose(self, num):
+    def __repr__(self):
+        """
+        Representation of ChordProgression class
+        :return: str
+        """
+        return '<{0}.{1} object at {2} || {3}>'.format(
+            type(self).__module__, type(self).__qualname__, hex(id(self)), self.__str__())
+
+    def transpose(self, num: int):
+        """
+        Transposes the midi note numbers of self's Chords by num octaves.
+        :param num: int
+        :return: None
+        """
         for chord in self.chords:
             chord.transpose(num)
 
-    def transpose(self, num):
-        for note in self.notes:
-            note.transpose(num)
-
-    def transpose_return_new(self, num):
+    def transpose_return_new(self, num: int):
+        """
+        Transposes the midi note numbers of self's Chords by num octaves and instantiates new Chords and a new Chord
+        Progression instance.
+        :param num: int
+        :return: None
+        """
         return ChordProgression([chord.transpose_return_new(num) for chord in self.chords])
 
 
