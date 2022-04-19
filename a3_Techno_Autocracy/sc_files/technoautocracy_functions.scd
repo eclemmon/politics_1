@@ -1,5 +1,13 @@
 (
+// #####################################################################################################################
+// technoautocracy_function.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This file holds a series of function controlling both the sound synthesis portion of the work, as well as some of
+// the logic for reaction to attacks and supports from the audience.
+// #####################################################################################################################
+
 ~attack = {
+    // Steps through a series of functions that are called when the machine is attacked by an audience member.
 	arg mem, updateVal;
 	var attack_sound, instrument, timeToFreeInst;
 
@@ -26,10 +34,12 @@
 		~updateAHumOrSin.value(mem, updateVal * mem.at(\baseAtkMul));
 	});
 
+    // Finally boolean test whether the audience has won after this attack.
 	~testAudienceWon.value(mem);
 };
 
 ~testAudienceWon = {
+    // Boolean tests whether the audience has won. If won, executes the "positive" ending sequence.
 	arg mem;
 	if(mem.at(\antiHumanAmpVal) <= 0, {
 		if(mem.at(\audienceWon) != true, {
@@ -45,6 +55,7 @@
 };
 
 ~support = {
+    // This function supports the machine by adding the input value to the 'health bar'.
 	arg mem, updateVal;
 	// pop an attack off the pause healing queue
 	mem.at(\attackQueue).pop;
@@ -53,6 +64,7 @@
 };
 
 ~heal = {
+    // Called regularly by the main technoautocracy routine. Heals the 'health bar' of the machine.
 	arg mem;
 	if(mem.at(\audienceWon) != true, {
 		// Heal 0.01
@@ -63,6 +75,8 @@
 };
 
 ~pauseHealing = {
+    // Pauses the healing of the main technoautocracy routine on attack by putting a 'pause' into the attack queue.
+    // schedules the \attackQueue to pop an attack token off in the future.
 	arg mem, updateVal;
 	var pauseTime, sum;
 	// map updateVal:
@@ -76,6 +90,8 @@
 };
 
 ~resumeHealing = {
+    // Tests if the attackQueue is empty of attack tokens. If so, resumes healing during the main teechnoautocracy
+    // routine.
 	arg mem;
 	// If attack queue is empty, set antiHumanHealing to true.
 	if(mem.at(\attackQueue).isEmpty, {
@@ -84,8 +100,9 @@
 };
 
 ~updateAHumOrSin = {
+    // Function that tests whether the health bar for the AntiHumanInstrument is full before updating sin values.
 	arg mem, updateVal;
-	// If \antiHumanAmplitudeValue is less the preset AntiHuman amp maximum:
+	// If \antiHumanAmplitudeValue is less than the preset AntiHuman amp maximum:
 	if ((mem.at(\antiHumanAmpVal) < mem.at(\antiHumanMax)) && (mem.at(\sinMaxed) != true), {
 		~updateAntiHumanAmp.value(mem, updateVal);
 	}, {
@@ -99,6 +116,7 @@
 };
 
 ~updateSinAmp = {
+    // Function that updates the anti-human sin wave amplitude.
 	arg mem, updateVal;
 	// update sin amplitude value
 	mem.put(\sinAmpVal, mem.at(\sinAmpVal) + updateVal);
@@ -110,6 +128,7 @@
 };
 
 ~updateSinLFOPhase = {
+	// Function that updates the phase of the LFO on the anti-human sin wave.
 	arg mem, updateVal;
 	// update sin LFO Phase
 	mem.put(\sinLFOPhase, (mem.at(\sinLFOPhase) - updateVal));
@@ -126,6 +145,7 @@
 };
 
 ~updateSinLFOFreq = {
+	// Function that updates the frequency of the LFO on the sin-human sin wave
 	arg mem, updateVal;
 	mem.put(\sinLFOFreq, (mem.at(\sinLFOFreq) - updateVal));
 	// If less than 0 set to 0
@@ -140,14 +160,14 @@
 };
 
 ~updateSin = {
-	arg mem, updateVal;
 	/*
-	Sin Waves (peel off from all elements).
+	Function with logic on the sin waves:
 	~the sin waves start as off.
-	~When reach peak, aHum falls off
-	~when aHum is out entirely, Sin LFOs narrow down to pure sin wave
+	~When reach peak, antiHumanInstrument falls off
+	~when antiHumanInstrument is out entirely, Sin LFOs narrow down to pure sin wave
 	~when only pure sin waves, 5 minute gliss to single pitch.
 	*/
+	arg mem, updateVal;
 	if (mem.at(\sinMaxed), {
 		// Set audience to defeated
 		if (mem.at(\audienceDefeated) == false, {
@@ -189,6 +209,7 @@
 
 
 ~updateAntiHumanAmp = {
+	// Function with logic to update the antiHumanInstrument's amplitude.
 	arg mem, updateVal;
 	// update Anti Human amplitude value
 	mem.put(\antiHumanAmpVal, mem.at(\antiHumanAmpVal) + updateVal);
@@ -218,6 +239,7 @@
 };
 
 ~respond = {
+    // Function that builds a granulator or playback of some creepy sounds in response to an attack.
 	arg mem, instrument, buffer, timeToFreeInst;
 	var synth;
 	if (instrument == \granulator, {
@@ -231,11 +253,13 @@
 };
 
 ~selectInstrument = {
+	// Randomly select and instrument from the instrument array and returns it.
 	arg instArray;
 	instArray.choose;
 };
 
 ~calculateTimeToFreeInst = {
+	// Calculates the time to free an instrument after it has been played.
 	arg updateVal;
 	updateVal.linlin(0.0, 1.0, 1.0, 4.0);
 };
