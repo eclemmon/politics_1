@@ -49,7 +49,7 @@ class Note:
 
     def __hash__(self):
         """
-        Hash method for testing whether two notes are the object (and necessarily have the same note number).
+        Hash method for testing whether two notes are the same object (and necessarily have the same note number).
         :return: int
         """
         return hash(tuple(sorted(self.__dict__.items())))
