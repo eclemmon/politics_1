@@ -1,3 +1,5 @@
+from logging import Logger
+
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 import Utility_Tools.politics_logger
@@ -7,18 +9,33 @@ from pythonosc import osc_message_builder
 
 
 class TechnoAutocracyMusicGen:
-    def __init__(self, logger_object, sentiment_analyzer=SentimentIntensityAnalyzer(), total_time=120):
+    def __init__(self, logger_object: Logger, sentiment_analyzer=SentimentIntensityAnalyzer(), total_time: int = 120):
+        """
+        Initializes TechnoAutocracyMusicGen
+        :param logger_object: Logger
+        :param sentiment_analyzer: SentimentIntensityAnalyzer
+        :param total_time: int
+        """
+        # Set passed in objects
         self.logger_object = logger_object
         self.sentiment_analyzer = sentiment_analyzer
         self.total_time = total_time
 
+        # Boot UDP Clients for SC and GUI
         self.sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
         self.gui_client = udp_client.SimpleUDPClient("127.0.0.1", 12000)
 
+        # Set OSC addresses
         self.attack_address = "/attack"
         self.support_address = "/support"
 
     def attack(self, data, sentiment):
+        """
+
+        :param data:
+        :param sentiment:
+        :return:
+        """
         self.send_gui_msg(data, sentiment, self.attack_address)
         self.send_sc_msg(sentiment, self.attack_address)
 
