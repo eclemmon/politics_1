@@ -21,7 +21,7 @@ from a2_Cybernetic_Republic.python_files.send_to_sc_functions import *
 
 class CyberneticRepublicMusicGen:
     def __init__(self, logger_object: logging.Logger, vote_processor_dat: dict,
-                 num_cycles: int = 2, voting_period: int = 10, resting_period: int = 2) -> object:
+                 num_cycles: int = 2, voting_period: int = 20, resting_period: int = 10) -> object:
         """
         Initializes Cybernetic Republic's music generator.
         :param logger_object: Logger to log as needed.
@@ -37,6 +37,7 @@ class CyberneticRepublicMusicGen:
         self.logger = logger_object
         self.countdown = Classes.countdown.Countdown(voting_period, resting_period)
         self.section = 0
+        self.introduction = True
         self.vote_option_keys = list(vote_processor_dat.keys())
         self.vote_processor_dat = vote_processor_dat
         self.vote_processor = self.build_vote_processor_options(0, self.vote_processor_dat)
@@ -99,7 +100,10 @@ class CyberneticRepublicMusicGen:
             'vote': None,
             'already-voted': False,
             'no-option-selected': False,
-            'voting-period': self.is_voting_period
+            'voting-period': self.is_voting_period,
+            'introduction': self.introduction,
+            'first-option': self.vote_processor.candidates[0],
+            'vote-text': data['text']
         }
         print(data)
         if self.is_voting_period:
@@ -140,7 +144,11 @@ class CyberneticRepublicMusicGen:
         any values in a thread-safe manner.
         :return: None
         """
-        # Set initial GUI string
+        # Start the GUI
+        self.send_logic_to_gui("/start")
+        # send initial section title to GUI
+        self.send_section_title_to_gui(list(self.vote_processor_dat.keys())[self.section].upper())
+        # Set initial GUI Vote options
         vote = self.vote_processor.display_current_results()
         self.send_vote_message_to_gui(vote.splitlines())
         # Start worker thread that counts through the sections
@@ -176,6 +184,8 @@ class CyberneticRepublicMusicGen:
         """
         total_count = 0
         while total_count <= total_time:
+            if self.introduction and total_count == self.countdown.init_rest_period:
+                self.start_introduction()
             # Set is voting period to match countdown
             self.is_voting_period = self.countdown.is_voting_period
             # Get message of count down as string
@@ -212,6 +222,12 @@ class CyberneticRepublicMusicGen:
                     self.section = (self.section + 1) % len(self.vote_option_keys)
                     self.vote_processor = self.build_vote_processor_options(self.section, self.vote_processor_dat)
                     vote = self.vote_processor.display_current_results()
+                    if self.introduction:
+                        self.introduction = False
+                        self.end_introduction()
+                    # Send New Section Title
+                    self.send_section_title_to_gui(list(self.vote_processor_dat.keys())[self.section].upper())
+                    # Send new vote options
                     self.send_vote_message_to_gui(vote.splitlines())
                     # reset voters
                     self.voters = {}
@@ -234,6 +250,7 @@ class CyberneticRepublicMusicGen:
     def send_vote_message_to_gui(self, text_list: list, update: bool = False):
         """
         Helper function that updates the vote string on the GUI side.
+        :param update: bool
         :param text_list: List of Strings from VoteProcessor object returned by a vote.
         :return: None
         """
@@ -241,7 +258,6 @@ class CyberneticRepublicMusicGen:
             msg = osc_message_builder.OscMessageBuilder(address=self.update_vote_tally_address)
         else:
             msg = osc_message_builder.OscMessageBuilder(address=self.vote_tally_address)
-        print(text_list)
         for text in text_list:
             msg.add_arg(text, arg_type='s')
         msg = msg.build()
@@ -268,6 +284,19 @@ class CyberneticRepublicMusicGen:
         msg = osc_message_builder.OscMessageBuilder(address=address)
         msg = msg.build()
         self.gui_client.send(msg)
+
+    def send_section_title_to_gui(self, section_title, address='/section_title'):
+        msg = osc_message_builder.OscMessageBuilder(address=address)
+        msg.add_arg(section_title, arg_type='s')
+        msg = msg.build()
+        self.gui_client.send(msg)
+
+    def start_introduction(self):
+        self.send_logic_to_gui('/start_introduction')
+
+    def end_introduction(self):
+        self.send_logic_to_gui('/end_introduction')
+        self.introduction = False
 
     @staticmethod
     def build_music_generators(meter_key=None, melody_key=None, bass_key=None,
@@ -379,7 +408,6 @@ class CyberneticRepublicMusicGen:
         :return: None
         """
         self.arpeggiator = arpeggiator_on_off
-
 
 if __name__ == "__main__":
     a = {'username': 'boop', 'text': '808'}
