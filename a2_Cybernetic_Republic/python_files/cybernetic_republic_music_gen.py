@@ -370,7 +370,7 @@ class CyberneticRepublicMusicGen:
         send_bass_or_melody_notes_to_sc(data['bass'], self.sc_client, '/bass_notes')
         send_bass_or_melody_durations_to_sc(data['bass'], self.sc_client, '/bass_durations')
 
-    def initialize_musical_data(self, data: dict, arppeggiator: bool = False):
+    def initialize_musical_data(self, data: dict, max_inst: int = 8, arppeggiator: bool = False):
         """
         Sends initialization command to SuperCollider via OSC.
         :param data: Dictionary of {String: Musical Generator Object}
@@ -379,11 +379,11 @@ class CyberneticRepublicMusicGen:
         """
         # Initialize everything
         send_rhythm_initialization_to_sc(self.sc_client)
-        send_bass_or_melody_initialization_to_sc(random.randint(0, 16), self.sc_client, '/bass_init')
+        send_bass_or_melody_initialization_to_sc(random.randint(0, max_inst), self.sc_client, '/bass_init')
         if data['melody'] is not None:
-            send_bass_or_melody_initialization_to_sc(random.randint(0, 16), self.sc_client, '/melody_init')
+            send_bass_or_melody_initialization_to_sc(random.randint(0, max_inst), self.sc_client, '/melody_init')
         if data['middle_voices'] is not None:
-            send_middle_voice_initialization_to_sc(random.randint(0, 16), self.sc_client)
+            send_middle_voice_initialization_to_sc(random.randint(0, max_inst), self.sc_client)
         # turn on or off arpeggiator
         if arppeggiator:
             send_arpeggiator_on_off_to_sc(self.sc_client, address='/arpeggiator')
