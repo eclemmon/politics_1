@@ -4,6 +4,23 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // This file holds a series of function controlling both the sound synthesis portion of the work, as well as some of
 // the logic for reaction to attacks and supports from the audience.
+// ---------------------------------------------------------------------------------------------------------------------
+// The logic of the work works as follows:
+// There are two health reservoirs for the technoautocarcy: one for sin waves (autocratic utopia) and another
+// anti-Human instruments.
+// The piece begins with noisy, quick switches, and then settles into randomly selecting between anti-human elements
+// during the main routine. The sin waves start as off. When the anti-human instrument's amplitude reaches their
+// maximum 'health', the machine begins a second phase, where the sin waves gradually creep in. When the sin waves'
+// 'health' is full the anti-human instruments fall off. When the anti-human instruments are silent at this point,
+// the LFOs on the sin wave's phase converge. When all the phases of the LFOs line up, all the different pitches
+// glissando over 5 minutes to a single pitch.
+// ---------------------------------------------------------------------------------------------------------------------
+// When the machine is attacked, depending on the current phase of the movement the reactive program is in, either
+// sin waves go down or anti-human instruments lose health. The machine then responds with an aggressive sound and
+// pauses healing. The attack sound is piano with delay and harmonic content from No Future Without Forgiveness
+// (https://www.youtube.com/watch?v=JUDL-mVfRKE). The attacks add an 'attack' token to a queue, which pauses the
+// machine's healing until the queue is empty. If a user supports the machine, it adds to the health of the machine and
+// pops an attack token off the queue.
 // #####################################################################################################################
 
 ~attack = {
@@ -265,6 +282,7 @@
 };
 
 ~changeAntiHumanInstrument = {
+	// Switches the current Anti-Human instrument running.
 	arg mem, currentInstrument, newInstrument, amp;
 	// if New Instrument is not the current instrument
 		if ((currentInstrument.asSymbol != newInstrument.asSymbol), {
@@ -280,6 +298,7 @@
 };
 
 ~buildAntiHumanInstrumentArray = {
+	// Builds the Anti-Human instrument by filling an array with noisy synths.
 	arg instrument, amp;
 	var antiHumanInstrumentArray;
 
@@ -305,6 +324,7 @@
 };
 
 ~buildResponseBuffers = {
+	// Helper function to load all response sounds into memory.
 	arg folderPath;
 	var array, path;
 	path = PathName.new(folderPath);
@@ -317,6 +337,27 @@
 	});
 	array;
 };
+
+~main = {
+	if(~gm.at(\introduction), {
+		"running introduction".postln;
+		~sendVisualsReadyToStart.value(~gm);
+		~gm.at(\antiHumanInst).do({arg item, i; item.set(\amp, 0.5)});
+		~gm.at(\antiHumanBaseNoise).do({arg item, i; item.set(\amp, 1)});
+		~introduction.reset;
+		~introduction.play();
+	}, {
+		"running main".postln;
+		~mainRoutine.reset;
+		~sendVisualsStartMain.value(~gm);
+		~mainRoutine.play();
+		~introduction.stop();
+	});
+};
+
+// #####################################################################################################################
+// Below are a series of controllers for the visuals since movement logic is controlled SC side rather than Python side
+// #####################################################################################################################
 
 ~sendHeal2Visuals = {
 	arg mem, updateVal;
@@ -360,51 +401,7 @@
 	mem.at(\visuals_netaddress).sendMsg("/sinBarHealing");
 };
 
-~main = {
-	if(~gm.at(\introduction), {
-		"running introduction".postln;
-		~sendVisualsReadyToStart.value(~gm);
-		~gm.at(\antiHumanInst).do({arg item, i; item.set(\amp, 0.5)});
-		~gm.at(\antiHumanBaseNoise).do({arg item, i; item.set(\amp, 1)});
-		~introduction.reset;
-		~introduction.play();
-	}, {
-		"running main".postln;
-		~mainRoutine.reset;
-		~sendVisualsStartMain.value(~gm);
-		~mainRoutine.play();
-		~introduction.stop();
-	});
-};
-
 )
 
 
 
-// ~changeAntiHumanInstrument.value(~gm, ~gm.at(\currentAntiHumanInstrument), \standardNNoise, []);
-//
-// ~respond.value(\bitCrush, 2.2);
-//
-// ~gm.at(\currentAntiHumanInstrument);
-// 2 Resevoirs, Sin Waves and Anti-Human elements
-// When attacked, sin waves go down, anti-human elements Go down, and then respond more aggressively, then return to a lower state, then start healing. Attack sound is piano w/ delay + chords from No Future.
-
-// Randomly choose between different synths and switch between.
-/*
-Piece begins with noisy, quick switches, then settles into random selecting between anti-human elements routine.
-Anti-Human
-
-Sin Waves (peel off from all elements).
-~the sin waves start as off.
-~They gradually creep in whenever the Anti-human elements reach their peak
-~When reach peak, aHum falls off
-~when aHum is out entirely, Sin LFOs narrow down to pure sin wave
-~when only pure sin waves, 5 minute gliss to single pitch.
-
-Anti-Human elements
-~bitCrush
-~StandardN Noise
-~LowClip
-
-
-*/
