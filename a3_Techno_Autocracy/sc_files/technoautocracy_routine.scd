@@ -1,4 +1,9 @@
 (
+// #####################################################################################################################
+// technoautocracy_routine.scd
+// ---------------------------------------------------------------------------------------------------------------------
+// This file contains the logic for both the main routine of the work as well as the introduction.
+// #####################################################################################################################
 ~mainRoutine = Routine.new({
 	var aHumMax;
 	loop {
@@ -47,7 +52,7 @@
 ~introduction = Routine.new({
 	var inst, resist, resistTime, stop, stopTime;
 
-	// Play the antiHuman instruments
+	// Play the antiHuman instruments, switching 5 times.
 	5.do({
 		inst = ~gm.at(\antiHumanInstrumentKeys).choose;
 		// Change the instrument
@@ -156,32 +161,3 @@
 });
 
 )
-
-
-
-
-
-
-
-// 2 Resevoirs, Sin Waves and Anti-Human elements
-// When attacked, sin waves go down, anti-human elements Go down, and then respond more aggressively, then return to a lower state, then start healing. Attack sound is piano w/ delay + chords from No Future.
-
-// Randomly choose between different synths and switch between.
-/*
-Piece begins with noisy, quick switches, then settles into random selecting between anti-human elements routine.
-Anti-Human
-
-Sin Waves (peel off from all elements).
-~the sin waves start as off.
-~They gradually creep in whenever the Anti-human elements reach their peak
-~When reach peak, aHum falls off
-~when aHum is out entirely, Sin LFOs narrow down to pure sin wave
-~when only pure sin waves, 5 minute gliss to single pitch.
-
-Anti-Human elements
-~bitCrush
-~StandardN Noise
-~LowClip
-
-
-*/
