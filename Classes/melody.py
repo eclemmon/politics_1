@@ -4,12 +4,22 @@ from Classes.scale import Scale
 from Classes.meter import *
 from Classes.note import Note
 from Classes.chord import Chord
+from typing import Union
 from Rhythm_Generators.subdivision_generator import subdivide_meter_into_polyrhythm
 import random
 
 
 class Melody:
+    """
+    Melody superclass for constructing melodies.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale, transposition=5):
+        """
+        Intialization of Melody class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        :param transposition: int
+        """
         self.harmonic_rhythm = harmonic_rhythm
         self.scale = scale
         self.notes_and_durations = self.build_notes_and_durations()
@@ -49,7 +59,12 @@ class Melody:
         except AssertionError as msg:
             print(msg)
 
-    def sum_with_rests(self, durations):
+    def sum_with_rests(self, durations: list):
+        """
+        A helper testing function for checking the sum of durations generated when constructing the melody class.
+        :param durations: list
+        :return: float or int
+        """
         res = []
         for dur in durations:
             if type(dur) == str:
@@ -59,27 +74,49 @@ class Melody:
         return sum(res)
 
     def build_notes_and_durations(self):
+        """
+        Template for build_notes_and_durations
+        :return: None
+        """
         pass
 
     def get_next_note_and_dur(self):
+        """
+        Template for get_next_note_and_dur
+        :return: None
+        """
         pass
 
-    def transpose_self_to_range(self, transposition):
+    def transpose_self_to_range(self, transposition: int):
+        """
+        A helper function to transpose the notes in the melody to a particular range.
+        :param transposition: int of num octaves to add to note
+        :return: None
+        """
         for i in range(len(self.notes_and_durations[0])):
             # tuples are immutable — so please don't transpose the same note over and over!
             self.notes_and_durations[0][i] = Note(self.notes_and_durations[0][i].midi_note_number)
             self.notes_and_durations[0][i].transpose(transposition)
 
     def get_durations(self):
+        """
+        Getter function to get the durations of the melody.
+        :return: list of durations (floats || ints)
+        """
         return self.notes_and_durations[1]
 
     def get_notes(self):
+        """
+        Getter function to get the notes of the melody.
+        :return: list of Notes
+        """
         return self.notes_and_durations[0]
 
-    def appoggiatura(self, chord_and_duration_block, remaining_duration):
+    def appoggiatura(self, chord_and_duration_block: tuple, remaining_duration: Union[float, int]):
         """
         Makes an appoggiatura based on the entire duration of the chord and duration block. Can be an accented
         upper or lower neighbor.
+        :param remaining_duration: flaot or int
         :param chord_and_duration_block: Tuple of (Chord, float || int)
         :return: Tuple of (List of Notes, List of float || int, float || int),
         """
@@ -108,7 +145,15 @@ class Melody:
         remaining_duration = remaining_duration - total_appoggiatura_duration
         return notes, durations, remaining_duration
 
-    def suspension(self, current_duration_left, current_chord_and_duration_block, next_chord_and_duration_block):
+    def suspension(self, current_duration_left: Union[float, int], current_chord_and_duration_block: tuple,
+                   next_chord_and_duration_block: tuple):
+        """
+        Makes a suspension between the current chord and duration block and the next chord and duration block.
+        :param current_duration_left: int || float
+        :param current_chord_and_duration_block: tuple of (Chord, int)
+        :param next_chord_and_duration_block: tuple of (Chord, int)
+        :return: tuple of (List, List, int || float)
+        """
         notes = []
         durations = []
         # suspension holds note over a harmonic change
@@ -143,9 +188,11 @@ class Melody:
         remaining_duration = (current_chord_and_duration_block[1] + next_chord_and_duration_block[1]) - sum(durations)
         return notes, durations, remaining_duration
 
-    def mordent(self, chord_and_duration_block, current_duration_left, upper_mordent: bool = False):
+    def mordent(self, chord_and_duration_block: tuple, current_duration_left: Union[int, float],
+                upper_mordent: bool = False):
         """
         Makes a mordent based on the chord_and_duration block given.
+        :param current_duration_left: int || float
         :param chord_and_duration_block: tuple of (Chord, int || float)
         :param upper_mordent: boolean, defaults to False as lower mordents are more common
         :return: tuple of (List of Notes, List of float || int, float || int)
