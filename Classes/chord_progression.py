@@ -6,10 +6,10 @@ class ChordProgression:
     """
     Chord progression class for storing an iterable of chords.
     """
-    def __init__(self, *chords):
+    def __init__(self, chords):
         """
-        Initializes ChordProgression class
-        :param chords: tuple of Chords
+        Initializes ChordProgression class. Needs to be a list so we can shuffle the chords and shuffle them good!
+        :param chords: list of Chords
         """
         for chord in chords:
             assert isinstance(chord, Chord), "{} is expected to be a Chord class.".format(chord)
