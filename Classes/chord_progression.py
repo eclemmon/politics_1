@@ -6,7 +6,7 @@ class ChordProgression:
     """
     Chord progression class for storing an iterable of chords.
     """
-    def __init__(self, *chords: tuple):
+    def __init__(self, *chords):
         """
         Initializes ChordProgression class
         :param chords: tuple of Chords
