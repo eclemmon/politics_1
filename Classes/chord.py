@@ -7,7 +7,7 @@ class Chord:
     Note: Some duplicating logic with Scale class. In the future, create an abstracted note collection class and
     subclass Chord and Scale from there.
     """
-    def __init__(self, *notes):
+    def __init__(self, *notes: tuple):
         """
         Initialization for Chord Class
         :param notes: tuple of Notes
@@ -60,7 +60,7 @@ class Chord:
         """
         return hash(tuple(sorted(self.__dict__.items())))
 
-    def transpose(self, num):
+    def transpose(self, num: int):
         """
         Transposes self's midi note numbers by num octaves.
         :param num: int
@@ -69,7 +69,7 @@ class Chord:
         for note in self.notes:
             note.transpose(num)
 
-    def transpose_return_new(self, num):
+    def transpose_return_new(self, num: int):
         """
         Creates a new Chord that is transposed by num octaves.
         :param num: int
