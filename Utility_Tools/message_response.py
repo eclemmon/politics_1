@@ -5,19 +5,22 @@ from dotenv import dotenv_values
 
 
 class PoliticsMessageResponder:
-    def __init__(self, twilio_account_sid, twilio_auth_token, from_number, tweepy_auth):
+    """
+    PoliticsMessageResponder for generating texts and sending them via SMS or tweet back to audience members.
+    """
+    def __init__(self, twilio_account_sid: str, twilio_auth_token: str, from_number: str, tweepy_auth):
         """
         Constructs the politics message responder that will be used to send messages back to users.
-        :param twilio_account_sid: Twilio account session ID
-        :param twilio_auth_token: Twilio authentication token
-        :param from_number: Phone number to send messages from (if, for example the phone number owned changes)
-        :param tweepy_auth: tweepy auth object.
+        :param twilio_account_sid: str Twilio account session ID
+        :param twilio_auth_token: str Twilio authentication token
+        :param from_number: str Phone number to send messages from (if, for example the phone number owned changes)
+        :param tweepy_auth: tweepy auth handler.
         """
         self.client = Client(twilio_account_sid, twilio_auth_token)
         self.tweepy_api = tweepy.API(tweepy_auth)
         self.from_number = from_number
 
-    def send_sms(self, message, to_number):
+    def send_sms(self, message: str, to_number: str):
         """
         Sends an sms message to the to_number
         :param message: String message to be sent
@@ -35,11 +38,11 @@ class PoliticsMessageResponder:
         finally:
             return True
 
-    def send_twitter_reply_message(self, message, tweet_id):
+    def send_twitter_reply_message(self, message: str, tweet_id: int):
         """
-        Sents a tweet message as a reply to the tweet_id
+        Sends a tweet message as a reply to the tweet_id
+        :param tweet_id: Integer of user id to be responded to
         :param message: String message to be tweeted.
-        :param twitter_user_id: Integer of user id to be responded to
         :return: True
         """
         print("sending message...")
@@ -54,7 +57,14 @@ class PoliticsMessageResponder:
             return True
 
 
-def generate_discourse_message_response(message_responder: PoliticsMessageResponder, data, kwargs):
+def generate_discourse_message_response(message_responder: PoliticsMessageResponder, data: dict, kwargs: dict):
+    """
+    Responder function to build and send response messages during the discourse movement.
+    :param message_responder:
+    :param data: dict
+    :param kwargs: dict
+    :return: None
+    """
     if data.get('sms'):
         message_responder.send_sms(generate_sms_discourse_message(data, kwargs), data['username'])
     elif data.get('tweet'):
@@ -64,7 +74,13 @@ def generate_discourse_message_response(message_responder: PoliticsMessageRespon
         return None
 
 
-def generate_tweet_discourse_message(data, kwargs):
+def generate_tweet_discourse_message(data: dict, kwargs: dict):
+    """
+    String constructor for generating tweet responses during the discourse movement
+    :param data: dict
+    :param kwargs: dict
+    :return: str
+    """
     return "Hi {}, I processed your msg and this is some of what happened:\n8va: {}\nMusLen: {} s\n{}\n{}".format(
         "@" + data['username'],
         kwargs['od'],
@@ -74,7 +90,13 @@ def generate_tweet_discourse_message(data, kwargs):
     )
 
 
-def generate_sms_discourse_message(data, kwargs):
+def generate_sms_discourse_message(data: dict, kwargs: dict):
+    """
+    String constructor for generating sms responses during the discourse movement
+    :param data: dict
+    :param kwargs: dict
+    :return: str
+    """
     return "{}{}{}{}{}{}{}".format(
         construct_prefix_response_message(data['username']),
         construct_octave_response_message(kwargs['od']),
@@ -86,7 +108,15 @@ def generate_sms_discourse_message(data, kwargs):
     )
 
 
-def generate_cybernetic_republic_message_response(message_responder: PoliticsMessageResponder, data, kwargs):
+def generate_cybernetic_republic_message_response(message_responder: PoliticsMessageResponder, data: dict,
+                                                  kwargs: dict):
+    """
+    Responder function to build and send responses during the cybernetic republic movement
+    :param message_responder: PoliticsMessageResponder
+    :param data: dict
+    :param kwargs: dict
+    :return: str
+    """
     if data.get('sms'):
         message_responder.send_sms(generate_cybernetic_republic_message(data, kwargs), data['username'])
     elif data.get('tweet'):
@@ -96,7 +126,13 @@ def generate_cybernetic_republic_message_response(message_responder: PoliticsMes
         return None
 
 
-def generate_cybernetic_republic_message(data, kwargs):
+def generate_cybernetic_republic_message(data: dict, kwargs: dict):
+    """
+    String constructor function for building responses during the cybernetic republic message.
+    :param data: dict
+    :param kwargs: dict
+    :return: str
+    """
     if not kwargs['voting-period']:
         return "Hi {}, voting is currently closed. Please wait until voting opens!".format(data['username'])
     if kwargs['no-option-selected']:
@@ -117,12 +153,22 @@ def generate_cybernetic_republic_message(data, kwargs):
                    "tally! These are the updated results: \n{}".format(data['username'], kwargs['vote'])
 
 
-def construct_time_interval_response_message(time_interval):
+def construct_time_interval_response_message(time_interval: float):
+    """
+    Helper function to build a string describing how a user message affected time_interval data
+    :param time_interval: float
+    :return: str
+    """
     return '# The musical gesture will last this long (outside of reverb and delay): {} seconds\n\n'.format(
         time_interval)
 
 
-def construct_rhythm_response_message(rhythm):
+def construct_rhythm_response_message(rhythm: list):
+    """
+    Helper function to build a string describing how a user message affected rhythm data for sms.
+    :param rhythm: list
+    :return: str
+    """
     count = 0
     for i in rhythm:
         if i > 0:
@@ -131,7 +177,12 @@ def construct_rhythm_response_message(rhythm):
         count, count)
 
 
-def construct_rhythm_response_tweet(rhythm):
+def construct_rhythm_response_tweet(rhythm: list):
+    """
+    Helper function to build a string describing how a user message affected rhythm data for tweet.
+    :param rhythm: list
+    :return: str
+    """
     count = 0
     for i in rhythm:
         if i > 0:
@@ -139,13 +190,23 @@ def construct_rhythm_response_tweet(rhythm):
     return "Num Notes: {}".format(count)
 
 
-def construct_delay_response_message(delay_t_a_d):
+def construct_delay_response_message(delay_t_a_d: tuple):
+    """
+    Helper function to build a string describing how a user message affected delay data
+    :param delay_t_a_d: tuple of floats
+    :return: str
+    """
     return "# You submitted {} noun(s) and {} verb(s) to control the delay time and feedback amount\n\n".format(
         delay_t_a_d[0],
         delay_t_a_d[1])
 
 
 def construct_spatialization_response_message(spat):
+    """
+    Helper function to build a string describing how a user message affected spatialization data for sms.
+    :param spat: tuple of floats.
+    :return: str
+    """
     if spat[1] > 0:
         if spat[2] == 0:
             return "# Your musical gesture will move from: [ROH] {} --> [C] {}\n\n".format(spat[1], spat[2])
@@ -164,6 +225,11 @@ def construct_spatialization_response_message(spat):
 
 
 def construct_spatialization_response_tweet(spat):
+    """
+    Helper function to build a string describing how a user message affected spatialization data for tweets.
+    :param spat: tuple of floats.
+    :return: str
+    """
     if spat[1] > 0:
         if spat[2] == 0:
             return "Spat: [ROH] {} --> [C] {}".format(spat[1], spat[2])
@@ -182,6 +248,11 @@ def construct_spatialization_response_tweet(spat):
 
 
 def construct_emojis_response_message(pmod):
+    """
+    Helper function to build a string describing how a user message affected phase modulation.
+    :param pmod: float
+    :return: str
+    """
     if pmod[0] == 0:
         return "# I don't think you submitted any emojis, so I didn't apply any special sauce to the synth...\n\n"
     else:
@@ -190,6 +261,12 @@ def construct_emojis_response_message(pmod):
 
 
 def construct_octave_response_message(od):
+    """
+    Helper function to build a string describing how a user message affected the octave placement of the musical
+    gesture.
+    :param od: int
+    :return: str
+    """
     if od >= 6:
         return "# Your message was relatively short, so it will be relatively high and short.\n\n"
     elif 3 <= od <= 5:
@@ -199,6 +276,11 @@ def construct_octave_response_message(od):
 
 
 def construct_prefix_response_message(username):
+    """
+    Helper function to build the prefix with context.
+    :param username: str
+    :return: str
+    """
     return "Thanks so much for your message {}! I processed it and here is some information about how it will affect " \
            "the music it generated:\n\n".format(username)
 
