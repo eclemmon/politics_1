@@ -1,16 +1,16 @@
 import math
 
 
-def build_point_one(n):
+def build_point_one(n: float):
     """
     Takes in a value and maps it to a vector that points directly up the y axis.
-    :param n: Float length of vector along a radius of a circle where vector points up along y axis
+    :param n: float length of vector along a radius of a circle where vector points up along y axis
     :return: tuple of vector values
     """
     return 0, n
 
 
-def build_point_two(n):
+def build_point_two(n: float):
     """
     Takes in a value and maps it to a vector that points south east, 30º below the x-axis of a cartesian plane.
     :param n: Float length of vector along a radius segment.
@@ -21,7 +21,7 @@ def build_point_two(n):
     return x, y
 
 
-def build_point_three(n):
+def build_point_three(n: float):
     """
     Takes in a value and maps it to a vector that points south west, 30º below the x-axis of a cartesian plane.
     :param n: Float length of vector along a radius segment.
@@ -32,7 +32,7 @@ def build_point_three(n):
     return x, y
 
 
-def add_points(*tuples):
+def add_points(*tuples: tuple):
     """
     Adds all tuples as vector math. (-1, 0) + (1, 2) = (0, 2)
     :param tuples: a set of tuples.
@@ -41,7 +41,7 @@ def add_points(*tuples):
     return tuple([sum(x) for x in zip(*tuples)])
 
 
-def add_three_points_for_politics(*values):
+def add_three_points_for_politics(*values: tuple):
     """
     Takes in a tuple of 3 values between 0 and 1, constructs 3 points and adds them.
     :param values: Tuple of three tuples as points.
@@ -53,7 +53,7 @@ def add_three_points_for_politics(*values):
     return add_points(v1, v2, v3)
 
 
-def origin2point_angle_from_pos_x_axis(tup):
+def origin2point_angle_from_pos_x_axis(tup: tuple):
     """
     Calculates the angle in radians from the x axis. Quadrants I & II returns a positive value, III & IV, negative.
     (uses atan2 on two points).
@@ -63,7 +63,7 @@ def origin2point_angle_from_pos_x_axis(tup):
     return math.atan2(tup[1], tup[0])
 
 
-def get_closest_polygon_vertex_indexes_from_three_added_points(no_polygon_sides, *values):
+def get_closest_polygon_vertex_indexes_from_three_added_points(no_polygon_sides: int, *values: float):
     """
     For an equilateral polygon with no of sides x, finds the indexes of the closest two vertices of the polygon when
     it is inscribed within a circle.
@@ -76,7 +76,7 @@ def get_closest_polygon_vertex_indexes_from_three_added_points(no_polygon_sides,
     return tuple(sorted(find_indexes_of_closest_point2vertex_in_new_poly(angle_in_rads, no_polygon_sides)))
 
 
-def vertex_angles_by_no_poly_sides(no_polygon_sides):
+def vertex_angles_by_no_poly_sides(no_polygon_sides: int):
     """
     Gets a list of angles to the vertices of an equilateral polygon of n sides in radians.
     :param no_polygon_sides: Integer
@@ -95,15 +95,15 @@ def vertex_angles_by_no_poly_sides(no_polygon_sides):
     return res
 
 
-def find_indexes_of_closest_point2vertex_in_new_poly(original_origin2point_angle, polygon_size):
+def find_indexes_of_closest_point2vertex_in_new_poly(original_origin2point_angle: float, polygon_size: int):
     """
     Finds the index of the closest two angles to the input vector angle from a set of angles in radians. The set of
     angles is derived from finding the vertices of an equal sided polygon inscribed in a circle, and taking the
     angle of these line segments from the positive x-axis. When original vector angle is the bisector of the two line
     segments it takes the smaller value.
-    :param original_origin2point_angle:
-    :param polygon_size:
-    :return: tuple of closest two vertice's indexes
+    :param original_origin2point_angle: float
+    :param polygon_size: int
+    :return: tuple of the closest two vertices' indexes
     """
     polygon_angles = vertex_angles_by_no_poly_sides(polygon_size)
     closest_index = min(range(len(polygon_angles)), key=lambda i: abs(polygon_angles[i] - original_origin2point_angle))
@@ -121,7 +121,7 @@ def find_indexes_of_closest_point2vertex_in_new_poly(original_origin2point_angle
             return closest_index, (closest_index - 1) % polygon_size
 
 
-def generate_vertices_points_by_no_polygon_sides(no_polygon_sides):
+def generate_vertices_points_by_no_polygon_sides(no_polygon_sides: int):
     """
     Generates the vertices of an equilateral polygon based on the number of sides as a list.
     :param no_polygon_sides: Integer
@@ -131,7 +131,7 @@ def generate_vertices_points_by_no_polygon_sides(no_polygon_sides):
     return list(zip([math.cos(a) for a in polygon_angles], [math.sin(a) for a in polygon_angles]))
 
 
-def get_distance_between_points(point1, point2):
+def get_distance_between_points(point1: tuple, point2: tuple):
     """
     Calculates the distance between two points on a cartesian plane.
     :param point1: Tuple (x, y)
@@ -141,7 +141,7 @@ def get_distance_between_points(point1, point2):
     return math.hypot(point2[0]-point1[0], point2[1]-point1[1])
 
 
-def get_point_end_vertices_distance(point, vertices):
+def get_point_end_vertices_distance(point: tuple, vertices: list):
     """
     Gets the distance between a point and a list of points.
     :param point: Tuple (x, y)
@@ -151,7 +151,7 @@ def get_point_end_vertices_distance(point, vertices):
     return [get_distance_between_points(point, i) for i in vertices]
 
 
-def get_linear_weights_by_distances(point, *vertices):
+def get_linear_weights_by_distances(point: tuple, *vertices: list):
     """
     Gets the weights of the distances between a point and a list of vertices. If distance between point i and vertex j
     is 0, weight = 1.
@@ -164,7 +164,7 @@ def get_linear_weights_by_distances(point, *vertices):
 # TODO: make an exponentially decreasing weighting function.
 
 
-def get_closest_tri_vertices_to_point(no_polygon_sides, *indexes):
+def get_closest_tri_vertices_to_point(no_polygon_sides: int, *indexes: list):
     """
     Gets two vertices of a polygon with n sides based on the index of of the vertex. Vertex index 0 starts at x-axis
     and continues counter clockwise. Appends two vertices to a list containing the origin to give three points that
@@ -178,7 +178,7 @@ def get_closest_tri_vertices_to_point(no_polygon_sides, *indexes):
     return res + [vertices[i] for i in indexes]
 
 
-def get_graph_chord_indexes_and_weights(sentiment_values, num_adjacent_chords):
+def get_graph_chord_indexes_and_weights(sentiment_values: dict, num_adjacent_chords: int):
     """
     Gets the respective weights of chords in a graph based on the input sentiment values. Chords will always include
     the current node, as well as two of the "next" chords in the graph based on the index that is also calculated.
