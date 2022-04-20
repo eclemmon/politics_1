@@ -5,13 +5,16 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from gensim.models.coherencemodel import CoherenceModel
-import matplotlib.pyplot as plt
 
-def load_data(path, file_name):
+
+# Note, currently placeholder code for future reference when using LSA space to map text similarity based on
+# the texts submitted over several concerts. Not currently in use.
+
+def load_data(path: str, file_name: str):
     """
     This loads the text file
-    :param path: path to file name
-    :param file_name: file_name
+    :param path: str
+    :param file_name: str
     :return: list of paragraphs/documents and title(initial 100 words considered as title of document
     """
     documents_list = []
@@ -21,15 +24,15 @@ def load_data(path, file_name):
             text = line.strip()
             documents_list.append(text)
     print("Total Number of Documents:", len(documents_list))
-    titles.append(text[0:min(len(text),100)])
+    titles.append(text[0:min(len(text), 100)])
     return documents_list, titles
 
 
-def preprocess_data(documents_list):
+def preprocess_data(documents_list: list):
     """
     This function runs all the documents through a regexp tokenizer,
-    removes stop words, and stems the left over words
-    :param doc_set: The document list
+    removes stop words, and stems the leftover words
+    :documents_list: list
     :return: preprocessed texts from the document list
     """
     tokenizer = RegexpTokenizer(r'\w+')
@@ -45,24 +48,24 @@ def preprocess_data(documents_list):
     return texts
 
 
-def prepare_corpus(cleaned_documents):
+def prepare_corpus(cleaned_documents: list):
     """
-    create term dictionary of our corpus and
+    Create term dictionary of our corpus and
     Converting list of documents (corpus) into Document Term Matrix
-    :param cleaned_documents: The cleaned documents
-    :return: term dictionary and Document Term Matrix
+    :param cleaned_documents: list
+    :return: tuple of term dictionary and Document Term Matrix
     """
     dictionary = corpora.Dictionary(cleaned_documents)
     document_term_matrix = [dictionary.doc2bow(doc) for doc in cleaned_documents]
     return dictionary, document_term_matrix
 
 
-def create_gensim_lsa_model(cleaned_documents, number_of_topics, words):
+def create_gensim_lsa_model(cleaned_documents: list, number_of_topics: int, words: int):
     """
     Create LSA model through gensim
-    :param cleaned_documents: cleaned documents
-    :param number_of_topics: number of topics
-    :param words: number of words associated with each topic
+    :param cleaned_documents: list of cleaned documents
+    :param number_of_topics: int of number of topics
+    :param words: int number of words associated with each topic
     :return: return LSA model
     """
     dictionary, doc_term_matrix = prepare_corpus(cleaned_documents)
@@ -84,10 +87,10 @@ def compute_coherence_values(dictionary, doc_term_matrix, cleaned_documents,
     """
     coherence_values = []
     model_list = []
-    for number_of_topics in range(start, stop, step):
-        model = LdaModel(doc_term_matrix, num_topics=number_of_topics, id2word=dictionary)
-        model_list.append(model)
-        coherence_model = CoherenceModel(model=model, texts=cleaned_documents, dictionary=dictionary,
+    for num_topics in range(start, stop, step):
+        lda_model = LdaModel(doc_term_matrix, num_topics=num_topics, id2word=dictionary)
+        model_list.append(lda_model)
+        coherence_model = CoherenceModel(model=lda_model, texts=cleaned_documents, dictionary=dictionary,
                                          coherence='c_v')
         coherence_values.append(coherence_model.get_coherence())
     return model_list, coherence_values
