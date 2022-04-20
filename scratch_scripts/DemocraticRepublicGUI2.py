@@ -12,7 +12,7 @@ import json
 from scratch_scripts.Python2SC import message_handler
 from pythonosc import udp_client
 
-with open("../twitter_credentials.json", "r") as file:
+with open("../Deprecated/twitter_credentials.json", "r") as file:
     credentials = json.load(file)
 
 auth = tweepy.OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
