@@ -76,12 +76,8 @@ class CyberneticRepublicMusicGen:
         # Message Responder
         config = dotenv_values()
 
-        twitter_path = '/Users/ericlemmon/Documents/PhD/PhD_Project_v2/twitter_credentials.json'
-        with open(twitter_path, "r") as file:
-            credentials = json.load(file)
-
-        self.twitter_auth = tweepy.OAuth1UserHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
-                                                     credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
+        self.twitter_auth = tweepy.OAuth1UserHandler(config['TWITTER_CONSUMER_KEY'], config['TWITTER_CONSUMER_SECRET'],
+                                                     config['TWITTER_ACCESS_TOKEN'], config['TWITTER_ACCESS_SECRET'])
         self.responder = PoliticsMessageResponder(config['TWILIO_ACCOUNT_SID'], config['TWILIO_AUTH_TOKEN'],
                                                   config['TWILIO_PHONE_NUMBER'], self.twitter_auth)
 
