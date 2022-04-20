@@ -3,11 +3,14 @@ import hashlib
 
 
 class InstrumentKeyAndNameGenerator:
-    def __init__(self, inst_names, max_no_instruments):
+    """
+    InstrumentKeyAndNameGenerator class to help in constructing sound selection to be passed to SuperCollider.
+    """
+    def __init__(self, inst_names: list, max_no_instruments: int):
         """
-        Class to help in constructing sound selection to be passed to SuperCollider.
-        :param inst_names: List of instrument names available, e.g. ['sin', 'saw']
-        :param max_no_instruments: Integer of maximum number of instruments allowed, purely a safety value to cap
+        Initialization for InstrumentKeyAndNameGenerator
+        :param inst_names: list of instrument names available, e.g. ['sin', 'saw']
+        :param max_no_instruments: int of maximum number of instruments allowed, purely a safety value to cap
         the number of instruments allowed to run. Set at object construction time.
         """
         self.total_no_instruments = len(inst_names)
@@ -16,34 +19,34 @@ class InstrumentKeyAndNameGenerator:
         self.max_instruments = max_no_instruments
         self.instrument_keys = ['sound{}'.format(count + 1) for count in range(len(inst_names))]
 
-    def get_instrument_chain_keys(self, sent_dict, emoji_sent_dict, num_inst_to_run=4):
+    def get_instrument_chain_keys(self, sent_dict: dict, emoji_sent_dict: dict, num_inst_to_run: int = 4):
         """
-        Gets the keys for instruments to be activated in Super Collider.
-        :param sent_dict: Dict String: Float. e.g. {'pos': 0.736...etc}
-        :param emoji_sent_dict: Dict String: Float. e.g. {'pos': 0.736...etc}
-        :param num_inst_to_run: Integer of number of instruments in final array.
-        :return: List of instrument keys. e.g. ['sound3', 'sound4', 'sound6', 'sound5', 'sound3']
+        Gets the keys for instruments to be activated in SuperCollider.
+        :param sent_dict: dict String: Float. e.g. {'pos': 0.736...etc}
+        :param emoji_sent_dict: dict String: Float. e.g. {'pos': 0.736...etc}
+        :param num_inst_to_run: int of number of instruments in final array.
+        :return: list of instrument keys. e.g. ['sound3', 'sound4', 'sound6', 'sound5', 'sound3']
         """
         return get_instrument_chain(num_inst_to_run - 1, self.instrument_graph, sent_dict,
                                     emoji_sent_dict, self.total_no_instruments, self.instrument_keys,
                                     self.max_instruments)
 
-    def get_instrument_chain_names(self, keys: list):
+    def get_instrument_chain_names(self, instrument_keys: list):
         """
         Gets a list of the instrument names to pass to SuperCollider
-        :param keys: keys in the instrument key dict. ['sound1', 'sound2']
+        :param instrument_keys: keys in the instrument key dict. ['sound1', 'sound2']
         :return: List of instrument names ['sin', 'saw']
         """
-        return [self.instrument_dict[key] for key in keys]
+        return [self.instrument_dict[key] for key in instrument_keys]
 
-    def get_n_instrument_chain_names(self, keys: list, num_insts: int):
+    def get_n_instrument_chain_names(self, instrument_keys: list, num_insts: int):
         """
         Gets a list of n instrument names to pass to SuperCollider
-        :param keys: List of keys in the instrument key dict. ['sound1', 'sound2']
-        :param num_insts: Integer of number of instruments desired.
-        :return: List of instrument names ['sin', 'saw']
+        :param instrument_keys: list of keys in the instrument key dict. ['sound1', 'sound2']
+        :param num_insts: int of number of instruments desired.
+        :return: list of strs, instrument names ['sin', 'saw']
         """
-        instruments = self.get_instrument_chain_names(keys)
+        instruments = self.get_instrument_chain_names(instrument_keys)
         return instruments[:num_insts]
 
 
@@ -51,8 +54,8 @@ def generate_instrument_dict(inst_names: list):
     """
     Builds a dictionary of instruments that are agnostic to the names inserted. Keys are organized as
     'sound[i+1]': 'name' based on the instrument_names_sc list input.
-    :param inst_names: List of instrument names e.g., ['sin', 'crazyness']
-    :return: Dictionary of String:String e.g., {'sound1': 'sin', 'sound2': 'crazyness'}
+    :param inst_names: list of instrument names e.g., ['sin', 'crazyness']
+    :return: dict of String: String e.g., {'sound1': 'sin', 'sound2': 'crazyness'}
     """
     instrument_dict = {}
     for count, name in enumerate(inst_names):
@@ -65,8 +68,8 @@ def generate_instrument_graph(instrument_dict: dict):
     """
     Iterates through the keys of the instrument_dict and maps the key to an array of the other key names in the
     instrument_dict key set.
-    :param instrument_dict: Dictionary of String: String. e.g. {'sound1': 'sin'}
-    :return: Dictionary of String: List. e.g. {'sound1': ['sound2', 'sound3', 'sound4', 'sound5', 'sound6']}
+    :param instrument_dict: dict of String: String. e.g. {'sound1': 'sin'}
+    :return: dict of String: List. e.g. {'sound1': ['sound2', 'sound3', 'sound4', 'sound5', 'sound6']}
     """
     keys = list(instrument_dict.keys())
     graph = {}
@@ -131,8 +134,14 @@ def get_instrument_chain(num_inst_to_run: int, inst_graph: dict, sentiment_dict:
         res.append(get_next_instrument(inst_graph, res[-1], values[_], total_no_instruments))
     return res
 
-def better_hash(input):
-    return int.from_bytes(hashlib.sha3_256(repr(input).encode()).digest()[:8], 'little')
+
+def better_hash(to_be_hashed):
+    """
+    Function to hash an input object with a hashing function that generates more random values.
+    :param to_be_hashed: Object
+    :return: int
+    """
+    return int.from_bytes(hashlib.sha3_256(repr(to_be_hashed).encode()).digest()[:8], 'little')
 
 
 if __name__ == "__main__":
