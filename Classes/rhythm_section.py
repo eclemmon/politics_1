@@ -640,13 +640,27 @@ class RandomRhythms(RhythmSection):
 
 
 class PolyRhythms(RhythmSection):
-    def __init__(self, meter, number_notes=6):
+    """
+    PolyRhythms rhythm section class. Generates polyrhythms based on n number of input notes.
+    """
+    def __init__(self, meter: Meter, number_notes: int = 6):
+        """
+        Initialization for PolyRhythms class.
+        :param meter: Meter
+        :param number_notes: int number of midi notes (or different percussion instruments to generate)
+        """
+        # TODO: Fix naming of number_notes to be more descriptive.
         super().__init__(meter)
         self.midi_notes = random.sample([midi_note for midi_note in range(60, 80)], number_notes)
         self.midi_note_duration_arrays = [subdivide_meter_into_polyrhythm(meter.num_beats, random.randint(1, 13))
                                           for _ in range(len(self.midi_notes))]
 
-    def transform_rhythm_to_meter(self, meter):
+    def transform_rhythm_to_meter(self, meter: Meter):
+        """
+        Generates new polyrhythms to conform to the new metrical unit.
+        :param meter: Meter
+        :return: None
+        """
         self.meter = meter
         self.midi_note_duration_arrays = [subdivide_meter_into_polyrhythm(meter.num_beats, random.randint(1, 13))
                                           for _ in range(len(self.midi_notes))]
