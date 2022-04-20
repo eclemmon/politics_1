@@ -1,14 +1,18 @@
 from Classes.chord import Chord
 from Classes.note import Note
+from typing import Union
 import random
 
 
 class HarmonicWeb:
-    def __init__(self, starting_chord=None):
+    """
+    HarmonicWeb superclass. Essentially a graph with logic especially suited for manipulating notes and chords.
+    """
+    def __init__(self, starting_chord: Union[Chord, None] = None):
         """
-        Initializes the harmonic web
-        :param starting_chord: If starting chord is given, makes a copy of the chord and
+        Initializes the harmonic web  If starting chord is given, makes a copy of the chord and
         brings it into a lower octave.
+        :param starting_chord: Chord || None
         """
         if starting_chord is None:
             midinote_numbers = [0, 4, 7]
@@ -26,20 +30,23 @@ class HarmonicWeb:
         # Initializes dict for when search paths are called
         self.breadth_first_path = {}
 
-    def build_web(self, chord=None):
+    def build_web(self, chord: Union[Chord, None] = None):
         """
-        :param chord:
-        :return:
+        Template function for building the web.
+        :param chord: Chord || None
+        :return: None
         """
         pass
 
-    def breadth_first_search(self, destination_chord, starting_chord=None):
+    def breadth_first_search(self, destination_chord, starting_chord: Union[Chord, None] = None):
         """
-        Breadth first search implementation, starting chord is wherever the 'cursor' is pointing via
-        self.current_chord. Walks through the web to find the shortest path to the destination chord.
-        :param destination_chord: The chord that user wants to travel to.
-        :return: Returns and empty array if the destination is the current chord. Otherwise memoizes and returns the
-        shortest path between self.current_chord and destination chord.
+        Breadth first search implementation, starting chord is wherever the 'cursor' is pointing via self.current_chord.
+        Walks through the web to find the shortest path to the destination chord. Returns an empty pitches if the
+        destination is the current chord. Otherwise, memoizes and returns the shortest path between self.current_chord
+        and destination chord.
+        :param starting_chord: Chord || None
+        :param destination_chord: Chord
+        :return: List
         """
         if starting_chord is None:
             starting_chord = self.current_chord
@@ -73,51 +80,51 @@ class HarmonicWeb:
 
         return []
 
-
-    def build_chord_permutations(self, chord=None):
+    def build_chord_permutations(self, chord: Union[Chord, None] = None):
         """
-
-        :param chord:
-        :return:
+        Template function for building permutations of a chord.
+        :param chord: Chord || None
+        :return: None
         """
         pass
 
-
-    def get_valid_chords(self, chord=None):
+    def get_valid_chords(self, chord: Union[Chord, None] = None):
         """
-
-        :param chord:
-        :return:
+        Template function for getting valid chords
+        :param chord: Chord || None
+        :return: None
         """
         pass
 
     @staticmethod
-    def tonal_invert_chord(chord):
+    def tonal_invert_chord(chord: list):
         """
         Inverts the elements of a chord tonally.
         :param chord: a list that reflects the pitch classes of a triad
         :return: returns a new list, with the last element appended to the front of the list and transposed down
         and octave.
         """
+        # TODO: Check on tonal inversion and refactor so it takes advantage of Chord class
         chord[-1] -= 12
         element = chord.pop()
         return [element] + chord
 
     @staticmethod
-    def build_chord(array):
+    def build_chord(pitches: list):
         """
-        Builds a chord out of an array.
-        :param array: an array of pitches
-        :return: returns a Chord object.
+        Builds a chord out of a list of midi note numbers
+        :param pitches: list
+        :return: Chord
         """
-        notes = [Note(note_number) for note_number in array]
+        # TODO: Refactor as probably unnecessary
+        notes = [Note(note_number) for note_number in pitches]
         return Chord(*notes)
 
-    def random_walk_only_new(self, length):
+    def random_walk_only_new(self, length: int):
         """
         Randomly walks through the neo-Riemannian web based on closest chords without traversing chords already
         visited. Returns current chord if length is 0.
-        :param length: The number of steps through the web.
+        :param length: int
         :return: Returns the path as a list.
         """
         if length == 0:
@@ -137,12 +144,12 @@ class HarmonicWeb:
             self.current_chord = next_chord
         return path
 
-    def true_random_walk(self, length):
+    def true_random_walk(self, length: int):
         """
         Randomly walks through the neo-Riemannian web based on closest chords. Can visit chords already visited.
         returns current chord if length is 0.
-        :param length: The number of steps through the web.
-        :return: Returns the path as a list.
+        :param length: int
+        :return: list
         """
         if length == 0:
             return [self.current_chord]
@@ -156,4 +163,8 @@ class HarmonicWeb:
         return path
 
     def get_neighbor_chords(self):
+        """
+        Helper function that gets the next chords in the graph.
+        :return: list
+        """
         return self.web[self.current_chord]
