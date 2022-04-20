@@ -75,7 +75,12 @@ def build_rhythm_section(rhythm_section_key: str, meter_key: str):
     if rhythm_section_key == 'introduction':
         return cybernetic_republic_intro_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
     else:
-        return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
+        if rhythm_section_key == 'breakbeat1':
+            return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key], 1)
+        elif rhythm_section_key == 'breakbeat2':
+            return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key], 2)
+        else:
+            return cybernetic_republic_rhythm_section[rhythm_section_key](cybernetic_republic_meter_data[meter_key])
 
 
 def build_meter(meter_key: str):
