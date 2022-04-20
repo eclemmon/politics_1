@@ -667,7 +667,14 @@ class PolyRhythms(RhythmSection):
 
 
 class IntroductionRhythms(RhythmSection):
-    def __init__(self, meter):
+    """
+    IntroductionRhythms class. Generates a simple on beat patter for every quarter note. A little House-y
+    """
+    def __init__(self, meter: Meter):
+        """
+        Initialization for IntroductionRhythms
+        :param meter: Meter
+        """
         super().__init__(meter)
         self.midi_notes = [88]
         self.midi_note_duration_arrays = [
@@ -675,27 +682,59 @@ class IntroductionRhythms(RhythmSection):
         ]
 
     def rhythm_to_duple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to two.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(2)
 
     def rhythm_to_triple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to three.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(3)
 
     def rhythm_to_four(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to four.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(4)
 
     def rhythm_to_five(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 5 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(5)
 
     def rhythm_to_six(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 6 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(6)
 
     def rhythm_to_seven(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 7 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(7)
 
     def rhythm_to_nine(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 9 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(9)
 
     def rhythm_to_twelve(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 12 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = nr(12)
 
 
