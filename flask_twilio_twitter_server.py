@@ -3,7 +3,6 @@ import eventlet
 eventlet.monkey_patch()
 from flask import Flask, json, request
 from flask_migrate import Migrate
-from twilio.twiml.messaging_response import MessagingResponse
 from flask_socketio import SocketIO
 from database import db
 import tweepy
@@ -53,6 +52,14 @@ class MyStream(tweepy.Stream):
                         'tweet': True, "twitter_user_id": json_data['user']['id'], "tweet_id": json_data['id']}
         store_message(message_data)
         self.stream_sio.emit('handle_message', message_data)
+
+    def on_closed(self, response):
+        msg = "Twitter closed the stream, this was the response: {}".format(response)
+        print(msg)
+
+    def on_request_error(self, status_code):
+        msg = "There was a request error in the tweepy stream: {}".format(status_code)
+        print(msg)
 
 
 @app.route('/sms', methods=['POST'])
