@@ -13,6 +13,7 @@ class Melody:
     """
     Melody superclass for constructing melodies.
     """
+
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale, transposition=5):
         """
         Intialization of Melody class.
@@ -211,8 +212,8 @@ class Melody:
         # add ornamental notes to durations
         durations += [0.125, 0.125]
         # build resolution duration and append to durations
-        if current_duration_left-0.25 <= 0.25:
-            resolution_duration = current_duration_left-0.25
+        if current_duration_left - 0.25 <= 0.25:
+            resolution_duration = current_duration_left - 0.25
             durations.append(resolution_duration)
         else:
             resolution_duration = self.get_random_duration(tuples_allowed=False)
@@ -498,10 +499,25 @@ class Melody:
 
 
 class SustainedMelody(Melody):
+    """
+    SustainedMelody Class. Sustains the melody notes as much as possible
+    """
+
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for SustainedMelody
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for the SustainedMelody class. Relies heavily on logic from:
+        > Melody.sustain_across_note_to_chord_and_dur_block, and
+        > Melody.sustain_across_chord_and_dur_block
+        :return: list of lists [list, list]
+        """
         notes = []
         durations = []
         chords_and_durations = self.harmonic_rhythm.get_zipped_hr_chords_and_durations()
@@ -510,8 +526,10 @@ class SustainedMelody(Melody):
             # Get the first chord and compare it to the next chord.
             if i == 0:
                 # if it is sustainable
-                sustainable_note_and_duration = self.get_next_note_and_dur(next_chord_and_dur_block=chords_and_durations[i + 1],
-                                                                   current_chord_and_dur_block=chords_and_durations[i])
+                sustainable_note_and_duration = self.get_next_note_and_dur(
+                    next_chord_and_dur_block=chords_and_durations[i + 1],
+                    current_chord_and_dur_block=chords_and_durations[i]
+                )
                 notes.append(sustainable_note_and_duration[0])
                 durations.append(chords_and_durations[i][1])
             else:
@@ -535,9 +553,9 @@ class SustainedMelody(Melody):
             i += 1
         return [notes, durations]
 
-    def get_next_note_and_dur(self, next_chord_and_dur_block,
-                              current_chord_and_dur_block=None,
-                              current_note_and_dur_block=None):
+    def get_next_note_and_dur(self, next_chord_and_dur_block: tuple,
+                              current_chord_and_dur_block: Union[tuple, None] = None,
+                              current_note_and_dur_block: Union[tuple, Note] = None):
         """
         Gets the next note and duration, either by generating a summed durational value of the existing, sustained note,
         or by getting a new, random chord note. WARNING: GOBBLETIGOOK AND REDUNDANCIES BELOW
@@ -738,6 +756,7 @@ if __name__ == "__main__":
 
     sc_client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
 
+
     def sum_with_rests(durations):
         res = []
         for dur in durations:
@@ -746,6 +765,8 @@ if __name__ == "__main__":
             else:
                 res.append(dur)
         return sum(res)
+
+
     meter1 = ComplexMeter(7, [3, 1, 2, 1, 1, 2, 1], [2, 3, 2])
     meter2 = CompoundMeter(9, [3, 1, 1, 2, 1, 1, 2, 1, 1], [3, 3, 3])
     meter3 = SimpleDuple(4)
@@ -783,10 +804,10 @@ if __name__ == "__main__":
     #                                                                     i.harmonic_rhythm.meter.num_beats * i.harmonic_rhythm.num_bars,
     #                                                                                      i.harmonic_rhythm.meter.num_beats)
     #               )
-        # print(sum(sm.notes_and_durations[1]), )
-        # print(sum(rm.notes_and_durations[1]))
-        # print(sum(cm.notes_and_durations[1]))
-        # print(sum(prm.notes_and_durations[1]))
-        # print(sum(ornm.notes_and_durations[1]))
-        # print(sum(lm.notes_and_durations[1]))
+    # print(sum(sm.notes_and_durations[1]), )
+    # print(sum(rm.notes_and_durations[1]))
+    # print(sum(cm.notes_and_durations[1]))
+    # print(sum(prm.notes_and_durations[1]))
+    # print(sum(ornm.notes_and_durations[1]))
+    # print(sum(lm.notes_and_durations[1]))
     # print(lm.notes_and_durations[0])
