@@ -6,7 +6,13 @@ import time
 import functools
 import logging
 
+
 def clock(func):
+    """
+    Wrapper funciong that times a function and prints out the data. Useful for testing.
+    :param func: Function to be decorated
+    :return: Subsidiary function's usual return + str from clocked
+    """
     @functools.wraps(func)
     def clocked(*args, **kwargs):
         t0 = time.time()
