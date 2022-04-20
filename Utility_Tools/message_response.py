@@ -100,23 +100,26 @@ def generate_cybernetic_republic_message(data, kwargs):
     if not kwargs['voting-period']:
         return "Hi {}, voting is currently closed. Please wait until voting opens!".format(data['username'])
     if kwargs['no-option-selected']:
-        return "Hi {}, you said: {}... I tried finding one of the vote options, but couldn't. Try again?".format(
-            data['username'], data['text'][:20]
-        )
+        return "Hi {}, you said: {}... I tried finding one of the vote options, but couldn't. Remember, you have to " \
+               "write the vote exactly as it appears for me to tally it. Try again?".format(
+                data['username'], data['text'][:20]
+                )
     if kwargs['already-voted']:
-        return "Hi {}, it seems like you already voted in this section. You may only vote once!".format(data['username'])
+        return "Hi {}, it seems like you already voted in this section. You may only vote once!".format(
+            data['username'])
     else:
-        if kwargs['introduction'] and kwargs['first-option'] not in kwargs['vote-text']:
-            return "Gee golly, you really have a hard time following instructions in tutorials, dontchya? I'm nice " \
-                    "though and still parsed your message and added the first vote option I found to the tally." \
-                    " These are the updated results: \n {}".format(kwargs['vote'])
+        if kwargs['introduction'] and kwargs['first-option'].lower() not in kwargs['vote-text'].lower():
+            return "I suggested you vote for the first option during the tutorial, but that's OK! " \
+                   "I still parsed your message and added the first vote option I found to the tally." \
+                   " These are the updated results: \n {}".format(kwargs['vote'])
         else:
             return "Hi {}, I parsed your message, and added the first vote option I found to the " \
                    "tally! These are the updated results: \n{}".format(data['username'], kwargs['vote'])
 
 
 def construct_time_interval_response_message(time_interval):
-    return '# The musical gesture will last this long (outside of reverb and delay): {} seconds\n\n'.format(time_interval)
+    return '# The musical gesture will last this long (outside of reverb and delay): {} seconds\n\n'.format(
+        time_interval)
 
 
 def construct_rhythm_response_message(rhythm):
@@ -135,9 +138,11 @@ def construct_rhythm_response_tweet(rhythm):
             count += 1
     return "Num Notes: {}".format(count)
 
+
 def construct_delay_response_message(delay_t_a_d):
-    return "# You submitted {} noun(s) and {} verb(s) to control the delay time and feedback amount\n\n".format(delay_t_a_d[0],
-                                                                                                        delay_t_a_d[1])
+    return "# You submitted {} noun(s) and {} verb(s) to control the delay time and feedback amount\n\n".format(
+        delay_t_a_d[0],
+        delay_t_a_d[1])
 
 
 def construct_spatialization_response_message(spat):
@@ -175,6 +180,7 @@ def construct_spatialization_response_tweet(spat):
         else:
             return "Spat: [LOH] {} --> [ROH] {}".format(spat[1], spat[2])
 
+
 def construct_emojis_response_message(pmod):
     if pmod[0] == 0:
         return "# I don't think you submitted any emojis, so I didn't apply any special sauce to the synth...\n\n"
@@ -198,14 +204,14 @@ def construct_prefix_response_message(username):
 
 
 if __name__ == "__main__":
-
     config = dotenv_values()
 
     TWITTER_PATH = '/Users/ericlemmon/Documents/PhD/PhD_Project_v2/twitter_credentials.json'
     with open(TWITTER_PATH, "r") as file:
         credentials = json.load(file)
 
-    twitter_auth = tweepy.OAuth1UserHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'], credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
+    twitter_auth = tweepy.OAuth1UserHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
+                                            credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
     # twitter_auth.set_access_token()
 
     data = {'username': "+13058041575"}
