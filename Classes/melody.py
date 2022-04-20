@@ -369,7 +369,8 @@ class Melody:
             self.chromatic_lower_neighbor
         ])(note)
 
-    def get_random_duration(self, tuples_allowed: bool = True):
+    @staticmethod
+    def get_random_duration(tuples_allowed: bool = True):
         """
         Gets a random duration. If tuples allowed, can return values 1/3 and 2/3
         :param tuples_allowed: boolean
@@ -380,7 +381,8 @@ class Melody:
         else:
             return random.choice([0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2])
 
-    def get_random_chord_tone(self, chord: Chord):
+    @staticmethod
+    def get_random_chord_tone(chord: Chord):
         """
         Get a random chord tone from a given chord.
         :param chord: Chord
@@ -388,7 +390,8 @@ class Melody:
         """
         return random.choice(chord.notes)
 
-    def get_random_scale_tone(self, scale: Scale):
+    @staticmethod
+    def get_random_scale_tone(scale: Scale):
         """
         Get a random note from a given scale.
         :param scale: Scale
@@ -405,7 +408,8 @@ class Melody:
         duration = self.get_random_duration()
         return note, duration
 
-    def get_closest_chord_tone_to_note(self, note: Note, chord: Chord):
+    @staticmethod
+    def get_closest_chord_tone_to_note(note: Note, chord: Chord):
         """
         Gets the closest tone in a chord to a given note.
         :param note: Note
@@ -528,8 +532,7 @@ class SustainedMelody(Melody):
                 # if it is sustainable
                 sustainable_note_and_duration = self.get_next_note_and_dur(
                     next_chord_and_dur_block=chords_and_durations[i + 1],
-                    current_chord_and_dur_block=chords_and_durations[i]
-                )
+                    current_chord_and_dur_block=chords_and_durations[i])
                 notes.append(sustainable_note_and_duration[0])
                 durations.append(chords_and_durations[i][1])
             else:
@@ -781,10 +784,24 @@ class PolyrhythmicMelody(Melody):
 
 
 class MaxOrnamentationMelody(Melody):
+    """
+    MaxOrnamentationMelody class. Builds a melody that maximizes ornamentation as much as possible (such fun!)
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for MaxOrnamentationMelody
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for MaxOrnamentationMelody. While there is time left in a chord_and_duration block
+        chooses a random ornamentation and generates notes and durations. Wraps up by filling any remaining duration
+        left in the chord_and_dur block with a note of t time.
+        :return: list of [notes, durations]
+        """
         notes = []
         durations = []
 
@@ -800,9 +817,15 @@ class MaxOrnamentationMelody(Melody):
                     notes += notes_durations_remainder[0]
                     durations += notes_durations_remainder[1]
                     current_duration_left = notes_durations_remainder[2]
-        return notes, durations
+        return [notes, durations]
 
-    def get_random_ornamentation(self, chord_and_duration, current_duration_left):
+    def get_random_ornamentation(self, chord_and_duration: tuple, current_duration_left: Union[int, float]):
+        """
+        Randomly selects the ornamentation generation function.
+        :param chord_and_duration: tuple (Chord, int || float)
+        :param current_duration_left: int || float
+        :return: list of lists [notes, durations]
+        """
         r = random.randint(0, 3)
         if r == 0:
             return self.appoggiatura(chord_and_duration, current_duration_left)
