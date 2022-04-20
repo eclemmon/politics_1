@@ -2,15 +2,17 @@ import numpy
 import pandas
 import json
 from fuzzywuzzy import fuzz
+from typing import Union
 
 
 class CorpusMeanAndStd:
-    def __init__(self, mean=None, std=None, corpus=None):
+    def __init__(self, mean: Union[float, None] = None, std: Union[float, None] = None,
+                 corpus: Union[float, None] = None):
         """
         Constructs an object that helps find a corpus's mean topic value and the standard of deviation from the mean.
-        :param mean: Float of mean value.
-        :param std: Float of standard of deviation.
-        :param corpus:
+        :param mean: float || None
+        :param std: float || None
+        :param corpus: list || None
         """
         if mean is None or std is None:
             try:
@@ -25,29 +27,56 @@ class CorpusMeanAndStd:
             self.std = std
 
     def __sub__(self, other):
+        """
+        Class override function for subtracting one CorpusMeanAndStd from another
+        :param other: CorpusMeanAndStd
+        :return: CorpusMeanAndStd
+        """
         new_mean = self.mean - other.mean
         new_std = self.std - other.std
         return CorpusMeanAndStd(new_mean, new_std)
 
     def __add__(self, other):
+        """
+        Class override function for adding one CorpusMeanAndStd to another
+        :param other: CorpusMeanAndStd
+        :return: CorpusMeanAndStd
+        """
         new_mean = self.mean + other.mean
         new_std = self.std + other.std
         return CorpusMeanAndStd(new_mean, new_std)
 
-    def __repr__(self):
+    def __str__(self):
+        """
+        Class override for string representation of CorpusMeanAndStd
+        :return: str
+        """
         return "{}, {}".format(self.mean, self.std)
 
+    def __repr__(self):
+        """
+        Class override for representation of CorpusMeanAndStd
+        :return: str
+        """
+        return '<{0}.{1} object at {2} || {3}>'.format(
+            type(self).__module__, type(self).__qualname__, hex(id(self)), self.__str__())
+
     def average(self, other):
+        """
+        Function to get the average mean and std of two CorpusMeanAndStds
+        :param other: CorpusMeanAndStd
+        :return: CorpusMeanAndStd
+        """
         new_mean = (self.mean + other.mean) / 2
         new_std = (self.std + other.std) / 2
         return CorpusMeanAndStd(new_mean, new_std)
 
 
-def mean_and_std_of_corpus(corpus):
+def mean_and_std_of_corpus(corpus: list):
     """
     Builds mean and standard of deviation after determining levenshtein distance between texts in a corpus.
-    :param corpus:
-    :return:
+    :param corpus: list
+    :return: tuple
     """
     corpus_length = len(corpus)
 
