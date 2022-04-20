@@ -1,6 +1,6 @@
 class Note:
     """
-    A simple note class with logic for printing self, object equivalence and comparison. Also logic for transposition.
+    A simple note class with logic for printing self, object equivalence and comparison. Also, logic for transposition.
     """
     def __init__(self, midi_note_number: int):
         """
