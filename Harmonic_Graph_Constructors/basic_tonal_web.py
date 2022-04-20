@@ -2,6 +2,7 @@ from harmonic_web import HarmonicWeb
 from Classes.chord import Chord
 from Classes.note import Note
 from Data_Dumps import basic_tonal_web_structure
+from typing import Union
 
 
 class BasicTonalWeb(HarmonicWeb):
@@ -10,7 +11,7 @@ class BasicTonalWeb(HarmonicWeb):
     the dictionary. Starts in C-major if no starting chord is given. Otherwise, transposes the graph to the starting
     chord as best as possible.
     """
-    def __init__(self, starting_chord=None):
+    def __init__(self, starting_chord: Union[Chord, None] = None):
         """
         Initialization for BasicTonalWeb class.
         :param starting_chord: None || Chord

@@ -1,10 +1,20 @@
 from Classes.chord import Chord
 from Classes.note import Note
 from Harmonic_Graph_Constructors import harmonic_web
+from typing import Union
 
 
 class CircleOfFifths(harmonic_web.HarmonicWeb):
-    def __init__(self, starting_chord=None):
+    """
+    CircleOfFifths class. Generates a graph of chords based on the closest triads by adjacency on the circle of fifths.
+    So C-Major: [F-Major, G-Major]. Starts in C-major if no starting chord is given. Otherwise, transposes the graph
+    to the starting chord as best as possible.
+    """
+    def __init__(self, starting_chord: Union[None, Chord] = None):
+        """
+        Initialization of CircleOfFifths harmonic web.
+        :param starting_chord: Chord || None
+        """
         if starting_chord is None:
             midinote_numbers = [0, 4, 7]
         else:
@@ -20,15 +30,13 @@ class CircleOfFifths(harmonic_web.HarmonicWeb):
         # Initializes dict for when search paths are called
         self.breadth_first_path = {}
 
-    def build_web(self, chord=None):
+    def build_web(self, chord: Union[Chord, None] = None):
         """
-        Builds the Riemannian web
-        :param chord: default builds the web around the starting chord, but any triad that works in a Riemannian
-        web can be given over as well.
+        Builds the Circle of Fifths graph.
+        :param chord: Chord || None
         """
         if chord is None:
             chord = self.starting_chord
-        # neighbors = self.get_neighbor_chords(chord)
         self.web[chord] = self.get_neighbor_chords(chord)
         for next_chord in self.web[chord]:
             if next_chord in self.web.keys():
@@ -36,8 +44,12 @@ class CircleOfFifths(harmonic_web.HarmonicWeb):
             else:
                 self.build_web(next_chord)
 
-    def get_neighbor_chords(self, chord):
-        # notes = [note.midi_note_number for note in chord]
+    def get_neighbor_chords(self, chord: Chord):
+        """
+        Helper function to get the neighboring chords in the circle of fifths.
+        :param chord: Chord
+        :return: list of Chords.
+        """
         chords = [
             Chord(*[Note((note.midi_note_number + 7) % 12) for note in chord.notes]),
             Chord(*[Note((note.midi_note_number - 7) % 12) for note in chord.notes])
