@@ -14,3 +14,4 @@ thisProcess.interpreter.executeFile(path +/+ "/cybernetic_republic_init.scd");
 thisProcess.interpreter.executeFile(path +/+ "/cybernetic_republic_helper_functions.scd");
 thisProcess.interpreter.executeFile(path +/+ "/cybernetic_republic_osc_funcs.scd");
 )
+

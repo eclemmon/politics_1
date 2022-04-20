@@ -1,4 +1,5 @@
 import time
+import random
 
 
 class VoteProcessor:
@@ -78,7 +79,9 @@ class VoteProcessor:
         Gets the candidate with the highest vote share as a string.
         :return: String
         """
-        return max(self.vote_tallies, key=self.vote_tallies.get)
+        max_value = max(self.vote_tallies.values())
+        keys = [key for key, value in self.vote_tallies.items() if value == max_value]
+        return random.choice(keys)
 
     def get_winning_key_index(self):
         """
