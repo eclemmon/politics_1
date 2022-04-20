@@ -1,12 +1,34 @@
 
 class Meter:
-    def __init__(self, num_beats, accent_weights, subdivisions):
+    """
+    Meter super class that serves as a simple, abstract representation of meter.
+    """
+    def __init__(self, num_beats: int, accent_weights: list, subdivisions: list):
+        """
+        Initialization for meter class
+        :param num_beats: int
+        :param accent_weights: list of ints
+        :param subdivisions: list of ints
+        """
         self.num_beats = num_beats
         self.accent_weights = accent_weights
         self.subdivisions = subdivisions
 
+    def __str__(self):
+        """
+        String printing to prettily print data on the meter for users.
+        :return: str
+        """
+        return "{}: Number of beats: {}, accent weights: {}, subdivisions: {}".format(
+            self.__class__.__name__, self.num_beats, self.accent_weights, self.subdivisions)
+
     def __repr__(self):
-        return self.accent_weights
+        """
+        Representation of instance
+        :return: str
+        """
+        return '<{0}.{1} object at {2} || {3}>'.format(
+            type(self).__module__, type(self).__qualname__, hex(id(self)), self.__str__())
 
 
 class ComplexMeter(Meter):
