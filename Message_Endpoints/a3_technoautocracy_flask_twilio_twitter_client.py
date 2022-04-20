@@ -7,6 +7,7 @@ client = socketio.Client()
 logger = logger_launcher()
 music_gen = TechnoAutocracyMusicGen(logger)
 
+# TODO: Add responder to technoautocracy movement
 
 @client.on('client_connected')
 def on_connect(message):
@@ -15,7 +16,6 @@ def on_connect(message):
 
 @client.on('handle_message')
 def message(data):
-    # print(data)
     music_gen.on_data(data)
 
 

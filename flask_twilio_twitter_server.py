@@ -5,27 +5,20 @@ from flask import Flask, json, request
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from database import db
+from dotenv import dotenv_values
 import tweepy
 import json
 import os
 import datetime
 
-TWITTER_PATH = 'twitter_credentials.json'
-with open(TWITTER_PATH, "r") as file:
-    credentials = json.load(file)
-
-CONFIG_PATH = 'config.json'
-with open(CONFIG_PATH, "r") as file:
-    config = json.load(file)
-
-SETTINGS_PATH = 'settings.json'
-with open(SETTINGS_PATH, "r") as file:
-    settings = json.load(file)
+config = dotenv_values()
 
 MIGRATION_DIR = os.path.join('models', 'migrations')
 
 app = Flask(__name__)
-app.config.update(config)
+app.config.update({'DEBUG': config['DEBUG'],
+                   'SECRET_KEY': config['SECRET_KEY'],
+                   'SQLALCHEMY_DATABASE_URI': config['SQLALCHEMY_DATABASE_URI']})
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 app.app_context().push()
@@ -88,10 +81,10 @@ def handle_message(message_data):
 def connect():
     print('connected')
     sio.emit('client_connected', "you connected")
-    stream = MyStream(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'],
-                      credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
-    stream.filter(track=[settings["SEARCH_TERM"]], threaded=True)
-    sio.emit('client_connected', "the search term is {}".format(settings["SEARCH_TERM"]))
+    stream = MyStream(config['TWITTER_CONSUMER_KEY'], config['TWITTER_CONSUMER_SECRET'],
+                      config['TWITTER_ACCESS_TOKEN'], config['TWITTER_ACCESS_SECRET'])
+    stream.filter(track=[config["SEARCH_TERM"]], threaded=True)
+    sio.emit('client_connected', "the search term is {}".format(config["SEARCH_TERM"]))
 
 
 @sio.on('disconnect')
@@ -113,8 +106,8 @@ def store_message(message_data):
             msg = Message(text=message_data['text'],
                           date=datetime.datetime.now().isoformat(),
                           user_id=user.id,
-                          movement=settings["MOVEMENT"],
-                          scored=scored(settings))
+                          movement=config["MOVEMENT"],
+                          scored=scored(config))
             db.session.add(msg)
             db.session.commit()
             res = True
@@ -145,8 +138,8 @@ def get_or_make_user(message_data):
                 db.session.close()
 
 
-def scored(settings):
-    if settings["SCORED"] == "true":
+def scored(config):
+    if config["SCORED"] == "true":
         return True
     else:
         return False

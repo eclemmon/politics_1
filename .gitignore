@@ -3,7 +3,7 @@ scratch_scripts/ExperimentThreadingTkinter2.0.py
 Depreciated/hacking_together.py
 Depreciated/Message_Comparison_Toolset.py
 twitter_credentials.json
-twitter_credentials.py
+Deprecated/twitter_credentials.py
 .DS_Store
 Depreciated/Python_Start.py
 Depreciated/Listen_to_python.scd
@@ -16,4 +16,4 @@ Marketing Materials/
 Corpora/
 Profile_Files/
 Models/migrations
-config.json
+Deprecated/config.json

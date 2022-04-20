@@ -5,18 +5,12 @@ from Data_Dumps.instrument_names import instrument_indices_daw
 from a1_Discourse.python_files.discourse_music_gen import DiscourseMusicGen
 from Synthesis_Generators.instrument_key_generator import InstrumentKeyAndNameGenerator
 from Utility_Tools.politics_logger import logger_launcher
+from dotenv import dotenv_values
 
-# Load settings
-SETTINGS_PATH = '../settings.json'
-with open(SETTINGS_PATH, "r") as file:
-    settings = json.load(file)
-
-TWITTER_PATH = '../twitter_credentials.json'
-with open(TWITTER_PATH, "r") as file:
-    credentials = json.load(file)
+config = dotenv_values()
 
 # Determine instrument names
-if settings["DAW"] == 'true':
+if config["DAW"] == 'true':
     instruments = instrument_indices_daw
     inst_key_name_gen = InstrumentKeyAndNameGenerator(instruments, 16)
 else:
@@ -26,7 +20,6 @@ else:
 # Initialize client, logger and music generator
 client = socketio.Client()
 logger = logger_launcher()
-
 music_gen = DiscourseMusicGen(logger, inst_key_name_gen)
 
 
@@ -37,7 +30,6 @@ def on_connect(message):
 
 @client.on('handle_message')
 def message(data):
-    # print(data)
     music_gen.trigger_sounds(data)
 
 

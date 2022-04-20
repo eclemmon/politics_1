@@ -5,7 +5,6 @@ from Data_Dumps.vote_options import vote_options
 from Utility_Tools.politics_logger import logger_launcher
 
 
-
 # Load settings
 SETTINGS_PATH = '/Users/ericlemmon/Documents/PhD/PhD_Project_v2/settings.json'
 with open(SETTINGS_PATH, "r") as file:
