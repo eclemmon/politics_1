@@ -5,6 +5,10 @@ from dotenv import load_dotenv
 
 
 def run_ngrok_set_webhook():
+    """
+    Automator function for setting the ngrok and twilio webhooks
+    :return: ngrok process
+    """
     load_dotenv()
     # get datetime
     now = datetime.now()
