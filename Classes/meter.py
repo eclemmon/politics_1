@@ -32,7 +32,19 @@ class Meter:
 
 
 class ComplexMeter(Meter):
-    def __init__(self, num_beats, accent_weights, subdivisions):
+    """
+    ComplexMeter class. Complex meters can be either 5 or 7. For other complex or asymmetric meters, like 11, or unusual
+    sub-groupings of 8 or 9, these meters are typically thought to be two measure combinations of different meter
+    types. For example, an unusual measure of 9 grouped 2+3+2+2, is really a measure in 5 and a measure in 4. Hence,
+    the explicit reductive exception calls if the complex meter is not 5 or 7.
+    """
+    def __init__(self, num_beats: int, accent_weights: list, subdivisions: list):
+        """
+        Initialization for ComplexMeter class
+        :param num_beats: int
+        :param accent_weights: List of ints
+        :param subdivisions: List of ints
+        """
         if num_beats == 5 or num_beats == 7:
             if num_beats != len(accent_weights) and sum(subdivisions) != num_beats:
                 raise ValueError("The number of accent_weights and subdivisions in complex meter must equal the "
