@@ -521,7 +521,14 @@ class TakeFive(RhythmSection):
 
 
 class FourOnTheFloor(RhythmSection):
-    def __init__(self, meter):
+    """
+    FourOnTheFloor rhythm section class. Imitates up-tempo big-band/lindy-hop four on the floor rather than disco/edm.
+    """
+    def __init__(self, meter: Meter):
+        """
+        Initialization for FourOnTheFloor class.
+        :param meter: Meter
+        """
         super().__init__(meter)
         self.midi_notes = [midi_note for midi_note in range(76, 85)]
         self.midi_note_duration_arrays = [
