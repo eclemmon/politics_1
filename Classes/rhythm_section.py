@@ -316,7 +316,15 @@ class BreakBeat(RhythmSection):
 
 
 class CompoundSix(RhythmSection):
-    def __init__(self, meter):
+    """
+    CompoundSix rhythm section. Kind of like the kit part to In the Still of the Nite by The Five Satins, or Rihanna's
+    Love on the Brain. Kick on one, hi-hat or snare on 4 (2 of the compound big beats).
+    """
+    def __init__(self, meter: Meter):
+        """
+        Initialization for CompoundSix class.
+        :param meter: Meter
+        """
         super().__init__(meter)
         self.midi_notes = [midi_note for midi_note in range(44, 48)]
         self.midi_note_duration_arrays = [
@@ -329,22 +337,38 @@ class CompoundSix(RhythmSection):
         self.transform_rhythm_to_meter()
 
     def rhythm_to_duple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to two.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
                                                                                  slice(36, 37), slice(41, 48))
 
     def rhythm_to_triple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to three.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 3), slice(5, 9), slice(5, 10),
                                                                                  slice(0, 3), slice(5, 9),
                                                                                  slice(41, 44),
                                                                                  slice(2, 4))
 
     def rhythm_to_four(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to four.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10), slice(0, 4),
                                                                                  slice(6, 10), slice(0, 4),
                                                                                  slice(6, 10),
                                                                                  slice(36, 37), slice(41, 48))
 
     def rhythm_to_five(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 5 meter.
+        :return: None
+        """
         if self.meter.subdivisions == [2, 3]:
             self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 3), slice(5, 12),
                                                                                      slice(0, 3), slice(17, 24))
@@ -353,6 +377,10 @@ class CompoundSix(RhythmSection):
                                                                                      slice(22, 24))
 
     def rhythm_to_seven(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 7 meter.
+        :return: None
+        """
         if self.meter.subdivisions == [2, 2, 3]:
             self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 3), slice(5, 9),
                                                                                      slice(5, 12), slice(0, 3),
@@ -364,10 +392,18 @@ class CompoundSix(RhythmSection):
             self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 9), slice(5, 10))
 
     def rhythm_to_nine(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 9 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 11), slice(5, 12),
                                                                                  slice(0, 11), slice(41, 48))
 
     def rhythm_to_twelve(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 12 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 11), slice(5, 11),
                                                                                  slice(17, 24), slice(0, 11),
                                                                                  slice(5, 11), slice(41, 48))
@@ -379,40 +415,47 @@ class TakeFive(RhythmSection):
         self.midi_notes = [midi_note for midi_note in range(48, 53)]
         self.midi_note_duration_arrays = [
             [0.25] + rr(9) + [0.25] + rr(5) + [0.25] + rr(3) + [0.25] + rr(9) + [0.25] + rr(5) + [0.25] + rr(3),
-            [0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25,
-                                                                                                                '/r',
-                                                                                                                0.25,
-                                                                                                                '/r',
-                                                                                                                0.25] + rr(
-                5) + [0.25, '/r', 0.25, '/r'],
-            rr(2) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25,
-                                                                                                                   '/r',
-                                                                                                                   0.25,
-                                                                                                                   '/r',
-                                                                                                                   '/r',
-                                                                                                                   0.25] + rr(
-                4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(2),
-            rr(6) + [0.25] + rr(11) + [0.25, 0.25] + rr(2) + [0.25, 0.25] + rr(2) + [0.25, '/r', 0.25, 0.25, '/r'] +
-            nr(5) + rr(2) + nr(2),
-            rr(10) + [0.25] + rr(19) + [0.25] + rr(5) + [0.25, '/r', 0.25, '/r']
+            [0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r', 0.25] + rr(5) +
+            [0.25, '/r', 0.25, '/r', 0.25] + rr(5) + [0.25, '/r', 0.25, '/r'],  rr(2) + [0.25, '/r', 0.25, '/r',
+            '/r', 0.25] + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(4) + [0.25, '/r',  0.25, '/r', '/r', 0.25]
+            + rr(4) + [0.25, '/r', 0.25, '/r', '/r', 0.25] + rr(2), rr(6) + [0.25] + rr(11) + [0.25, 0.25] + rr(2) +
+            [0.25, 0.25] + rr(2) + [0.25, '/r', 0.25, 0.25, '/r'] + nr(5) + rr(2) + nr(2), rr(10) + [0.25] + rr(19) +
+            [0.25] + rr(5) + [0.25, '/r', 0.25, '/r']
         ]
         self.transform_rhythm_to_meter()
 
     def rhythm_to_duple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to two.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
                                                                                  slice(30, 34), slice(36, 40))
 
     def rhythm_to_triple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to three.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
                                                                                  slice(6, 10), slice(30, 34),
                                                                                  slice(36, 40), slice(36, 40))
 
     def rhythm_to_four(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to four.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 6), slice(6, 10),
                                                                                  slice(2, 6), slice(20, 28),
                                                                                  slice(32, 40))
 
     def rhythm_to_five(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 5 meter.
+        Passes if the meter subdivisions are 3, 2 like the originally composed segment.
+        :return: None
+        """
         if self.meter.subdivisions == [3, 2]:
             pass
         else:
@@ -421,12 +464,20 @@ class TakeFive(RhythmSection):
                                                                                      slice(36, 40), slice(30, 36))
 
     def rhythm_to_six(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 6 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
                                                                                  slice(8, 10),
                                                                                  slice(20, 26), slice(36, 40),
                                                                                  slice(38, 40))
 
     def rhythm_to_seven(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 7 meter.
+        :return: None
+        """
         if self.meter.subdivisions == [2, 2, 3]:
             self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(6, 10),
                                                                                      slice(6, 8), slice(6, 8),
@@ -445,6 +496,10 @@ class TakeFive(RhythmSection):
                                                                                      slice(36, 40), slice(36, 40))
 
     def rhythm_to_nine(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 9 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
                                                                                  slice(8, 10), slice(6, 10),
                                                                                  slice(8, 10), slice(20, 26),
@@ -452,6 +507,10 @@ class TakeFive(RhythmSection):
                                                                                  slice(36, 40), slice(38, 40))
 
     def rhythm_to_twelve(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 12 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 6), slice(6, 10),
                                                                                  slice(8, 10), slice(6, 10),
                                                                                  slice(8, 10), slice(6, 10),
@@ -480,12 +539,21 @@ class FourOnTheFloor(RhythmSection):
         self.transform_rhythm_to_meter()
 
     def rhythm_to_triple(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to three.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(4, 8), slice(10, 12),
                                                                                  slice(16, 20), slice(18, 20),
                                                                                  slice(24, 28), slice(26, 28),
                                                                                  slice(28, 32), slice(30, 32))
 
     def rhythm_to_five(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 5 meter.
+        Passes if the meter subdivisions are 3, 2 like the originally composed segment.
+        :return: None
+        """
         if self.meter.subdivisions == [2, 3]:
             self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 8), slice(6, 8),
                                                                                      slice(24, 32), slice(30, 32))
@@ -495,12 +563,20 @@ class FourOnTheFloor(RhythmSection):
                                                                                      slice(26, 32))
 
     def rhythm_to_six(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 6 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 4),
                                                                                  slice(4, 8), slice(6, 8),
                                                                                  slice(16, 20), slice(18, 20),
                                                                                  slice(28, 32), slice(30, 32))
 
     def rhythm_to_seven(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a complex/asymmetrical 7 meter.
+        :return: None
+        """
         if self.meter.subdivisions == [2, 2, 3]:
             self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 8), slice(0, 4),
                                                                                      slice(2, 4), slice(24, 32),
@@ -513,11 +589,19 @@ class FourOnTheFloor(RhythmSection):
                                                                                      slice(24, 32))
 
     def rhythm_to_nine(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 9 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(0, 4), slice(2, 4),
                                                                                  slice(4, 8), slice(6, 8),
                                                                                  slice(28, 32), slice(30, 32))
 
     def rhythm_to_twelve(self):
+        """
+        Transforms the meter and duration data from whatever its original meter is to a compound 12 meter.
+        :return: None
+        """
         self.midi_note_duration_arrays = self.build_new_midi_note_duration_array(slice(16, 20), slice(18, 20),
                                                                                  slice(16, 20), slice(18, 20),
                                                                                  slice(12, 16), slice(18, 20),
@@ -543,6 +627,7 @@ class PolyRhythms(RhythmSection):
         self.meter = meter
         self.midi_note_duration_arrays = [subdivide_meter_into_polyrhythm(meter.num_beats, random.randint(1, 13))
                                           for _ in range(len(self.midi_notes))]
+
 
 class IntroductionRhythms(RhythmSection):
     def __init__(self, meter):
