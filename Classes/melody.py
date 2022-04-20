@@ -636,10 +636,25 @@ class RandomMelody(Melody):
 
 
 class LeapyMelody(Melody):
+    """
+    LeapyMelody class. Generates a melody that jumps around between three upper octaves. Selects from either getting
+    a random note and duration, or generating a random appoggiatura.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for LeapyMelody class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
-    def get_next_note_and_dur(self, current_duration_left, current_chord_and_dur):
+    def get_next_note_and_dur(self, current_duration_left: Union[float, int], current_chord_and_dur: tuple):
+        """
+        Function to get the next note and duration for build_notes_and_durations function.
+        :param current_duration_left: float || int
+        :param current_chord_and_dur: tuple (Chord, float || int)
+        :return: tuple of (List, List, float || int)
+        """
         r = random.randint(0, 1)
         if r == 0:
             appoggiatura = self.appoggiatura(current_chord_and_dur, current_duration_left)
@@ -658,6 +673,11 @@ class LeapyMelody(Melody):
             return [note], [duration], duration_left
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for the LeapuMelody class. Builds the notes and durations and then
+        randomly transposes the notes.
+        :return: list of lists [Notes, Durations]
+        """
         notes = []
         durations = []
 
@@ -674,7 +694,7 @@ class LeapyMelody(Melody):
             transposition = random.choice([0, 1, 2])
             notes[i] = Note(notes[i].midi_note_number)
             notes[i].transpose(transposition)
-        return notes, durations
+        return [notes, durations]
 
 
 class ChoppyMelody(Melody):
