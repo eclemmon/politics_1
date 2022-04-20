@@ -2,7 +2,9 @@ from Classes.meter import SimpleDuple
 from Classes.meter import SimpleTriple
 from Classes.meter import ComplexMeter
 from Classes.meter import CompoundMeter
+from Classes.meter import Meter
 from itertools import chain
+from typing import Union
 import random
 
 
@@ -25,17 +27,41 @@ def nr(i, note_length=0.25):
     return [note_length for _ in range(i)]
 
 
-def subdivide_meter_into_polyrhythm(num_beats, subdivided_by):
+def subdivide_meter_into_polyrhythm(num_beats: Union[int, float], subdivided_by: int):
+    """
+    Helper function to divide input n number of beats by input var subdivided_by and give back subdivided_by
+    number of note durations.
+    :param num_beats: int || float
+    :param subdivided_by: int
+    :return: list
+    """
     return [num_beats * 0.25 * 4 / subdivided_by for _ in range(subdivided_by)]
 
 
 class RhythmSection:
-    def __init__(self, meter, midi_note_arrays=None, midi_note_duration_arrays=None):
+    """
+    RhythmSection superclass. Serves as a template for other RhythmSection subclasses.
+    """
+    def __init__(self, meter: Meter, midi_note_arrays: Union[None, list] = None,
+                 midi_note_duration_arrays: Union[None, list] = None):
+        """
+        Initialization for RhythmSection class. midi_note_arrays and midi_note_duration_arrays can be either None - in
+        which case the RhythmSection subclass will generate the data for each variable based on default data. Otherwise
+        will use the input data. Both midi_note_arrays and midi_note_duration_arrays should be 2d lists.
+        :param meter: Meter
+        :param midi_note_arrays: list of lists - must be a 2d list
+        :param midi_note_duration_arrays: list - must be a 2d list
+        """
         self.meter = meter
         self.midi_notes = midi_note_arrays
         self.midi_note_duration_arrays = midi_note_duration_arrays
 
     def transform_rhythm_to_meter(self):
+        """
+        A logical operator template for transforming RhythmSection subclasses according to the logic of the rhythmic
+        substrata via slicing defined in each rhythm_to_METER() call.
+        :return: None
+        """
         if self.meter.num_beats == 2:
             self.rhythm_to_duple()
         elif self.meter.num_beats == 3:
@@ -56,33 +82,75 @@ class RhythmSection:
             pass
 
     def rhythm_to_duple(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_triple(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_four(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_five(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_six(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_seven(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_nine(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def rhythm_to_twelve(self):
+        """
+        Template function
+        :return: None
+        """
         pass
 
     def flatten(t):
+        """
+        Helper function to flatten a 2d list into a 1d list.
+        :return:
+        """
         return [item for sublist in t for item in sublist]
 
-    def build_new_midi_note_duration_array(self, *slices):
+    def build_new_midi_note_duration_array(self, *slices: slice):
+        """
+        Abstracted helper function that uses passed in slices to build a new list of midi note durations. Used
+        to transform the rhythm information from one meter into another.
+        :param slices: slice
+        :return: list
+        """
         new_midi_note_durations_array = []
         for array in self.midi_note_duration_arrays:
             new_array = []
