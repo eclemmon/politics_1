@@ -1,5 +1,6 @@
 from typing import Union
 
+
 class SentimentDict:
     """
     SentimentDict class. A wrapper for the dictionary class with some extra logic to shorthand operations on sentiment
