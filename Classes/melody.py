@@ -698,7 +698,15 @@ class LeapyMelody(Melody):
 
 
 class ChoppyMelody(Melody):
+    """
+    ChoppyMelody class. Using a stochastic algorithm and short note durations, generates a choppy melody.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for ChoppyMelody class.
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
