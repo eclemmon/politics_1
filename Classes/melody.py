@@ -711,7 +711,7 @@ class ChoppyMelody(Melody):
 
     def build_notes_and_durations(self):
         """
-        Builts notes and durations for Choppy Melody
+        Builds notes and durations for Choppy Melody
         :return: List of Lists [[Notes], [floats]]
         """
         note_duration_values = [0.25, 0.5, 0.75]
@@ -739,10 +739,24 @@ class ChoppyMelody(Melody):
 
 
 class PolyrhythmicMelody(Melody):
+    """
+    PolyrhythmicMelody class. Builds a melody consisting of polyrhythmic durational subdivisions.
+    Subdivisions can result in rests or notes.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for PolyrhythmicMelody class
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def build_notes_and_durations(self):
+        """
+        For each chord and duration block from the HarmonicRhythm class, subdivide the durations randomly by an integer
+        between 3 and 7 and add values as durations or rests to the durations list. Add random notes for each duration.
+        :return: list of [notes, durations]
+        """
         notes = []
         durations = []
 
@@ -756,7 +770,13 @@ class PolyrhythmicMelody(Melody):
 
         return [notes, durations]
 
-    def get_random_chord_or_scale_tone(self, scale, chord):
+    def get_random_chord_or_scale_tone(self, scale: Scale, chord: Chord):
+        """
+        Selects between getting a random scale or random chord tone.
+        :param scale: Scale
+        :param chord: Chord
+        :return: Note
+        """
         return random.choice([self.get_random_chord_tone(chord), self.get_random_scale_tone(scale)])
 
 
