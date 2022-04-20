@@ -1,4 +1,6 @@
-# Not really basic, but rather basic as fuck.
+"""
+A supremely basic graph of tonal chords with both triads and sevenths. Data for constructing a Harmonic Graph.
+"""
 basic_major_tonal_web = {
     # CMaj
     (0, 4, 7): [(0, 4, 7, 11), (2, 5, 9), (2, 5, 9, 0), (5, 9, 0), (5, 9, 0, 4), (9, 0, 4), (9, 0, 4, 7), (7, 11, 2),
