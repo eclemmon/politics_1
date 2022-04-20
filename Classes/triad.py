@@ -3,9 +3,17 @@ from Classes.note import Note
 
 
 class Triad(Chord):
-    # noinspection PyMissingConstructor
-    def __init__(self, note_1, note_2, note_3):
-        self.notes = [note_1, note_2, note_3]
+    """
+    Triad class. SubClass of a chord with only three notes.
+    """
+    def __init__(self, note_1: Note, note_2: Note, note_3: Note):
+        """
+        Initialization for Triad
+        :param note_1: Note
+        :param note_2: Note
+        :param note_3: Note
+        """
+        self.notes = note_1, note_2, note_3
 
 
 if __name__ == '__main__':

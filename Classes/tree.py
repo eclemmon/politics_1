@@ -4,6 +4,10 @@ from NLP_Tools.message_comparison_toolset import WordNetTweetSimilarityScore
 
 
 class Tree:
+    """
+    Tree class for storing nodes. Useful for future development with more concrete object comparison when conducting
+    sound synthesis on related incoming texts.
+    """
     def __init__(self, message_comparison_obj):
         """
         A tree class that holds messages as nodes that can be traversed and catalogued
