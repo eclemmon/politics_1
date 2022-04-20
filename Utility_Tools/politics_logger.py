@@ -13,8 +13,8 @@ def construct_filename(path):
     """
     Constructs a file name  so that the .log file constructor can create
     a logging file dileneated by date and time.
-    :param str path: The target file path to save logged files.
-    :return: Returns the new path, along with constructed file name.
+    :param path: str The target file path to save logged files.
+    :return: str Returns the new path, along with constructed file name.
     """
     tail = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
     new_path = path + 'Politics-Log-' + tail + '.log'
@@ -25,7 +25,7 @@ def construct_filename(path):
 def create_logger_file(path):
     """
     Builds a .log file that can be written to.
-    :param str path: The target file path to create logged files.
+    :param path: str The target file path to create logged files.
     """
     file_name = construct_filename(path)
     current_time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -50,8 +50,8 @@ def setuplogger(path):
     """
     This function sets up the logger after building the file required through
     function: create_logger_file(path)
-    :param path: This is the path where you want to store your log of data
-    :return: Returns a file handler that will continuously write to the file
+    :param path: str This is the path where you want to store your log of data
+    :return: FileHandler Returns a file handler that will continuously write to the file
     specified in path for the duration of the session running.
     """
     print("Creating new logger file...")
@@ -65,7 +65,7 @@ def setuplogger(path):
 def logger_launcher():
     """
     This function launches the logger so any/all data is printed to the log file during the course of a concert.
-    :return: Returns the logger object.
+    :return: Logger
     """
     print("Launching Logger")
     logger = logging.getLogger(__name__)
