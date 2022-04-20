@@ -58,7 +58,7 @@ class Scale:
         """
         return len(self.notes)
 
-    def transpose(self, num):
+    def transpose(self, num: int):
         """
         Transposes self's midi note numbers by num octaves.
         :param num: int
@@ -67,7 +67,7 @@ class Scale:
         for note in self.notes:
             note.transpose(num)
 
-    def transpose_return_new(self, num):
+    def transpose_return_new(self, num: int):
         """
         Creates a new Chord that is transposed by num octaves.
         :param num: int
@@ -75,7 +75,7 @@ class Scale:
         """
         return Scale(tuple([Note(note.midi_note_number + num) for note in self.notes]))
 
-    def modal_transpose(self, scale_degree):
+    def modal_transpose(self, scale_degree: int):
         """
         Transposes self's midi note numbers by rotating indexes to create a new mode. so self.modal_transpose(1)
         called on a C Major scale will give D dorian.
@@ -85,7 +85,7 @@ class Scale:
         # TODO transpose rotated notes up and octave.
         self.notes = tuple(self.notes[scale_degree:] + self.notes[:scale_degree])
 
-    def modal_transpose_return_new(self, scale_degree):
+    def modal_transpose_return_new(self, scale_degree: int):
         """
         Transposes self's midi note numbers by rotating indexes to create and return a new mode and. So
         self.modal_transpose(1) called on a C Major scale will give D dorian.

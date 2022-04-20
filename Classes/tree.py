@@ -16,7 +16,7 @@ class Tree:
         self.nodes[None] = self.root
         self.message_comparison_obj = message_comparison_obj
 
-    def add_node(self, node):
+    def add_node(self, node: Node):
         """
         Adds a node to the tree. The root's key is None, so if there are no extant nodes, the first
         incoming message is appended to the root.
@@ -30,7 +30,7 @@ class Tree:
             self.nodes[node.message] = node
             self.nodes[key].add_child(node)
 
-    def remove_node(self, node):
+    def remove_node(self, node: Node):
         """
         Some functionality to remove a node.
         :param node: Node class.
@@ -40,13 +40,18 @@ class Tree:
             node.parent.add_child(child_node)
         node.parent.remove_child(node)
 
-    def remove_node_by_message(self, message):
+    def remove_node_by_message(self, message: str):
+        """
+        Removes a node by the input message.
+        :param message: str
+        :return: None
+        """
         node = self.nodes[message]
         self.remove_node(node)
 
-    def find_closest_node(self, node):
+    def find_closest_node(self, node: Node):
         """
-        Finds the closest node via the text comparison object. Returns the most similar
+        Finds the closest node via the text comparison object. Returns the most similar Node
         as a key for memoization.
         :param node: Node Class
         """
@@ -56,7 +61,7 @@ class Tree:
         else:
             return most_similar
 
-    def receive_message(self, message):
+    def receive_message(self, message: str):
         """
         Receives messages as a string and generates nodes to add to the tree.
         :param message: String from a tweet.
