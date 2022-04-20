@@ -2,14 +2,18 @@ from Classes.chord import Chord
 from Classes.note import Note
 from itertools import permutations
 from Harmonic_Graph_Constructors import harmonic_web
+from typing import Union
 
 
 class NeoriemannianWeb(harmonic_web.HarmonicWeb):
-    def __init__(self, starting_chord=None):
+    """
+    NeoriemannianWeb class. A graph that reflects the cyclical and pitch-based relationships between triads in
+    neo-Riemannian theory.
+    """
+    def __init__(self, starting_chord: Union[Chord, None] = None):
         """
-        Initializes the Neoriemannian web
-        :param starting_chord: If starting chord is given, makes a copy of the chord and
-        brings it into a lower octave.
+        Initializes the NeoriemannianWeb
+        :param starting_chord: Chord || None
         """
         if starting_chord is None:
             midinote_numbers = [0, 4, 7]
@@ -27,11 +31,11 @@ class NeoriemannianWeb(harmonic_web.HarmonicWeb):
         # Initializes dict for when search paths are called
         self.breadth_first_path = {}
 
-    def build_web(self, chord=None):
+    def build_web(self, chord: Union[Chord, None] = None):
         """
-        Builds the Riemannian web
-        :param chord: default builds the web around the starting chord, but any triad that works in a Riemannian
-        web can be given over as well.
+        Builds the Riemannian web. Default builds the web around the starting chord, but any triad that works
+        in a Riemannian graph can be given over as well.
+        :param chord: Chord
         """
         if chord is None:
             chord = self.starting_chord
@@ -43,13 +47,15 @@ class NeoriemannianWeb(harmonic_web.HarmonicWeb):
             else:
                 self.build_web(next_chord)
 
-    def breadth_first_search(self, destination_chord, starting_chord=None):
+    def breadth_first_search(self, destination_chord: Chord, starting_chord: Union[Chord, None] = None):
         """
         Breadth first search implementation, starting chord is wherever the 'cursor' is pointing via self.current_chord.
-        walks through the web to find the shortest path to the destination chord.
-        :param destination_chord: The chord that user wants to travel to.
-        :return: Returns and empty array if the destination is the current chord. Otherwise memoizes and returns the
-        shortest path between self.current_chord and destination chord.
+        walks through the web to find the shortest path to the destination chord. Returns and empty array if the
+        destination is the current chord. Otherwise, memoizes and returns the shortest path between self.current_chord
+        and destination chord.
+        :param starting_chord: Chord || None
+        :param destination_chord: Chord
+        :return: list
         """
         if starting_chord is None:
             starting_chord = self.current_chord
@@ -83,24 +89,24 @@ class NeoriemannianWeb(harmonic_web.HarmonicWeb):
 
         return []
 
-    def build_chord_permutations(self, chord=None):
+    def build_chord_permutations(self, chord: Union[Chord, None] = None):
         """
         neo-Riemannian chords are typically triads. To figure out the neighbor chords agnostically to the asymmetry
-        between pitch classes and the traidic system, this helper function builds all possible permutations of a chord's
-        altered notes by whole- and half-step.
-        :param chord: A Chord object.
-        :return: returns perms, a list of permutations of all chords possible after altering the initial chord by half-
-        or whole-step.
+        between pitch classes and the triadic system, this helper function builds all possible permutations of a chord's
+        altered notes by whole- and half-step. Returns a list of permutations of all chords possible after altering the
+        initial chord by half- or whole-step.
+        :param chord: Chord || None
+        :return: list
         """
         if chord is None:
             chord = self.starting_chord
         perms = []
-        midinote_numbers = [note.midi_note_number for note in chord.notes]
-        for index, note in enumerate(midinote_numbers):
-            new_chord1 = midinote_numbers.copy()
-            new_chord2 = midinote_numbers.copy()
-            new_chord3 = midinote_numbers.copy()
-            new_chord4 = midinote_numbers.copy()
+        midi_note_numbers = [note.midi_note_number for note in chord.notes]
+        for index, note in enumerate(midi_note_numbers):
+            new_chord1 = midi_note_numbers.copy()
+            new_chord2 = midi_note_numbers.copy()
+            new_chord3 = midi_note_numbers.copy()
+            new_chord4 = midi_note_numbers.copy()
             new_chord1[index] = note + 1
             new_chord2[index] = note - 1
             new_chord3[index] = note + 2
@@ -112,12 +118,13 @@ class NeoriemannianWeb(harmonic_web.HarmonicWeb):
         perms = [list(t) for t in perms]
         return perms
 
-    def get_valid_chords(self, chord=None):
+    def get_valid_chords(self, chord: Union[Chord, None] = None):
         """
-        This takes in a chord and returns all valid neighbor chords in a neo-Riemannian web.
-        :param chord: Starting chord. If none, starting chord will be self.starting_chord via the
-        build_chord_permutations call.
-        :return: Returns a list of valid neighbor chords in a neo-Riemannian web.
+        This takes in a chord and returns all valid neighbor chords in a neo-Riemannian web. If the starting chord is
+        none, the starting chord will be self.starting_chord via the build_chord_permutations call. Returns a list of
+        valid neighbor chords in a neo-Riemannian web.
+        :param chord: Chord
+        :return: list
         """
         valid_chords = []
         chords = self.build_chord_permutations(chord)
