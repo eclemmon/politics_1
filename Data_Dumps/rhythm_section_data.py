@@ -5,7 +5,8 @@ cybernetic_republic_rhythm_section = {
     'polyrhythms': PolyRhythms,
     'take-five': TakeFive,
     'compound': CompoundSix,
-    'breakbeat': BreakBeat,
+    'breakbeat1': BreakBeat,
+    'breakbeat2': BreakBeat,
     'random': RandomRhythms
 }
 

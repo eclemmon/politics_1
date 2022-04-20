@@ -6,5 +6,5 @@ cybernetic_republic_melodies = {
     'leapy': LeapyMelody,
     'choppy': ChoppyMelody,
     'polyrhythmic': PolyrhythmicMelody,
-    'maximum-ornamentation': MaxOrnamentationMelody
+    'max-ornament': MaxOrnamentationMelody
 }

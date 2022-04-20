@@ -25,7 +25,7 @@ cybernetic_republic_progressions = {
         Chord(Note(9), Note(0), Note(2), Note(5)),
         Chord(Note(7), Note(11), Note(2), Note(5))
     ]),
-    'chromatic-lament': ChordProgression([
+    'lament': ChordProgression([
         Chord(Note(0), Note(3), Note(7)),
         Chord(Note(11), Note(7), Note(2)),
         Chord(Note(10), Note(7), Note(0), Note(3)),
