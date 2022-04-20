@@ -7,7 +7,7 @@ class Chord:
     Note: Some duplicating logic with Scale class. In the future, create an abstracted note collection class and
     subclass Chord and Scale from there.
     """
-    def __init__(self, *notes: tuple):
+    def __init__(self, *notes: Note):
         """
         Initialization for Chord Class
         :param notes: tuple of Notes

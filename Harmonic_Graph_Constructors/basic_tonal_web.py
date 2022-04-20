@@ -5,7 +5,16 @@ from Data_Dumps import basic_tonal_web_structure
 
 
 class BasicTonalWeb(HarmonicWeb):
+    """
+    BasicTonalWeb class. This class imports data from Data_Dumps.basic_tonal_web_structure to make a graph out of
+    the dictionary. Starts in C-major if no starting chord is given. Otherwise, transposes the graph to the starting
+    chord as best as possible.
+    """
     def __init__(self, starting_chord=None):
+        """
+        Initialization for BasicTonalWeb class.
+        :param starting_chord: None || Chord
+        """
         if starting_chord is None:
             midinote_numbers = [0, 4, 7]
         else:
@@ -22,6 +31,10 @@ class BasicTonalWeb(HarmonicWeb):
         self.breadth_first_path = {}
 
     def build_web(self):
+        """
+        Builds the graph from the data.
+        :return: None
+        """
         diff = self.starting_chord.notes[0].midi_note_number
 
         for key, value in basic_tonal_web_structure.basic_major_tonal_web.items():

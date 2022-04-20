@@ -5,7 +5,7 @@ class Scale:
     """
     Scale class for containing notes, and additional logic as needed different from the Chord class.
     """
-    def __init__(self, *notes: tuple):
+    def __init__(self, *notes: Note):
         """
         Initializtion for Scale class.
         :param notes: tuple of Notes
