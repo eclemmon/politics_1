@@ -4,35 +4,35 @@ from nltk import tokenize
 from statistics import mean
 
 
-def get_sentiment_with_text(sentiment_analyzer, text):
+def get_sentiment_with_text(sentiment_analyzer: SentimentIntensityAnalyzer, text: str):
     """
-    Gets the sentiment of each sentence in a text and returns the sentence as key and value the a dict of the sentiment.
-    :param sentiment_analyzer: Sentiment intensity analyzer
-    :param text: The text to be analyzed
-    :return: {sentence1: {polarity_score}, sentence2: {polarity_score}...}
+    Gets the sentiment of each sentence in a text and returns the sentence as key and value of a dict of the sentiment.
+    :param sentiment_analyzer: SentimentIntensityAnalyzer
+    :param text: str
+    :return: dict {sentence1: {polarity_score}, sentence2: {polarity_score}...}
     """
     sentences = tokenize.sent_tokenize(text, language="english")
     return {sentence: sentiment_analyzer.polarity_scores(sentence) for sentence in sentences}
 
 
-def get_sentiment(sentiment_analyzer, text):
+def get_sentiment(sentiment_analyzer: SentimentIntensityAnalyzer, text: str):
     """
     Gets the sentiment of each sentence in a text and returns only the dict polarity scores as a list.
-    :param sentiment_analyzer: Sentiment intensity analyzer
-    :param text: The text to be analyzed
-    :return: [{polarity_score1}, {polarity_score2}...]
+    :param sentiment_analyzer: SentimentIntensityAnalyzer
+    :param text: str
+    :return: list of dicts [{polarity_score1}, {polarity_score2}...]
     """
     sentences = tokenize.sent_tokenize(text, language="english")
     return [sentiment_analyzer.polarity_scores(sentence) for sentence in sentences]
 
 
-def get_average_sentiment(sentiment_analyzer, text):
+def get_average_sentiment(sentiment_analyzer: SentimentIntensityAnalyzer, text: str):
     """
     Gets the average sentiment of the entire text (delineated by taking the mean of all the polarity
     scores of each sentence).
-    :param sentiment_analyzer: Sentiment intensity analyzer
-    :param text: The text to be analyzed
-    :return: {mean_polarity_score}
+    :param sentiment_analyzer: SentimentIntensityAnalyzer
+    :param text: str
+    :return: dict of mean_polarity_score
     """
     sentences = tokenize.sent_tokenize(text, language="english")
     sentiments = [sentiment_analyzer.polarity_scores(sentence) for sentence in sentences]
