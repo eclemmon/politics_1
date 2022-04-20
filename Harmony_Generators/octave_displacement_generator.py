@@ -3,12 +3,22 @@ from Utility_Tools.mapping_functions import linear_to_linear as lin2lin
 from nltk.tokenize import word_tokenize
 
 
-def get_octave_placement_sigmoid(text):
+def get_octave_placement_sigmoid(text: str):
+    """
+    Function to map the length of a given text to an octave via a sigmoid function.
+    :param text: str
+    :return: int
+    """
     length = len(text)
     return int(lin2sigmoid(length, 0, 280, 96, 24, -0.3)) // 12
 
 
-def get_octave_placement_linear(text):
+def get_octave_placement_linear(text: str):
+    """
+    Function to map the length of a given text to an octave via a linear mapping function.
+    :param text: str
+    :return: int
+    """
     length = len(text)
     if length > 144:
         length = 144
@@ -19,7 +29,12 @@ def get_octave_placement_linear(text):
     return int(lin2lin(length, 0, 144, 96, 24)) // 12
 
 
-def get_octave_placement_piecewise(text):
+def get_octave_placement_piecewise(text: str):
+    """
+    Function to map the length of a given text to an octave via special piece-wise logic.
+    :param text: str
+    :return: int
+    """
     char_len = len(text)
     if char_len <= 29:
         # Short texts
