@@ -399,7 +399,7 @@ class CyberneticRepublicMusicGen:
                                            self.variable_keys['bass'], self.variable_keys['middle-voices'],
                                            self.variable_keys['rhythm'], self.variable_keys['progression'])
         self.send_musical_data_to_sc(data)
-        self.initialize_musical_data(data, self.arpeggiator)
+        self.initialize_musical_data(data, arppeggiator=self.arpeggiator)
 
     def turn_arpeggiator_on_off(self, arpeggiator_on_off: bool):
         """
