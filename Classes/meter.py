@@ -77,12 +77,26 @@ class CompoundMeter(Meter):
 
 
 class SimpleTriple(Meter):
+    """
+    SimpleTriple class. In three!
+    """
     def __init__(self):
+        """
+        Initialization for SimpleTriple class.
+        """
         super().__init__(3, [3, 1, 1], [3])
 
 
 class SimpleDuple(Meter):
-    def __init__(self, num_beats):
+    """
+    SimpleDuple class. Simple duple meters can be in 2 or 4. Larger duple meters, like 8 can be seen as slowed down
+    versions of these more basic metrical units.
+    """
+    def __init__(self, num_beats: int):
+        """
+        Initialization for SimpleDuple class.
+        :param num_beats: int
+        """
         if num_beats == 2:
             super().__init__(2, [3, 1], [1, 1])
         elif num_beats == 4:
