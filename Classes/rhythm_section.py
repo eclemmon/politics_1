@@ -410,7 +410,16 @@ class CompoundSix(RhythmSection):
 
 
 class TakeFive(RhythmSection):
-    def __init__(self, meter):
+    """
+    TakeFive rhythm section class. A rhythm section that imitates Brubeck's Take Five. Not a transcription, but occupies
+    the same timbral space on the kit, and is written originally in 5. Has some of the lilting swing of the Brubeck
+    as well.
+    """
+    def __init__(self, meter: Meter):
+        """
+        Initialization for TakeFive class.
+        :param meter: Meter
+        """
         super().__init__(meter)
         self.midi_notes = [midi_note for midi_note in range(48, 53)]
         self.midi_note_duration_arrays = [
