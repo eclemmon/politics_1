@@ -223,7 +223,15 @@ class Melody:
         remaining_duration = current_duration_left - sum(durations)
         return notes, durations, remaining_duration
 
-    def turn(self, chord_and_duration_block, current_duration_left, chromatic: bool = False):
+    def turn(self, chord_and_duration_block: tuple, current_duration_left: Union[float, int], chromatic: bool = False):
+        """
+        Makes a 'turn' ornamentation. Usually, this consists of an accented upper neighbor, the primary indicated note,
+        a lower neighbor, and then back to the indicated ote.
+        :param chord_and_duration_block: tuple (Chord, float || int)
+        :param current_duration_left: float || int
+        :param chromatic: boolean
+        :return: tuple of (list, list, float || int)
+        """
         notes = []
         # get random indicated note
         indicated_note = random.choice(chord_and_duration_block[0].notes[:])
@@ -360,7 +368,7 @@ class Melody:
             self.chromatic_lower_neighbor
         ])(note)
 
-    def get_random_duration(self, tuples_allowed=True):
+    def get_random_duration(self, tuples_allowed: bool = True):
         """
         Gets a random duration. If tuples allowed, can return values 1/3 and 2/3
         :param tuples_allowed: boolean
@@ -411,7 +419,8 @@ class Melody:
                 closest_tone = tone
         return closest_tone
 
-    def is_tuplet(self, duration):
+    @staticmethod
+    def is_tuplet(duration: Union[int, float]):
         """
         Helper function to determine whether a duration is a tuplet
         :param duration: int or float
@@ -422,8 +431,9 @@ class Melody:
         else:
             return False
 
-    def is_sustainable(self, next_chord_and_dur_block, current_chord_and_dur_block=None,
-                       current_note_and_dur_block=None):
+    @staticmethod
+    def is_sustainable(next_chord_and_dur_block: tuple, current_chord_and_dur_block: Union[tuple, None] = None,
+                       current_note_and_dur_block: Union[tuple, None] = None):
         """
         Tests to see if the current note or chord is sustainable to the next chord and dur block.
         :param next_chord_and_dur_block: tuple of (Chord, int || float)
@@ -453,7 +463,8 @@ class Melody:
                     return True
             return False
 
-    def sustain_across_chord_and_dur_block(self, current_chord_and_dur_block, next_chord_and_dur_block):
+    @staticmethod
+    def sustain_across_chord_and_dur_block(current_chord_and_dur_block: tuple, next_chord_and_dur_block: tuple):
         """
         Sustains the current chord_and_dur_block to the next chord and dur block
         :param current_chord_and_dur_block: tuple of (Chord, int || float)
@@ -469,7 +480,14 @@ class Melody:
                 if note1 == note2:
                     return note1, current_chord_and_dur_block[1] + next_chord_and_dur_block[1]
 
-    def sustain_across_note_to_chord_and_dur_block(self, note_and_duration, next_chord_and_dur_block):
+    @staticmethod
+    def sustain_across_note_to_chord_and_dur_block(note_and_duration: tuple, next_chord_and_dur_block: tuple):
+        """
+        Sustains the current note and duration over to the next chord and duration block.
+        :param note_and_duration: tuple of (Note, int || float)
+        :param next_chord_and_dur_block: tuple of (Chords, int || float)
+        :return: tuple of (Note, int || float)
+        """
         # get note
         note1 = note_and_duration[0]
         # get chord
