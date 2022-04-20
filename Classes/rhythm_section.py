@@ -609,7 +609,14 @@ class FourOnTheFloor(RhythmSection):
 
 
 class RandomRhythms(RhythmSection):
-    def __init__(self, meter):
+    """
+    RandomRhythms rhythm section class. Generates rhythms randomly for playback.
+    """
+    def __init__(self, meter: Meter):
+        """
+        Initialization for RandomRhythms class
+        :param meter: Meter
+        """
         super().__init__(meter)
         self.midi_notes = [midi_note for midi_note in range(60, 80)]
         self.midi_note_duration_arrays = [[random.uniform(0.1, 5) for _ in range(24)] for
