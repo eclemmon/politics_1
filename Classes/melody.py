@@ -594,13 +594,31 @@ class SustainedMelody(Melody):
 
 
 class RandomMelody(Melody):
+    """
+    RandomMelody class. Generates a melody randomly, by selecting notes and durations randomly as long as there is
+    space in the total duration left.
+    """
     def __init__(self, harmonic_rhythm: HarmonicRhythm, scale: Scale):
+        """
+        Initialization for RandomMelody
+        :param harmonic_rhythm: HarmonicRhythm
+        :param scale: Scale
+        """
         super().__init__(harmonic_rhythm, scale)
 
     def get_next_note_and_dur(self):
+        """
+        Gets a random scale tone and a random duration and returns
+        :return: tuple of (Note, float || int)
+        """
         return self.get_random_scale_tone(self.scale), self.get_random_duration()
 
     def build_notes_and_durations(self):
+        """
+        Builds notes and durations for RandomMelody class. While sum(durations) < total_duration, adds random notes
+        and duration values to notes list and durations list.
+        :return: list of lists [list, list]
+        """
         notes = []
         durations = []
         total_duration = self.harmonic_rhythm.meter.num_beats * self.harmonic_rhythm.num_bars
@@ -746,7 +764,7 @@ class MaxOrnamentationMelody(Melody):
             return self.turn(chord_and_duration, current_duration_left, random.choice([True, False]))
         else:
             return self.trill(chord_and_duration, current_duration_left,
-                   random.choice([True, False]), random.choice([True, False]))
+                              random.choice([True, False]), random.choice([True, False]))
 
 
 if __name__ == "__main__":
