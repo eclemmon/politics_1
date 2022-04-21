@@ -1,4 +1,7 @@
 # Politics I
+
+![Politics 1](/blob/logo_square.jpg)
+
 This repository hosts the development codebase for the participatory computer music work Politics I.
 
 The current functionality uploaded here is currently in the development phase.
@@ -6,9 +9,15 @@ The current functionality uploaded here is currently in the development phase.
 # Installation
 
 Politics I requires many different dependencies. This README file will walk you through downloading and installing the
-software required for Politics I
+software required for Politics I. In this 
 
-1. Download and install <a href=https://www.python.org/downloads/release/python-392/>Python 3.9.2</a>
+First and foremost, much of the software is written in Python. Download and install python by going here:
+
+https://www.python.org/downloads/release/python-392/ or 
+
+`brew tap twilio/brew && brew install twilio`
+
+
 
 
 2. Download and install <a href=https://supercollider.github.io/download>SuperCollider</a>
