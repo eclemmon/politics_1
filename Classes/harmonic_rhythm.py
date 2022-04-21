@@ -40,11 +40,11 @@ def recursive_split_meter(meter_subdivision: list, n_splits: int, n_recursions: 
     :param n_recursions: int to track the number of recursions executed.
     :return: list
     """
-    if all(i == 1 for i in meter_subdivision):
+    if all([i == 1 for i in meter_subdivision]):
         return [1 for _ in range(sum(meter_subdivision))]
     elif n_recursions > n_splits >= 0:
         return [sum(meter_subdivision)]
-    elif n_recursions == n_splits:
+    elif len(meter_subdivision) == n_splits:
         return meter_subdivision
     else:
         greatest_index = 0
@@ -80,7 +80,7 @@ def chords_in_bar_less_than_subdivisions(num_chords: int, subdivisions: list):
 
 def chords_in_bar_greater_than_subdivisions(num_chords: int, subdivisions: list):
     """
-    Logical helper function that calls recursive split meter to get the subdivisions of the meter whne num_chords is >
+    Logical helper function that calls recursive split meter to get the subdivisions of the meter when num_chords is >
     len(subdivisions)
     :param num_chords: int
     :param subdivisions: list
@@ -204,21 +204,21 @@ if __name__ == "__main__":
     # meter = CompoundMeter(9, [3,1,1,2,1,1,2,1,1], [3, 3, 3])
     # meter = SimpleDuple(2)
     # meter = CompoundMeter(12, [3, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1], [3,3, 3, 3])
-    meter = ComplexMeter(5, [3, 1, 1, 2, 1], [3, 2])
+    meter = ComplexMeter(5, [3, 1, 2, 1, 1], [2, 3])
     c_major = Chord(Note(0), Note(4), Note(7))
     CM7 = Chord(Note(0), Note(4), Note(7), Note(11))
     Cmm7 = Chord(Note(0), Note(3), Note(7), Note(10))
     a = Chord(Note(9), Note(0), Note(3))
     G7 = Chord(Note(7), Note(11), Note(14), Note(17))
-    long = ChordProgression([c_major, CM7, Cmm7, a, G7, a])
+    long = ChordProgression([c_major, CM7, Cmm7, a, G7, a, G7, a, c_major])
     short = ChordProgression([c_major, CM7, Cmm7])
     medium = ChordProgression([c_major, CM7, Cmm7, a])
     hr = HarmonicRhythm(meter, long)
-    # print("long: ", hr.get_chords_and_durations())
+    print("long: ", hr.get_zipped_hr_chords_and_durations())
     hr = HarmonicRhythm(meter, short)
-    # print("short: ", hr.get_chords_and_durations())
+    print("short: ", hr.get_chords_and_durations())
     hr = HarmonicRhythm(meter, medium)
-    # print("mediusm: ", hr.get_chords_and_durations())
+    print("mediusm: ", hr.get_chords_and_durations())
     # print(hrhythm.get_zipped_hr_chords_and_durations())
     # print(hrhythm.get_chords_and_durations())
 
