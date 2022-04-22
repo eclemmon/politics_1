@@ -71,13 +71,13 @@ NB: Politics I has only been tested and run on MacOS. All installation instructi
 
 Install brew from terminal
 
-`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+`$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 
 ### Step 4:
 
 Install all other requisite packages
 
-`brew install \
+`$ brew install \
 --cask supercollider \
 ngrok/ngrok/ngrok \
 git \
@@ -89,7 +89,7 @@ brew tap twilio/brew && brew install twilio`
 
 Clone Politics I from GitHub
 
-`git clone https://github.com/eclemmon/politics_1.git`
+`$ git clone https://github.com/eclemmon/politics_1.git`
 
 ***
 
@@ -217,13 +217,13 @@ Once all these variables are set, you should be almost ready to go!
 
 First, boot the messaging servicer(s):
 
-`sh run.sh`
+`$ sh run.sh`
 
 Then, open Live and SuperCollider (whether you open live will depend on the movement you are performing) and execute 
 any necessary supercollider code in the movement_name_main.scd file. Then navigate back to the directory of the movement 
 you are performing and execute:
 
-`sh run_movement_name.sh`
+`$ sh run_movement_name.sh`
 
 NB: In the future, you will not need to run SuperCollider code manually, as sclang and scsynth
 will be run from the shell scripts automatically.
