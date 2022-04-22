@@ -3,7 +3,7 @@
 ![Politics 1](/blob/readme/logo_square.jpg)
 
 ### Politics I is a participatory work of music created by Eric Lemmon. For performances of this work, please get in touch at ec.lemmon@gmail.com. 
-For more about this work, please visit [my website]([Further Reading](ericlemmon.net/politics-i/)).
+For more about this work, please visit [my website]([Further Reading](https://ericlemmon.net/politics-i/)).
 
 ***
 # Table of Contents
