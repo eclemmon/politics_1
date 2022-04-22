@@ -17,3 +17,4 @@ future~=0.18.2
 eventlet~=0.33.0
 pyngrok~=5.1.0
 python-dotenv~=0.19.2
+sphinx

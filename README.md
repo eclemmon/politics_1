@@ -2,9 +2,9 @@
 
 ![Politics 1](/blob/logo_square.jpg)
 
-This repository hosts the development codebase for the participatory computer music work Politics I.
+### Politics I is a participatory work of music created by Eric Lemmon. For performances of this work, please get in touch at ec.lemmon@gmail.com
 
-The current functionality uploaded here is currently in the development phase.
+
 
 # Installation
 
