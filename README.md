@@ -232,3 +232,8 @@ will be run from the shell scripts automatically.
 
 If you have any questions, or any steps seem to be missing in this installation walk-through,
 let me know! Contact me at `ec.lemmon@gmail.com`
+
+***
+
+#### [Bibliography](/blob/politics_I.bib)
+
