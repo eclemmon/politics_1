@@ -198,3 +198,7 @@ def get_graph_chord_indexes_and_weights(sentiment_values: dict, num_adjacent_cho
     weights = get_linear_weights_by_distances(vector_end, vertices)
     indexes = ['home'] + list(indexes)
     return dict(zip(indexes, weights))
+
+if __name__ == "__main__":
+    print(get_distance_between_points((0.78, -0.2), (1, 0)))
+    print(get_linear_weights_by_distances((0.78, -0.2), [(1, 0), (0, 0), (0.525, -.7071)]))
