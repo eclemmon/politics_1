@@ -213,7 +213,7 @@ class DiscourseMusicGen:
 
         # Send Message Response
         kwargs = {'od': od, 'time_interval': time_interval, 'rhythm': rhythm, 'delay_t_a_d': delay_t_a_d, 'spat': spat,
-                  'pmod': pmod}
+                  'pmod': pmod, 'inst_node': inst_node}
         generate_discourse_message_response(self.responder, data, kwargs)
 
         # Build the osc message

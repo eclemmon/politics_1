@@ -1,6 +1,7 @@
 import tweepy
 import json
 from twilio.rest import Client
+from Classes.node import Node
 from dotenv import dotenv_values
 
 
@@ -97,14 +98,15 @@ def generate_sms_discourse_message(data: dict, kwargs: dict):
     :param kwargs: dict
     :return: str
     """
-    return "{}{}{}{}{}{}{}".format(
+    return "{}{}{}{}{}{}{}{}".format(
         construct_prefix_response_message(data['username']),
         construct_octave_response_message(kwargs['od']),
         construct_time_interval_response_message(kwargs['time_interval']),
         construct_rhythm_response_message(kwargs['rhythm']),
         construct_delay_response_message(kwargs['delay_t_a_d']),
         construct_spatialization_response_message(kwargs['spat']),
-        construct_emojis_response_message(kwargs['pmod'])
+        construct_emojis_response_message(kwargs['pmod']),
+        construct_closest_message_response(kwargs['inst_node'])
     )
 
 
@@ -273,6 +275,21 @@ def construct_octave_response_message(od):
         return "# Your message was medium in length, so it will be in the middle of our hearing range.\n\n"
     else:
         return "# Your message was long, so it will be low and long!\n\n"
+
+
+def construct_closest_message_response(node: Node):
+    """
+    Helper function to build a string that returns the closest message according to the message comparison algorithm.
+    :param node: Node
+    :return: str
+    """
+    if node.parent.message is None:
+        return "# You sent the first message of the piece or it is very unique! I selected a random instrument to " \
+               "make sound with.\n\n"
+    else:
+        return '# I selected instruments based on the most similar text I could find to yours: "{}"\n\n'.format(
+            node.parent.message
+        )
 
 
 def construct_prefix_response_message(username):
