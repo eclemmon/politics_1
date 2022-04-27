@@ -24,7 +24,7 @@ def clock(func):
             arg_lst.append(', '.join(repr(arg) for arg in args))
         if kwargs:
             pairs = ['%s=%r' % (k, w) for k, w in sorted(kwargs.items())]
-            arg_lst.appen(', '.join(pairs))
+            arg_lst.append(', '.join(pairs))
         arg_str = ', '.join(arg_lst)
         print('[%0.8fs] %s(%s) -> %r' % (elapsed, name, arg_str, result))
         return result
