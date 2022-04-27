@@ -287,7 +287,7 @@ class DiscourseMusicGen:
         :param data: Dict of data, i.e. {'text': "lorum ipsum", 'username': "Confucius"}
         :return: Tuple with the closest related text and the similarity score.
         """
-        return self.message_comparison_obj.new_incoming_tweet(data['text'])
+        return self.message_comparison_obj.new_incoming_document(data['text'])
 
     @staticmethod
     def generate_euclidean_rhythm(pos_count_dict):
