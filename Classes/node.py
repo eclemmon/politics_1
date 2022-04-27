@@ -48,3 +48,8 @@ class Node:
         """
         node.parent = None
         self.children.remove(node)
+
+    def get_node_instrument_chain(self, num_instruments=None):
+        if num_instruments is None:
+            num_instruments = len(self.instruments)
+        return self.instruments[:num_instruments]

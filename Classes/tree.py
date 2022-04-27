@@ -83,6 +83,7 @@ class Tree:
         """
         new_node = Node(message)
         self.add_node(new_node)
+        return new_node
 
     def set_node_instrument_chain(self, node: Node, similarity_score: float):
         if similarity_score >= 0.9:
@@ -93,8 +94,10 @@ class Tree:
             else:
                 node.instruments = node.parent.instruments[-4:] + [random.randint(0, 15)]
 
-    def get_node_instrument_chain(self, node):
-        return node.instruments
+    def get_node_instrument_chain(self, node, num_instruments=None):
+        if num_instruments is None:
+            num_instruments = len(node.instruments)
+        return node.instruments[:num_instruments]
 
 if __name__ == '__main__':
     sentences = [
