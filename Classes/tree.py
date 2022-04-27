@@ -1,5 +1,5 @@
 import random
-from node import Node
+from Classes.node import Node
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.message_comparison_toolset import WordNetTweetSimilarityScore
 
@@ -35,15 +35,17 @@ class Tree:
             if self.nodes.get(node.message):
                 # Some memoization to speed up algorithm
                 key, similarity = node.message, 1.0
-                node = self.nodes.get(node.message)
             else:
                 # get closest message by similarity
                 key, similarity = self.find_closest_node(node)
+                # memoize the message as a key and the node as the value
                 self.nodes[node.message] = node
-                node.num_ancestors = self.nodes[key].num_ancestors + 1
-                self.nodes[key].add_child(node)
-                self.set_node_instrument_chain(node, similarity)
-            print(node, similarity)
+            # Add to the number of ancestors based on parent node
+            node.num_ancestors = self.nodes[key].num_ancestors + 1
+            # Add new node as child to most similar node (parent node)
+            self.nodes[key].add_child(node)
+            # Generate an instrument chain and attach it to the new node
+            self.set_node_instrument_chain(node, similarity)
 
     def remove_node(self, node: Node):
         """

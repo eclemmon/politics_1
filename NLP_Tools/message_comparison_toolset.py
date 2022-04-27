@@ -24,10 +24,7 @@ def preprocess(string):
     """
     string = string.lower()
     string = porterstemmer.stem(string)
-    if string in stop_words:
-        return None
-    else:
-        return string
+    return string
 
 
 class TF_IDF:

@@ -7,6 +7,7 @@ from dotenv import dotenv_values
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from better_profanity import profanity
 from Classes.worker_thread import WorkerThread
+from Classes.tree import Tree
 from Harmonic_Graph_Constructors.harmonic_web import HarmonicWeb
 from Utility_Tools.mapping_functions import linear_to_linear
 from Utility_Tools.message_response import PoliticsMessageResponder
@@ -88,7 +89,8 @@ class DiscourseMusicGen:
         self.synth_osc_address = '/sound_triggers'
         self.gui_osc_address = '/gui_address'
         self.num_chords_walked_multiplier = ncw_multiplier
-        self.inst_key_name_gen = instrument_key_and_name_gen
+        # self.inst_key_name_gen = instrument_key_and_name_gen
+        self.instrument_tree = Tree(self.message_comparison_obj)
         self.max_time_interval = max_time_interval
         self.daw = daw
 
@@ -177,7 +179,6 @@ class DiscourseMusicGen:
             msg.add_arg(float(item), arg_type='f')
 
         # Data on octave displacement. (Octave) {Length of message on sigmoid curve. Shorter, higher, longer, lower}
-        # od = octave_displacement_generator.get_octave_placement_sigmoid(data['text'])
         od = octave_displacement_generator.get_octave_placement_piecewise(data['text'])
         # Add octave displacement to osc message: 1 val
         msg.add_arg(od, arg_type='i')
@@ -187,12 +188,12 @@ class DiscourseMusicGen:
 
         # Chain of Instruments to synthesize with (List of instrument names) {Hash of sentiment values}
         # Lower octaves == less instruments
-        num_insts = int(linear_to_linear(od, 2, 8, 1, self.inst_key_name_gen.max_instruments + 1))
-        inst_keys = self.inst_key_name_gen.get_instrument_chain_keys(sent, avg_emoji_sent.sent_dict)
-        inst_names = self.inst_key_name_gen.get_n_instrument_chain_names(inst_keys, num_insts)
+        num_insts = int(linear_to_linear(od, 2, 8, 1, 16))
+        inst_node = self.instrument_tree.receive_message(data['text'])
         # Add instrument names to osc message: var num of vals
-        msg.add_arg(len(inst_names), arg_type='i')
-        for inst in inst_names:
+        instruments = inst_node.get_node_instrument_chain(num_insts)
+        msg.add_arg(len(instruments), arg_type='i')
+        for inst in instruments:
             if self.daw:
                 msg.add_arg(inst, arg_type='i')
             else:
