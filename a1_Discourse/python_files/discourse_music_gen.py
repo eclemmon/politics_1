@@ -277,8 +277,7 @@ class DiscourseMusicGen:
         else:
             interval = self.harmonic_rhythm / num_walked
         # print("interval: ", interval)
-        self.schedule_random_walk_only_new(num_walked, harmonic_graph, interval,
-                                           self.harmonic_rhythm)
+        self.schedule_random_walk_only_new(num_walked, harmonic_graph, interval)
 
     def compare_text(self, data):
         """
