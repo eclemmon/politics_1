@@ -10,9 +10,9 @@ NGROK_PID=$(pgrep ngrok)
 # Kill running ngrok
 kill -9 "($NGROK_PID)"
 
-echo "##################"
-echo "Running Politics 1"
-echo "##################"
+echo "###############################"
+echo "Running Politics 1 Flask Server"
+echo "###############################"
 
 echo $SUB_DOMAIN
 source "$SCRIPT_DIR/venv/bin/activate"

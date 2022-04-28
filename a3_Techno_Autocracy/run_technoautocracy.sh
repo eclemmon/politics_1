@@ -6,11 +6,11 @@ export PYTHONPATH="$ROOT_DIR"
 SC_DIR="~/Applications/SuperCollider.app/Contents/MacOS/"
 
 echo "########################################"
-echo "Running Politics 1 - Cybernetic Republic"
+echo "Running Politics 1 - Technoautocracy"
 echo "########################################"
 echo ""
 echo "Starting virtual environment..."
 source "$ROOT_DIR/venv/bin/activate"
 echo "Virtual environment successfully booted"
 
-"$ROOT_DIR/venv/bin/python" "$ROOT_DIR/Message_Endpoints/a2_cybernetic_republic_flask_twilio_twitter_client.py"
+"$ROOT_DIR/venv/bin/python" "$ROOT_DIR/Message_Endpoints/a3_technoautocracy_flask_twilio_twitter_client.py"
