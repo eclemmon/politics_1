@@ -16,4 +16,5 @@ echo "Virtual environment successfully booted"
 
 "$ROOT_DIR/venv/bin/python" "$ROOT_DIR/Message_Endpoints/a3_technoautocracy_flask_twilio_twitter_client.py" &
 "$SC_DIR/sclang" "$SC_SCRIPT_PATH" &
+processing-java --sketch="$ROOT_DIR/a3_Techno_Autocracy/visualization_files/a3_technoautocracy/" --run &
 echo "For technoautocracy you have to run the script from technoautocracy_run.scd for now!"
