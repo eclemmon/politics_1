@@ -23,7 +23,7 @@ public class BackgroundWave {
     // Iterate over horizontal pixels
     for (float x = 0; x <= width; x += 10) {
       // Calculate a y value according to noise, map to 
-      float y = map(noise(xoff, yoff), 0, 1, 750, 850); // Option #1: 2D Noise
+      float y = map(noise(xoff, yoff), 0, 1, height-125, height-75); // Option #1: 2D Noise
       // float y = map(noise(xoff), 0, 1, 200,300);    // Option #2: 1D Noise
       
       // Set the vertex

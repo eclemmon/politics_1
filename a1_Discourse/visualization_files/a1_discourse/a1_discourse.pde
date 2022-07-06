@@ -16,10 +16,10 @@ StaticMessage phone;
 Boolean scored;
 
 void setup() {
-  fullScreen(1, P2D);
+  size(1280, 720, P2D);
   frameRate(30);
   smooth();
-  scored = true;
+  scored = false;
   backgroundColor = new Color(124, 169, 130);
   waveColor = new Color(5, 59, 6);
   oscP5 = new OscP5(this, 12000);
