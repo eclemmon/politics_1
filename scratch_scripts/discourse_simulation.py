@@ -92,7 +92,7 @@ class TweetsIncomingSim:
         :param tweet:
         :return: Tuple with closest related text and the similarity score.
         """
-        return self.message_comparison_obj.new_incoming_tweet(tweet)
+        return self.message_comparison_obj.new_incoming_document(tweet)
 
     def generate_rhythm(self, data):
         return er_gen.generate_euclidean(4, 6)

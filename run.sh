@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap "pkill -P $$" SIGINT EXIT
+
 cd /Users/ericlemmon/Documents/PhD/PhD_Project_v2 || exit
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -10,9 +12,9 @@ NGROK_PID=$(pgrep ngrok)
 # Kill running ngrok
 kill -9 "($NGROK_PID)"
 
-echo "##################"
-echo "Running Politics 1"
-echo "##################"
+echo "###############################"
+echo "Running Politics 1 Flask Server"
+echo "###############################"
 
 echo $SUB_DOMAIN
 source "$SCRIPT_DIR/venv/bin/activate"

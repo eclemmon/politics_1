@@ -8,6 +8,7 @@ from nltk.corpus import wordnet as wn
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from Utility_Tools.timer_function import clock
 
 
 porterstemmer = PorterStemmer()
@@ -23,16 +24,13 @@ def preprocess(string):
     """
     string = string.lower()
     string = porterstemmer.stem(string)
-    if string in stop_words:
-        return None
-    else:
-        return string
+    return string
 
 
 class TF_IDF:
     """
     Term frequency-Inverse Document Frequency class for comparing two texts based on a corpus of documents.
-    Currently not in use in favor of Levenshtein distance.
+    Currently, not in use in favor of Levenshtein distance.
     """
     def __init__(self):
         """
@@ -42,7 +40,7 @@ class TF_IDF:
         self.all_documents = []
         self.vectorizer = TfidfVectorizer(preprocessor=preprocess)
 
-    def new_incoming_tweet(self, new_tweet_text: str):
+    def new_incoming_document(self, new_tweet_text: str):
         """
         Update the tfidf vectorizor to include all the documents and the new one.
         :param new_tweet_text: str
@@ -51,7 +49,7 @@ class TF_IDF:
         if len(self.all_documents) == 0:
             self.all_documents.append(new_tweet_text)
             self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
-            return 0.0
+            return None, 0.0
         else:
             query_tfidf = self.vectorizer.transform([new_tweet_text])
             cosine_simiilarities = cosine_similarity(query_tfidf, self.docs_tfidf).flatten()
@@ -210,6 +208,7 @@ class WordNetTweetSimilarityScore:
 if __name__ == '__main__':
     print("Testing similarity scores for sentences:")
     sentences = [
+        "politics I",
         "Some jazz musicians are excellent at the trombone.",
         "I played the viola for the wedding.",
         "Cats are jamming on a hurdy gurdy!",
@@ -220,17 +219,23 @@ if __name__ == '__main__':
         "beep, bep, soowop.",
         "Music is sound in time",
         "Music is sound in ti",
-        "cat, cats and jesus have a spectral music that sounds like jazz boob"
+        "cat, cats and jesus have a spectral music that sounds like jazz boob",
+        "politics is power",
+        "I love dogs",
+        "Ruth is my baby",
+        "I am sitting in a room",
+        "I hate dog"
+
     ]
 
     focus_sentence = "Hello every one I love music so much."
 
-    tweets = WordNetTweetSimilarityScore(sentences)
-    print(tweets.new_incoming_tweet(focus_sentence))
+    # tweets = WordNetTweetSimilarityScore(sentences)
+    # print(tweets.new_incoming_tweet(focus_sentence))
 
     tf_idf = TF_IDF()
     for sentence in sentences:
-        print(tf_idf.new_incoming_tweet(new_tweet_text=sentence))
+        print(tf_idf.new_incoming_document(new_tweet_text=sentence))
 
-    for sentence in sentences:
-        print(tf_idf.most_similar_doc(new_tweet_text=sentence))
+    # for sentence in sentences:
+    #     print(tf_idf.most_similar_doc(new_tweet_text=sentence))

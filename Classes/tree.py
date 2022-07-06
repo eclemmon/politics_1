@@ -1,4 +1,5 @@
-from node import Node
+import random
+from Classes.node import Node
 from NLP_Tools.message_comparison_toolset import TF_IDF
 from NLP_Tools.message_comparison_toolset import WordNetTweetSimilarityScore
 
@@ -28,11 +29,23 @@ class Tree:
         """
         if len(self.nodes) == 1:
             self.root.add_child(node)
+            self.set_node_instrument_chain(node, 0)
             self.nodes[node.message] = node
         else:
-            key = self.find_closest_node(node)
-            self.nodes[node.message] = node
+            if self.nodes.get(node.message):
+                # Some memoization to speed up algorithm
+                key, similarity = node.message, 1.0
+            else:
+                # get closest message by similarity
+                key, similarity = self.find_closest_node(node)
+                # memoize the message as a key and the node as the value
+                self.nodes[node.message] = node
+            # Add to the number of ancestors based on parent node
+            node.num_ancestors = self.nodes[key].num_ancestors + 1
+            # Add new node as child to most similar node (parent node)
             self.nodes[key].add_child(node)
+            # Generate an instrument chain and attach it to the new node
+            self.set_node_instrument_chain(node, similarity)
 
     def remove_node(self, node: Node):
         """
@@ -59,9 +72,9 @@ class Tree:
         as a key for memoization.
         :param node: Node Class
         """
-        most_similar = self.message_comparison_obj.most_similar_doc(node.message)
-        if most_similar == 0.0:
-            return None
+        most_similar = self.message_comparison_obj.new_incoming_document(node.message)
+        if most_similar[1] == 0.0:
+            return None, 0.0
         else:
             return most_similar
 
@@ -72,10 +85,25 @@ class Tree:
         """
         new_node = Node(message)
         self.add_node(new_node)
+        return new_node
 
+    def set_node_instrument_chain(self, node: Node, similarity_score: float):
+        if similarity_score >= 0.9:
+            node.instruments = node.parent.instruments
+        else:
+            if node.parent is None:
+                node.instruments = [random.randint(0, 16)]
+            else:
+                node.instruments = node.parent.instruments[-4:] + [random.randint(0, 15)]
+
+    def get_node_instrument_chain(self, node, num_instruments=None):
+        if num_instruments is None:
+            num_instruments = len(node.instruments)
+        return node.instruments[:num_instruments]
 
 if __name__ == '__main__':
     sentences = [
+        "politics I",
         "Some jazz musicians are excellent at the trombone.",
         "I played the viola for the wedding.",
         "Cats are jamming on a hurdy gurdy!",
@@ -86,7 +114,20 @@ if __name__ == '__main__':
         "beep, bep, soowop.",
         "Music is sound in time",
         "Music is sound in ti",
-        "cat, cats and jesus have a spectral music that sounds like jazz boob"
+        "cat, cats and jesus have a spectral music that sounds like jazz boob",
+        "politics is power",
+        "I love dogs",
+        "Ruth is my baby",
+        "I am sitting in a room",
+        "I hate dog",
+        "i hate dogs",
+        "I have a dog",
+        'no to dog',
+        "I had a dog",
+        "I was a doggo",
+        "I had a dogg",
+        "nary another had any old damn hound",
+        "I had a dog"
     ]
 
     tf_idf = TF_IDF()
@@ -98,5 +139,5 @@ if __name__ == '__main__':
         tf_idf_tree.receive_message(doc)
 
         # wordnet_tree.receive_message(doc)
-    print(tf_idf_tree.nodes["Music is sound in ti"].parent.parent.message)
-    tf_idf_tree.remove_node_by_message("Music is sound in ti")
+    # print(tf_idf_tree.nodes["Music is sound in ti"].parent.parent.message)
+    # print(tf_idf_tree.nodes)

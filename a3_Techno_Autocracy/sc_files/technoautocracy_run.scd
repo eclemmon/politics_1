@@ -1,6 +1,6 @@
 (
 // #####################################################################################################################
-// technoautocracy_init.scd
+// technoautocracy_run.scd
 // ---------------------------------------------------------------------------------------------------------------------
 // This file initializes all the program files for the technoautocracy movement.
 // ---------------------------------------------------------------------------------------------------------------------
@@ -21,24 +21,10 @@
 // machine's healing until the queue is empty. If a user supports the machine, it adds to the health of the machine and
 // pops an attack token off the queue.
 // #####################################################################################################################
+// #####################################################################################################################
+// Start the piece here when ready.
+// #####################################################################################################################
 
-var path;
-path = thisProcess.nowExecutingPath.dirname;
-~server = Server.default;
-
-// Boot the server and execute all program files.
-~server.waitForBoot(
-	{
-		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_synthdefs.scd");
-		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_functions.scd");
-		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_oscfuncs.scd");
-		~server.sync;
-		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_init.scd");
-		thisProcess.interpreter.executeFile(path +/+ "/technoautocracy_routine.scd");
-		~server.sync;
-
-	};
-
-);
-
+~main.value();
 )
+

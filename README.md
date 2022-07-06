@@ -56,6 +56,10 @@ NB: Politics I has only been tested and run on MacOS. All installation instructi
 
 ### Step 8:
 
+> Download and install [Processing](https://processing.org/download)
+
+### Step 9:
+
 > Download and extract [Politics I](https://github.com/eclemmon/politics_1/archive/refs/heads/trunk.zip) from github into a directory of your choosing
 
 ***
@@ -72,11 +76,15 @@ NB: Politics I has only been tested and run on MacOS. All installation instructi
 
 ### Step 3:
 
+> Download and install [Processing](https://processing.org/download)
+
+### Step 4:
+
 Install brew from terminal
 
 `$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 
-### Step 4:
+### Step 5:
 
 Install all other requisite packages
 
@@ -88,7 +96,7 @@ postgresql \
 redis &&
 brew tap twilio/brew && brew install twilio`
 
-### Step 5:
+### Step 6:
 
 Clone Politics I from GitHub
 
@@ -166,6 +174,15 @@ Activate your python virtual environment:
 Install required python packages:
 
 `$ (venv) python3 -m pip install -r requirements.txt`
+
+### Step 5:
+
+Install processing-java for CLI control of processing sketches.
+
+* Open Processing IDE in `~/path/to/Processing`
+* In the menubar select `tools` > `install processing-java`:
+![Politics 1](/blob/readme/install-processing-java.png)
+
 
 ## Set Environment Variables
 
