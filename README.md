@@ -8,12 +8,20 @@ For more about this work, please visit [my website](https://ericlemmon.net/polit
 ***
 # Table of Contents
 
-1. [Installation](#installation)
-2. [Registering for requisite services and getting access to web APIs](#Registering-for-Services-and-Getting-Access-to-APIs)
-3. [Setting up Politics I Environment](#setting-up-politics-i-environment)
-4. [Running](#Running-Politics-I)
-5. [Bibliography](#bibliography)
+1. [Technical Requirements](#technical-requirements)
+2. [Installation](#installation)
+3. [Registering for requisite services and getting access to web APIs](#Registering-for-Services-and-Getting-Access-to-APIs)
+4. [Setting up Politics I Environment](#setting-up-politics-i-environment)
+5. [Running](#Running-Politics-I)
+6. [Bibliography](#bibliography)
 
+***
+# Technical Requirements
+
+- Minimum: Stereo PA System & Sub
+- Projector Screen
+- Projector
+- Stable Internet Connection
 ***
 # Installation
 
