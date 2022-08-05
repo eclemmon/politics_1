@@ -6,6 +6,7 @@
 For more about this work, please visit [my website](https://ericlemmon.net/politics-i/).
 
 ***
+
 # Table of Contents
 
 1. [Technical Requirements](#technical-requirements)
@@ -16,13 +17,16 @@ For more about this work, please visit [my website](https://ericlemmon.net/polit
 6. [Bibliography](#bibliography)
 
 ***
+
 # Technical Requirements
 
 - Minimum: Stereo PA System & Sub
 - Projector Screen
 - Projector
 - Stable Internet Connection
+
 ***
+
 # Installation
 
 Politics I requires many different dependencies. This README file will walk you through downloading and installing the
