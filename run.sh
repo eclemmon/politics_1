@@ -2,8 +2,6 @@
 
 trap "pkill -P $$" SIGINT EXIT
 
-cd /Users/ericlemmon/Documents/PhD/PhD_Project_v2 || exit
-
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 SC_DIR="~/Applications/SuperCollider.app/Contents/MacOS/"
 SECRET_KEY="abc123"
