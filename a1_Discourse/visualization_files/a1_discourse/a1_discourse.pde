@@ -26,12 +26,12 @@ void setup() {
   receiver = new NetAddress( "127.0.0.1", 12000);
   messageQueue = new MessageQueue();
   backgroundWave = new BackgroundWave(backgroundColor, waveColor, messageQueue);
-  
+
   // Check if scored version of piece
   if (!scored) {
     twitter = new StaticMessage("Tweet: @InteractiveMus4", "FreeMonoBold.ttf", (height - 25), (width - 595), (height - 25));
     twitter.set_alpha(0);
-    phone = new StaticMessage("SMS: (929) 334-3697 //", "FreeMonoBold.ttf", (height - 25), (width - 545 - 610), (height - 25));
+    phone = new StaticMessage("SMS: +1 (929) 334-3697 //", "FreeMonoBold.ttf", (height - 25), (width - 545 - 675), (height - 25));
     phone.set_alpha(0);
   };
 };
@@ -39,7 +39,7 @@ void setup() {
 void draw() {
   backgroundWave.render();
   noStroke();
-  
+
   // check if scored version of piece
   if (!scored) {
     twitter.fade_in();
