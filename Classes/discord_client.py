@@ -28,9 +28,9 @@ class DiscordClient(discord.Client):
         if message.autho.id == self.user.id:
             return
         else:
-            data = {'discord': True}
-            store_message(data, self.app, self.config, self.db)
-            self.client_sio.emit('handle_message', data)
+            message_data = {'discord': True}
+            store_message(message_data, self.app, self.config, self.db)
+            self.client_sio.emit('handle_message', message_data)
 
     def send_data_off(self):
         self.send_data = False
