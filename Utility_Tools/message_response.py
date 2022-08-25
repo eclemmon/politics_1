@@ -1,5 +1,7 @@
 import tweepy
 import json
+import discord
+import requests
 from twilio.rest import Client
 from Classes.node import Node
 from dotenv import dotenv_values
@@ -9,7 +11,8 @@ class PoliticsMessageResponder:
     """
     PoliticsMessageResponder for generating texts and sending them via SMS or tweet back to audience members.
     """
-    def __init__(self, twilio_account_sid: str, twilio_auth_token: str, from_number: str, tweepy_auth):
+    def __init__(self, twilio_account_sid: str, twilio_auth_token: str, from_number: str, tweepy_auth,
+                 discord_webhook: str, discord_token: str):
         """
         Constructs the politics message responder that will be used to send messages back to users.
         :param twilio_account_sid: str Twilio account session ID
@@ -20,10 +23,11 @@ class PoliticsMessageResponder:
         self.client = Client(twilio_account_sid, twilio_auth_token)
         self.tweepy_api = tweepy.API(tweepy_auth)
         self.from_number = from_number
+        self.webhook = discord.SyncWebhook.from_url(discord_webhook)
 
     def send_sms(self, message: str, to_number: str):
         """
-        Sends an sms message to the to_number
+        Sends a sms message to the to_number
         :param message: String message to be sent
         :param to_number: String formatted "+19999999999"
         :return: True
@@ -53,7 +57,16 @@ class PoliticsMessageResponder:
                 in_reply_to_status_id=tweet_id
             )
         except BaseException as e:
-            print("Error send_twitter_direct_message: {}".format(str(e)))
+            print("Error send_twitter_reply_message: {}".format(str(e)))
+        finally:
+            return True
+
+    def send_discord_reply_message(self, embed: discord.Embed):
+        print("Sending discord message...")
+        try:
+            self.webhook.send(username="Politics I Bot", embed=embed)
+        except BaseException as e:
+            print("Error send_discord_reply_message: {}".format(str(e)))
         finally:
             return True
 
@@ -71,6 +84,8 @@ def generate_discourse_message_response(message_responder: PoliticsMessageRespon
     elif data.get('tweet'):
         message_responder.send_twitter_reply_message(generate_tweet_discourse_message(data, kwargs),
                                                      data['tweet_id'])
+    elif data.get('discord'):
+        message_responder.send_discord_reply_message(generate_discord_discourse_message(data, kwargs))
     else:
         return None
 
@@ -110,6 +125,33 @@ def generate_sms_discourse_message(data: dict, kwargs: dict):
     )
 
 
+def generate_discord_discourse_message(data: dict, kwargs: dict):
+    """
+
+    :param data:
+    :param kwargs:
+    :return:
+    """
+    name_acknowledgement = construct_prefix_response_message(data['username'])
+    message_received = data['text']
+    result = "{}{}{}{}{}{}{}".format(
+        construct_octave_response_message(kwargs['od']),
+        construct_time_interval_response_message(kwargs['time_interval']),
+        construct_rhythm_response_message(kwargs['rhythm']),
+        construct_delay_response_message(kwargs['delay_t_a_d']),
+        construct_spatialization_response_message(kwargs['spat']),
+        construct_emojis_response_message(kwargs['pmod']),
+        construct_closest_message_response(kwargs['inst_node'])
+    )
+    embed = discord.Embed(
+        title="{}".format(name_acknowledgement),
+        url=data['url'],
+        color=discord.Color.green())
+    embed.add_field(name="YOU SAID: ", value=message_received, inline=False)
+    embed.add_field(name="THE RESULT: ", value=result)
+    return embed
+
+
 def generate_cybernetic_republic_message_response(message_responder: PoliticsMessageResponder, data: dict,
                                                   kwargs: dict):
     """
@@ -124,6 +166,8 @@ def generate_cybernetic_republic_message_response(message_responder: PoliticsMes
     elif data.get('tweet'):
         message_responder.send_twitter_reply_message(generate_cybernetic_republic_message(data, kwargs),
                                                      data['tweet_id'])
+    elif data.get('discord'):
+        message_responder.send_discord_reply_message()
     else:
         return None
 
@@ -153,6 +197,22 @@ def generate_cybernetic_republic_message(data: dict, kwargs: dict):
         else:
             return "Hi {}, I parsed your message, and added the first vote option I found to the " \
                    "tally! These are the updated results: \n{}".format(data['username'], kwargs['vote'])
+
+
+def generate_cybernetic_republic_discord_embed(data: dict, kwargs: dict):
+    """
+
+    :param data:
+    :param kwargs:
+    :return:
+    """
+    response_message = generate_cybernetic_republic_message(data, kwargs)
+    embed = discord.Embed(
+        title="In response to: {}".format(data['username']),
+        url=data['url'],
+        color=discord.Color.green())
+    embed.add_field(name="VOTING RESULT: ", value=response_message)
+    return embed
 
 
 def construct_time_interval_response_message(time_interval: float):
@@ -203,7 +263,7 @@ def construct_delay_response_message(delay_t_a_d: tuple):
         delay_t_a_d[1])
 
 
-def construct_spatialization_response_message(spat):
+def construct_spatialization_response_message(spat: tuple):
     """
     Helper function to build a string describing how a user message affected spatialization data for sms.
     :param spat: tuple of floats.
@@ -249,7 +309,7 @@ def construct_spatialization_response_tweet(spat):
             return "Spat: [LOH] {} --> [ROH] {}".format(spat[1], spat[2])
 
 
-def construct_emojis_response_message(pmod):
+def construct_emojis_response_message(pmod: float):
     """
     Helper function to build a string describing how a user message affected phase modulation.
     :param pmod: float
