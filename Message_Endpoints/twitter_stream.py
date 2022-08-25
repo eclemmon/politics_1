@@ -12,8 +12,10 @@ __status__ = "Production"
 
 import tweepy
 import json
+import requests
 from flask_socketio import SocketIO
-from Utility_Tools.store_user_message import store_message
+import collections
+from dotenv import dotenv_values
 
 
 class TwitterStream(tweepy.Stream):
@@ -22,7 +24,7 @@ class TwitterStream(tweepy.Stream):
     redis server that functions as a thread-safe queue.
     """
 
-    def __init__(self, consumer_key: str, consumer_secret: str, access_token: str, access_secret: str, app, config, db):
+    def __init__(self, consumer_key: str, consumer_secret: str, access_token: str, access_secret: str, post_address):
         """
         Initialization for TwitterStream class.
         :param consumer_key: str
@@ -32,10 +34,7 @@ class TwitterStream(tweepy.Stream):
         """
         super(TwitterStream, self).__init__(consumer_key, consumer_secret, access_token, access_secret)
         self.stream_sio = SocketIO(message_queue='redis://')
-        self.send_data = False
-        self.app = app
-        self.config = config
-        self.db = db
+        self.post_address = post_address
 
     def on_data(self, data):
         """
@@ -44,13 +43,15 @@ class TwitterStream(tweepy.Stream):
         :param data: json
         :return: None
         """
-        if self.send_data:
-            json_data = json.loads(data)
-            message_data = {'username': json_data['user']['screen_name'],
-                            'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip(),
-                            'tweet': True, "twitter_user_id": json_data['user']['id'], "tweet_id": json_data['id']}
-            store_message(data, self.app, self.config, self.db)
-            self.stream_sio.emit('handle_message', message_data)
+        json_data = json.loads(data)
+        message_data = {
+            'username': json_data['user']['screen_name'],
+            'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip(),
+            "twitter_user_id": json_data['user']['id'],
+            "tweet_id": json_data['id']
+        }
+        requests.post(self.post_address, data=message_data)
+
 
     def on_closed(self, response):
         """
@@ -70,16 +71,16 @@ class TwitterStream(tweepy.Stream):
         msg = "There was a request error in the tweepy stream: {}".format(status_code)
         print(msg)
 
-    def send_data_off(self):
-        self.send_data = False
-        print(self.send_data_report())
 
-    def send_data_on(self):
-        self.send_data = True
-        print(self.send_data_report())
-
-    def send_data_report(self):
-        return 'Sending data set to: {}'.format(self.send_data)
+def make_twitter_stream(configuration: collections.OrderedDict, post_address):
+    print("OK RUNNING STREAMS")
+    # Boot threaded twitter stream
+    twitter_stream = TwitterStream(configuration['TWITTER_CONSUMER_KEY'], configuration['TWITTER_CONSUMER_SECRET'],
+                                   configuration['TWITTER_ACCESS_TOKEN'], configuration['TWITTER_ACCESS_SECRET'], post_address)
+    twitter_stream.filter(track=[configuration["SEARCH_TERM"]])
+    return twitter_stream
 
 
-
+config = dotenv_values()
+post_address = 'http://127.0.0.1:8000/discord'
+twitter_stream = make_twitter_stream(config, post_address)
