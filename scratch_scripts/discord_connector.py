@@ -15,6 +15,8 @@ import os
 import discord
 import threading
 from dotenv import load_dotenv
+from Utility_Tools.message_response import generate_discord_discourse_message
+from Classes.node import Node
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -55,13 +57,20 @@ init()
 
 
 
+
 username = "Eric"
 url = "https://discord.com/channels/995399237061857381/995399237623885906/995404775292141609"
-embed = discord.Embed(title="Hi {}!".format(username),
-                      url=url,
-                      color=discord.Color.green())
-embed.add_field(name="YOU SAID: ", value="boops\n", inline=False)
-embed.add_field(name="THE RESULT: ", value="DATA\nDATA\nDATA", inline=False)
+# embed = discord.Embed(title="Hi {}!".format(username),
+#                       url=url,
+#                       color=discord.Color.green())
+# embed.add_field(name="YOU SAID: ", value="boops\n", inline=False)
+# embed.add_field(name="THE RESULT: ", value="DATA\nDATA\nDATA", inline=False)
+parent = Node('uh')
+data = {'username': username, 'url': url, 'text': 'ho hum doldrum'}
+kwargs = {'od': 7.43, 'time_interval': 4, 'rhythm': [0, 1, 0, 1], 'delay_t_a_d': (3, 3), 'spat': (-0.99, 0.0, 1.0), 'pmod': '8.4', 'inst_node': Node("abc", parent=parent)}
 
-webhook = discord.Webhook.from_url(WEBHOOK, adapter=discord.RequestsWebhookAdapter())
-webhook.send(username="Politics I Bot", embed=embed)
+
+# embed = generate_discord_discourse_message(data, kwargs)
+# webhook = discord.Webhook.from_url(WEBHOOK, adapter=discord.RequestsWebhookAdapter())
+# webhook.send(username="Politics I Bot", embed=embed)
+
