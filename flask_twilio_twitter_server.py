@@ -19,7 +19,9 @@ MIGRATION_DIR = os.path.join('models', 'migrations')
 app = Flask(__name__)
 app.config.update({'DEBUG': config['DEBUG'],
                    'SECRET_KEY': config['SECRET_KEY'],
-                   'SQLALCHEMY_DATABASE_URI': config['SQLALCHEMY_DATABASE_URI']})
+                   'SQLALCHEMY_DATABASE_URI': config['SQLALCHEMY_DATABASE_URI'],
+                   'LISTENING': False
+                   })
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 app.app_context().push()
@@ -35,14 +37,15 @@ sio = SocketIO(app, message_queue='redis://', cors_allowed_origins="*")
 @app.route('/sms', methods=['POST'])
 def sms():
     """
-    Function for handling incoming POST requests from the flask app.
-    :return: str with no data so that it doesn't produce a response
+    Function for handling incoming POST requests from the /sms Route to the Flask app.
+    :return: str with no data so that it doesn't produce a direct response
     """
-    full_number = request.form['From']
-    message_body = request.form['Body']
-    message_data = {"username": full_number, "text": message_body, "sms": True}
-    sio.emit('handle_message', message_data)
-    store_message(message_data, app, config, db)
+    if app.config.get_namespace('LISTENING'):
+        full_number = request.form['From']
+        message_body = request.form['Body']
+        message_data = {"username": full_number, "text": message_body, "sms": True}
+        sio.emit('handle_message', message_data)
+        store_message(message_data, app, config, db)
     return ""
 
 
@@ -99,23 +102,23 @@ def shutdown():
 @sio.on('connect')
 def connect():
     """
-    When movement has connected, boots up a twitter stream and starts accepting data from there.
+    When movement has connected, allows POST routes and twitter stream to send data to REDIS.
     :return: None
     """
     print('Clients Connected')
     sio.emit('client_connected', "you connected")
-    streams.send_data_on()
     sio.emit('client_connected', "the search term is {}".format(config["SEARCH_TERM"]))
+    app.config.update('LISTENING', True)
 
 
 @sio.on('disconnect')
 def disconnect():
     """
-    Print message for when the sio client disconnects
-    :return:
+    When movement has disconnected, ends POST and twitter stream permission to send messages to REDIS
+    :return: None
     """
     print('Clients Diconnected')
-    streams.send_data_off()
+    app.config.update('LISTENING', False)
 
 
 def shutdown_server():
