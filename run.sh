@@ -19,6 +19,8 @@ source "$SCRIPT_DIR/venv/bin/activate"
 
 redis-server &
 python3.8 "$SCRIPT_DIR/flask_twilio_twitter_server.py" &
+python3.8 "$SCRIPT_DIR/Message_Endpoints/discord_socketio_client.py" &
+python3.8 "$SCRIPT_DIR/Message_Endpoints/twitter_stream.py" &
 python3.8 "$SCRIPT_DIR/Utility_Tools/set_web_hook.py";
 
 
