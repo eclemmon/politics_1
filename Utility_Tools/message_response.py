@@ -167,7 +167,7 @@ def generate_cybernetic_republic_message_response(message_responder: PoliticsMes
         message_responder.send_twitter_reply_message(generate_cybernetic_republic_message(data, kwargs),
                                                      data['tweet_id'])
     elif data.get('discord'):
-        message_responder.send_discord_reply_message()
+        message_responder.send_discord_reply_message(generate_cybernetic_republic_discord_embed(data, kwargs))
     else:
         return None
 

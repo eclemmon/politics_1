@@ -41,7 +41,8 @@ async def on_message(message: discord.Message):
             'username': message.author.name,
             'guild_id': message.guild.id,
             'guild_name': message.guild.name,
-            'text': message.content
+            'text': message.content,
+            'url': message.jump_url
         }
         requests.post(post_address, data=payload)
     else:

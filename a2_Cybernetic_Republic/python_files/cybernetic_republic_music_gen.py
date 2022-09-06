@@ -79,7 +79,8 @@ class CyberneticRepublicMusicGen:
         self.twitter_auth = tweepy.OAuth1UserHandler(config['TWITTER_CONSUMER_KEY'], config['TWITTER_CONSUMER_SECRET'],
                                                      config['TWITTER_ACCESS_TOKEN'], config['TWITTER_ACCESS_SECRET'])
         self.responder = PoliticsMessageResponder(config['TWILIO_ACCOUNT_SID'], config['TWILIO_AUTH_TOKEN'],
-                                                  config['TWILIO_PHONE_NUMBER'], self.twitter_auth)
+                                                  config['TWILIO_PHONE_NUMBER'], self.twitter_auth,
+                                                  config['DISCORD_WEBHOOK'], config['DISCORD_TOKEN'])
 
         # run the countdown
         self.run_music()
