@@ -64,6 +64,7 @@ def discord():
             'guild_id': request.form['guild_id'],
             'guild_name': request.form['guild_name'],
             'text': request.form['text'],
+            'url': request.form['url'],
             'discord': True
         }
         sio.emit('handle_message', message_data)
@@ -108,7 +109,7 @@ def connect():
     print('Clients Connected')
     sio.emit('client_connected', "you connected")
     sio.emit('client_connected', "the search term is {}".format(config["SEARCH_TERM"]))
-    app.config.update('LISTENING', True)
+    app.config['LISTENING'] = True
 
 
 @sio.on('disconnect')
@@ -118,7 +119,7 @@ def disconnect():
     :return: None
     """
     print('Clients Diconnected')
-    app.config.update('LISTENING', False)
+    app.config['LISTENING'] = False
 
 
 def shutdown_server():
