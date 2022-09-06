@@ -233,6 +233,7 @@ NB: so that the tweepy message responder can reply to tweets automatically in Po
 
 ![Set webhook, channel, save, and copy webhook to .env](/blob/readme/discord_webhook_settings_6.png)
 
+PHEW! All done with setting up discord!
 ***
 
 # Setting up Politics I Environment
