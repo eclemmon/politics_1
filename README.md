@@ -291,7 +291,7 @@ NB: You may need to execute `⌘` + `⇧ Shift` + `.` to see this file after its
 
 Open the .env file and fill out the empty fields following the `=` symbol.
 For example, after TWILIO_ACCOUNT_SID=, you will place your unique String Identifier code, which will look something like this:
-`SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` (see instructions below to find all authentication tokens for both Twilio and Twitter).
+`SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` (see instructions below to find all authentication tokens for both Twilio, Discord, and Twitter).
 
 ```
 # GET THESE TWILIO VALUES FROM TWILIO DASH
@@ -329,7 +329,11 @@ SC_DIR="/Applications/SuperCollider.app/Contents/MacOS"
 
 > Twilio SID and Auth Token [instructions](https://support.twilio.com/hc/en-us/articles/223136027-Auth-Tokens-and-How-to-Change-Them).
 
-> [Instructions](https://support.twilio.com/hc/en-us/articles/223136027-Auth-Tokens-and-How-to-Change-Them) for finding and getting twitter authentication keys and secrets.
+> [Instructions](https://developer.twitter.com/en/docs/authentication/oauth-1-0a/api-key-and-secret) for finding and getting twitter authentication keys and secrets.
+
+> Get Discord [bot token](https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token).
+
+> Get Discord [webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks).
 
 Once all these variables are set, you should be almost ready to go!
 
