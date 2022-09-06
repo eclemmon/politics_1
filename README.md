@@ -152,6 +152,87 @@ NB: so that the tweepy message responder can reply to tweets automatically in Po
 
 ![OAuth](/blob/readme/twitter_oauth.png)
 
+## Register for Discord
+
+### Step 1:
+
+> [Register for Discord and log in via web browser](https://discord.com/)
+
+### Step 2:
+
+> Create a new server
+
+![discord_server](/blob/readme/discord_create_server.png)
+
+### Step 3:
+
+> [Navigate to Discord's application developer portal.](https://discord.com/developers/applications)
+
+### Step 4:
+
+> Create a new application
+
+![Create a new application](/blob/readme/discord_bot_1.png)
+
+![Create a new application](/blob/readme/discord_bot_2.png)
+
+### Step 5:
+
+> Add the bot
+
+![Add the bot](/blob/readme/discord_bot_3.png)
+
+### Step 6:
+
+> Make the bot private and get the token
+
+![Get the token](/blob/readme/discord_bot_4.png)
+
+### Step 7:
+
+> Go to the Oauth2 --> URL Generator tab and check the bot option in scopes
+
+![check the bot scopes in OAuth2](/blob/readme/discord_bot_5.png)
+
+### Step 8:
+
+> Set the bot permissions and copy the generated URL
+
+![set permission and copy url](/blob/readme/discord_bot_6.png)
+
+### Step 9:
+
+> Add the bot to your server
+
+![Add bot to server](/blob/readme/discord_bot_7.png)
+
+### Step 10:
+
+> In your discord server, go to server settings by hitting the carrot at the top left near the server name.
+
+![Go to server settings step 1](/blob/readme/discord_server_settings_1.png)
+
+![Go to server settings step 2](/blob/readme/discord_server_settings_2.png)
+
+### Step 11:
+
+> Click on the integrations tab
+
+![Go to integrations tab](/blob/readme/discord_server_settings_3.png)
+
+### Step 12:
+
+> Select the webhooks option and create a new webhook.
+
+![Select webhooks option](/blob/readme/discord_webhook_settings_4.png)
+![Create a new webhook](/blob/readme/discord_webhook_settings_5.png)
+
+### Step 13:
+
+> Set the webhook name, set the target channel where participants can chat, save changes, and copy the webhook URL into the .env file
+
+![Set webhook, channel, save, and copy webhook to .env](/blob/readme/discord_webhook_settings_6.png)
+
 ***
 
 # Setting up Politics I Environment
@@ -226,6 +307,11 @@ TWITTER_ACCESS_SECRET=
 # YOUR TWITTER HANDLE GOES HERE, AUDIENCE MEMBERS SHOULD BE INSTRUCTED TO TWEET AT YOUR ACCOUNT
 SEARCH_TERM=
 
+# YOUR DISCORD TOKEN, GUILD, AND WEBHOOKS GO HERE
+DISCORD_TOKEN=
+DISCORD_GUILD=
+DISCORD_WEBHOOK=
+
 # SOME LOGIC VALUES FOR RUNNING THE PROGRAM
 MOVEMENT=1
 SCORED=false
@@ -235,6 +321,9 @@ SECRET_KEY=abc123
 
 # SHOULD BE THE NAME OF THE POSTGRES DB YOU CREATED
 SQLALCHEMY_DATABASE_URI=postgresql:///politics_1_prod
+
+# DEFAULT DIRECTORY FOR SUPERCOLLIDER ALLOWING FOR AUTO-BOOT VIA SHELL SCRIPT
+SC_DIR="/Applications/SuperCollider.app/Contents/MacOS"
 ```
 
 > Twilio SID and Auth Token [instructions](https://support.twilio.com/hc/en-us/articles/223136027-Auth-Tokens-and-How-to-Change-Them).
