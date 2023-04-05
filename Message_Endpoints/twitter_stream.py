@@ -18,13 +18,13 @@ import collections
 from dotenv import dotenv_values
 
 
-class TwitterStream(tweepy.Stream):
+class TwitterStream(tweepy.StreamingClient):
     """
     TwitterStream class to add some extra functionality to the tweepy stream so that it can communicate with the external
     redis server that functions as a thread-safe queue.
     """
 
-    def __init__(self, consumer_key: str, consumer_secret: str, access_token: str, access_secret: str, post_address):
+    def __init__(self, bearer_token, post_address):
         """
         Initialization for TwitterStream class.
         :param consumer_key: str
@@ -32,7 +32,7 @@ class TwitterStream(tweepy.Stream):
         :param access_token: str
         :param access_secret: str
         """
-        super(TwitterStream, self).__init__(consumer_key, consumer_secret, access_token, access_secret)
+        super(TwitterStream, self).__init__(bearer_token)
         self.stream_sio = SocketIO(message_queue='redis://')
         self.post_address = post_address
 
@@ -45,10 +45,10 @@ class TwitterStream(tweepy.Stream):
         """
         json_data = json.loads(data)
         message_data = {
-            'username': json_data['user']['screen_name'],
-            'text': json_data['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip(),
-            "twitter_user_id": json_data['user']['id'],
-            "tweet_id": json_data['id']
+            'username': json_data['includes']['users'][0]['username'],
+            'text': json_data['data']['text'].replace('@InteractiveMus4', '').replace('\n', ' ').strip(),
+            "twitter_user_id": json_data['data']['author_id'],
+            "tweet_id": json_data['data']['id']
         }
         requests.post(self.post_address, data=message_data)
 
@@ -75,12 +75,27 @@ class TwitterStream(tweepy.Stream):
 def make_twitter_stream(configuration: collections.OrderedDict, post_address):
     print("OK RUNNING STREAMS")
     # Boot threaded twitter stream
-    twitter_stream = TwitterStream(configuration['TWITTER_CONSUMER_KEY'], configuration['TWITTER_CONSUMER_SECRET'],
-                                   configuration['TWITTER_ACCESS_TOKEN'], configuration['TWITTER_ACCESS_SECRET'], post_address)
-    twitter_stream.filter(track=[configuration["SEARCH_TERM"]])
+    twitter_stream = TwitterStream(configuration['TWITTER_BEARER_TOKEN'], post_address)
+
+    # clean-up pre-existing rules
+    result = twitter_stream.get_rules()
+    if result.data is not None:
+        rule_ids = [rule.id for rule in result.data]
+    else:
+        rule_ids = []
+
+    if (len(rule_ids) > 0):
+        twitter_stream.delete_rules(rule_ids)
+        twitter_stream = TwitterStream(configuration['TWITTER_BEARER_TOKEN'], post_address)
+    else:
+        print("no rules to delete")
+
+    twitter_stream.add_rules(tweepy.StreamRule(configuration['SEARCH_TERM']))
+    twitter_stream.filter(tweet_fields=["referenced_tweets"], expansions=["author_id"], threaded=True)
     return twitter_stream
 
 
 config = dotenv_values()
-post_address = 'http://127.0.0.1:8000/discord'
+post_address = 'http://127.0.0.1:8000/twitter'
 twitter_stream = make_twitter_stream(config, post_address)
+print("Twitter Stream Running.")
