@@ -88,6 +88,7 @@ def twitter():
         }
         sio.emit('handle_message', message_data)
         store_message(message_data, app, config, db)
+    return ""
 
 
 @app.route('/shutdown', methods=['POST'])
