@@ -94,7 +94,7 @@
 	arg chords_data;
 	var pwrand;
 	pwrand = Pwrand(
-		chords_data[0].collect({ arg item, i; Prand(item, inf)}),
+		chords_data[0].collect({ arg item, i; Prand(item, 1)}),
 		chords_data[1],
 		inf
 	);
