@@ -1,8 +1,9 @@
 from datetime import datetime
-from pyngrok import ngrok
+from pyngrok import ngrok, conf, installer
 from twilio.rest import Client
 from dotenv import load_dotenv
-
+import ssl
+import os
 
 def run_ngrok_set_webhook():
     """
@@ -22,6 +23,14 @@ def run_ngrok_set_webhook():
 
 
 if __name__ == "__main__":
+    pyngrok_config = conf.get_default()
+
+    if not os.path.exists(pyngrok_config.ngrok_path):
+        myssl = ssl.create_default_context();
+        myssl.check_hostname = False
+        myssl.verify_mode = ssl.CERT_NONE
+        installer.install_ngrok(pyngrok_config.ngrok_path, context=myssl)
+
     ngrok_process = run_ngrok_set_webhook()
     try:
         # Block until CTRL-C or some other terminating event
