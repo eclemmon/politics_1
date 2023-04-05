@@ -1,3 +1,8 @@
+import com.jogamp.opengl.GLProfile;
+{
+  GLProfile.initSingleton();
+}
+
 import oscP5.*;
 import netP5.*;
 OscP5 oscP5;
