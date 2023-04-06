@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 OscP5 oscP5;
 NetAddress receiver;
+NetAddress oscBootAddress;
 MessageQueue messageQueue;
 Color backgroundColor;
 Color waveColor;
@@ -28,6 +29,8 @@ void setup() {
   waveColor = new Color(5, 59, 6);
   oscP5 = new OscP5(this, 12000);
   receiver = new NetAddress( "127.0.0.1", 12000);
+  oscBootAddress = new NetAddress("127.0.0.1", 12645);
+  
   messageQueue = new MessageQueue();
   backgroundWave = new BackgroundWave(backgroundColor, waveColor, messageQueue);
 
@@ -38,6 +41,10 @@ void setup() {
     phone = new StaticMessage("SMS: +1 (929) 334-3697 //", "FreeMonoBold.ttf", (height - 25), (width - 545 - 675), (height - 25));
     phone.set_alpha(0);
   };
+  // Send boot confirmation to python
+  OscMessage bootMessage = new OscMessage("/processing_ready");
+  bootMessage.add(1);
+  oscP5.send(bootMessage, oscBootAddress);
 };
 
 void draw() {
