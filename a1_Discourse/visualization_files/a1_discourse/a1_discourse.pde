@@ -21,7 +21,8 @@ StaticMessage phone;
 Boolean scored;
 
 void setup() {
-  size(1280, 720, P2D);
+  //size(1280, 720, P2D);
+  fullScreen(2);
   frameRate(30);
   smooth();
   scored = false;
