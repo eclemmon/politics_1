@@ -18,6 +18,7 @@ MIDIClient.init;
 
 // Init local net address for incoming OSC data
 ~netaddress = NetAddr.new("127.0.0.1", 57120);
+~osc_boot_address = NetAddr.new("127.0.0.1", 12645);
 
 // Init project files
 thisProcess.interpreter.executeFile(path +/+ "/discourse_midi_cc_functions.scd");
@@ -25,4 +26,5 @@ thisProcess.interpreter.executeFile(path +/+ "/discourse_helper_functions.scd");
 thisProcess.interpreter.executeFile(path +/+ "/discourse_build_sig_path.scd");
 thisProcess.interpreter.executeFile(path +/+ "/discourse_init.scd");
 thisProcess.interpreter.executeFile(path +/+ "/discourse_oscfuncs.scd");
+~osc_boot_address.sendMsg("/supercollider_ready", true);
 )
