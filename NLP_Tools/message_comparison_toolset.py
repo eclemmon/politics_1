@@ -38,7 +38,7 @@ class TF_IDF:
         """
         self.docs_tfidf = None
         self.all_documents = []
-        self.vectorizer = TfidfVectorizer(preprocessor=preprocess)
+        self.vectorizer = TfidfVectorizer(preprocessor=preprocess, token_pattern=r'[^\s]+')
 
     def new_incoming_document(self, new_tweet_text: str):
         """
@@ -46,17 +46,20 @@ class TF_IDF:
         :param new_tweet_text: str
         :return: tuple (str, float) of the closest related text and the cosine similarity score
         """
-        if len(self.all_documents) == 0:
-            self.all_documents.append(new_tweet_text)
-            self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
-            return None, 0.0
+        if len(new_tweet_text.strip()) < 1:
+            pass
         else:
-            query_tfidf = self.vectorizer.transform([new_tweet_text])
-            cosine_simiilarities = cosine_similarity(query_tfidf, self.docs_tfidf).flatten()
-            self.all_documents.append(new_tweet_text)
-            self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
-            result = dict(list(zip(self.all_documents[:-1], list(cosine_simiilarities))))
-            return max(result, key=result.get), max(result.values())
+            if len(self.all_documents) == 0:
+                self.all_documents.append(new_tweet_text)
+                self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
+                return None, 0.0
+            else:
+                query_tfidf = self.vectorizer.transform([new_tweet_text])
+                cosine_simiilarities = cosine_similarity(query_tfidf, self.docs_tfidf).flatten()
+                self.all_documents.append(new_tweet_text)
+                self.docs_tfidf = self.vectorizer.fit_transform(self.all_documents)
+                result = dict(list(zip(self.all_documents[:-1], list(cosine_simiilarities))))
+                return max(result, key=result.get), max(result.values())
 
     def most_similar_doc(self, new_tweet_text: str):
         """
@@ -208,24 +211,13 @@ class WordNetTweetSimilarityScore:
 if __name__ == '__main__':
     print("Testing similarity scores for sentences:")
     sentences = [
-        "politics I",
-        "Some jazz musicians are excellent at the trombone.",
-        "I played the viola for the wedding.",
-        "Cats are jamming on a hurdy gurdy!",
-        "Jesus ascended to heaven with blaring trumpets from angels' butts.",
-        "Cats are beautiful animals.",
-        "Kaija Saariaho writes spectral music",
-        "Beep, boop, doowop.",
-        "beep, bep, soowop.",
-        "Music is sound in time",
-        "Music is sound in ti",
-        "cat, cats and jesus have a spectral music that sounds like jazz boob",
-        "politics is power",
-        "I love dogs",
-        "Ruth is my baby",
-        "I am sitting in a room",
-        "I hate dog"
-
+        " ",
+        " 😓",
+        "\n",
+        "asdg",
+        "  ",
+        'hello there',
+        'hello again'
     ]
 
     focus_sentence = "Hello every one I love music so much."
