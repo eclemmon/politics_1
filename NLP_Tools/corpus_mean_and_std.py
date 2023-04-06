@@ -22,7 +22,7 @@ class CorpusMeanAndStd:
             except RuntimeError:
                 print("Something went wrong, you need to include either both a mean and a std value, or a corpus only")
         else:
-            assert isinstance(mean, float) and isinstance(std, float)
+            # assert (isinstance(mean, float) and isinstance(std, float))
             self.mean = mean
             self.std = std
 
@@ -32,6 +32,7 @@ class CorpusMeanAndStd:
         :param other: CorpusMeanAndStd
         :return: CorpusMeanAndStd
         """
+        print(self, other)
         new_mean = self.mean - other.mean
         new_std = self.std - other.std
         return CorpusMeanAndStd(new_mean, new_std)
@@ -104,7 +105,7 @@ def mean_and_std_of_corpus(corpus: list):
 
 
 if __name__ == '__main__':
-    file_path = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Corpora/TwiConv/time_and_tweets.json"
+    file_path = "/Users/ericlemmon/Documents/musical_practice/compositions/electronic_works/politics_1/Corpora/TwiConv/time_and_tweets.json"
 
     with open(file_path, 'r') as file:
         tweets = json.load(file)
