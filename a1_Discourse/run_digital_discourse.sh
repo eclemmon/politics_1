@@ -24,5 +24,5 @@ source "$ROOT_DIR/venv/bin/activate"
 echo "Virtual environment successfully booted"
 processing-java --sketch="$ROOT_DIR/a1_Discourse/visualization_files/a1_discourse/" --run &
 "$SC_DIR/sclang" "$SC_SCRIPT_PATH" &
-sleep 10
+"$ROOT_DIR/venv/bin/python" "$ROOT_DIR/Utility_Tools/osc_server.py"
 "$ROOT_DIR/venv/bin/python" "$ROOT_DIR/Message_Endpoints/a1_discourse_flask_twilio_twitter_client.py"
