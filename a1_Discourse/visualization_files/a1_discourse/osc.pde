@@ -1,9 +1,9 @@
-void mousePressed() {
-  OscMessage myMessage = new OscMessage("/hallo");
-  myMessage.add("EM IPSUM LOREM IPSUM LOREM IPSUMLOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM END");
-  oscP5.send(myMessage, receiver);
-  //println(messageList);
-}
+//void mousePressed() {
+//  OscMessage myMessage = new OscMessage("/hallo");
+//  myMessage.add("EM IPSUM LOREM IPSUM LOREM IPSUMLOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM END");
+//  oscP5.send(myMessage, receiver);
+//  //println(messageList);
+//}
 
 void oscEvent(OscMessage m) {
   /* print the address pattern and the typetag of the received OscMessage */
