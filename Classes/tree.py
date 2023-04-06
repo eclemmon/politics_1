@@ -103,31 +103,8 @@ class Tree:
 
 if __name__ == '__main__':
     sentences = [
-        "politics I",
-        "Some jazz musicians are excellent at the trombone.",
-        "I played the viola for the wedding.",
-        "Cats are jamming on a hurdy gurdy!",
-        "Jesus ascended to heaven with blaring trumpets from angels' butts.",
-        "Cats are beautiful animals.",
-        "Kaija Saariaho writes spectral music",
-        "Beep, boop, doowop.",
-        "beep, bep, soowop.",
-        "Music is sound in time",
-        "Music is sound in ti",
-        "cat, cats and jesus have a spectral music that sounds like jazz boob",
-        "politics is power",
-        "I love dogs",
-        "Ruth is my baby",
-        "I am sitting in a room",
-        "I hate dog",
-        "i hate dogs",
-        "I have a dog",
-        'no to dog',
-        "I had a dog",
-        "I was a doggo",
-        "I had a dogg",
-        "nary another had any old damn hound",
-        "I had a dog"
+        "🥶😞😡😒😡🥶🥶🥸🥶😞",
+        "🥶😞😡😒😡🥶"
     ]
 
     tf_idf = TF_IDF()
@@ -137,6 +114,7 @@ if __name__ == '__main__':
     for doc in sentences:
         # print(doc)
         tf_idf_tree.receive_message(doc)
+        print(tf_idf_tree.nodes)
 
         # wordnet_tree.receive_message(doc)
     # print(tf_idf_tree.nodes["Music is sound in ti"].parent.parent.message)
