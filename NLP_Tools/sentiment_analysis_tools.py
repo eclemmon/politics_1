@@ -35,7 +35,10 @@ def get_average_sentiment(sentiment_analyzer: SentimentIntensityAnalyzer, text: 
     :return: dict of mean_polarity_score
     """
     sentences = tokenize.sent_tokenize(text, language="english")
-    sentiments = [sentiment_analyzer.polarity_scores(sentence) for sentence in sentences]
+    if len(sentences) < 1:
+        sentiments = [{'neg': 0, 'neu': 0, 'pos': 0, 'compound': 0}]
+    else:
+        sentiments = [sentiment_analyzer.polarity_scores(sentence) for sentence in sentences]
     sentiment_mean = {}
     keys = ['neg', 'neu', 'pos', 'compound']
     for key in keys:
@@ -47,14 +50,14 @@ def get_average_sentiment(sentiment_analyzer: SentimentIntensityAnalyzer, text: 
 
 
 if __name__ == "__main__":
-    file_path = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Corpora/TwiConv/time_and_tweets.json"
-
-    with open(file_path, 'r') as file:
-        tweets = json.load(file)
+    # file_path = "/Users/ericlemmon/Google Drive/PhD/PhD_Project_v2/Corpora/TwiConv/time_and_tweets.json"
+    #
+    # with open(file_path, 'r') as file:
+    #     tweets = json.load(file)
 
     # simulation = TweetsIncomingSim(tweets)
     sentiment_analyzer = SentimentIntensityAnalyzer()
-    text = "I love the train! Let me get on it fam! Woohoo! I HATE the Train"
+    text = "😓 "
     print(get_sentiment_with_text(sentiment_analyzer, text=text))
     print(get_sentiment(sentiment_analyzer, text=text))
     print(get_average_sentiment(sentiment_analyzer, text=text))
